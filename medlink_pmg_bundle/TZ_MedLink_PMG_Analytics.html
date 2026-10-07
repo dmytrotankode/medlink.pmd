@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ТЕХНІЧНЕ ЗАВДАННЯ: Модуль аналітики ПМГ 2026, розрахунку тарифів та зв'язку з ЕМЗ для МІС "Медлінк"</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ml-primary: #0e508b;
+      --ml-primary-dark: #072e52;
+      --ml-primary-light: #166ba8;
+      --ml-accent: #0086ff;
+      --ml-accent-cyan: #00c0f0;
+      --ml-bg: #f8fafc;
+      --ml-surface: #ffffff;
+      --ml-text: #1e293b;
+      --ml-text-muted: #64748b;
+      --ml-border: #e2e8f0;
+      --ml-success: #10b981;
+      --ml-success-bg: #ecfdf5;
+      --ml-warning: #f59e0b;
+      --ml-warning-bg: #fffbeb;
+      --ml-danger: #ef4444;
+      --ml-danger-bg: #fef2f2;
+      --ml-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+      --ml-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+      --radius: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, sans-serif; }
+    body { background-color: #f1f5f9; color: var(--ml-text); line-height: 1.6; }
+
+    /* Container */
+    .doc-container { max-width: 1200px; margin: 2rem auto; background: white; border-radius: 14px; box-shadow: var(--ml-shadow-lg); overflow: hidden; border: 1px solid var(--ml-border); }
+
+    /* Cover Header */
+    .doc-header {
+      background: linear-gradient(135deg, var(--ml-primary-dark) 0%, var(--ml-primary) 65%, var(--ml-primary-light) 100%);
+      color: white; padding: 3rem 3.5rem; position: relative; border-bottom: 5px solid var(--ml-accent);
+    }
+    .header-badge {
+      display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+      font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1.25rem;
+    }
+    .header-badge .dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; }
+    .doc-title { font-size: 2.25rem; font-weight: 800; line-height: 1.2; margin-bottom: 1rem; letter-spacing: -0.02em; }
+    .doc-subtitle { font-size: 1.15rem; color: #cbd5e1; font-weight: 400; max-width: 900px; line-height: 1.5; margin-bottom: 2rem; }
+    
+    .meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 1.5rem; font-size: 0.85rem; }
+    .meta-item strong { display: block; color: white; font-weight: 600; font-size: 0.9rem; }
+    .meta-item span { color: #94a3b8; }
+
+    /* Content Layout */
+    .doc-body { padding: 3rem 3.5rem; }
+    h2.section-title {
+      font-size: 1.45rem; font-weight: 800; color: var(--ml-primary); margin: 2.5rem 0 1.25rem 0;
+      padding-bottom: 0.5rem; border-bottom: 2px solid var(--ml-border); display: flex; align-items: center; gap: 10px;
+    }
+    h2.section-title:first-of-type { margin-top: 0; }
+    h3.sub-title { font-size: 1.15rem; font-weight: 700; color: #1e293b; margin: 1.5rem 0 0.75rem 0; }
+    p { margin-bottom: 1rem; font-size: 0.95rem; color: #334155; }
+    ul, ol { margin-left: 1.5rem; margin-bottom: 1.25rem; font-size: 0.95rem; color: #334155; }
+    li { margin-bottom: 0.4rem; }
+
+    /* Callout Alerts */
+    .alert {
+      border-radius: var(--radius); padding: 1.25rem 1.5rem; margin: 1.5rem 0; font-size: 0.925rem;
+      border-left: 5px solid; display: flex; gap: 14px; align-items: flex-start;
+    }
+    .alert-info { background: #eff6ff; border-color: var(--ml-accent); color: #1e40af; }
+    .alert-success { background: var(--ml-success-bg); border-color: var(--ml-success); color: #065f46; }
+    .alert-warning { background: var(--ml-warning-bg); border-color: var(--ml-warning); color: #92400e; }
+    .alert-danger { background: var(--ml-danger-bg); border-color: var(--ml-danger); color: #991b1b; }
+    .alert-icon { font-size: 1.35rem; line-height: 1; }
+
+    /* Tables */
+    .doc-table { width: 100%; border-collapse: collapse; margin: 1.25rem 0 2rem 0; font-size: 0.875rem; border: 1px solid var(--ml-border); border-radius: 8px; overflow: hidden; }
+    .doc-table th { background: #f8fafc; color: #334155; font-weight: 700; padding: 12px 14px; border: 1px solid var(--ml-border); text-align: left; }
+    .doc-table td { padding: 11px 14px; border: 1px solid var(--ml-border); color: #334155; }
+    .doc-table tr:nth-child(even) { background-color: #fafbfc; }
+
+    /* Code Blocks */
+    .code-box {
+      background: #0f172a; color: #e2e8f0; padding: 1.25rem; border-radius: 8px; font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem; line-height: 1.5; margin: 1.25rem 0; overflow-x: auto; border: 1px solid #1e293b;
+    }
+    .code-inline {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.825rem; background: #e2e8f0; color: #0f172a;
+      padding: 2px 6px; border-radius: 4px;
+    }
+
+    /* Mockups & UI Previews */
+    .mockup-container {
+      background: #f8fafc; border: 1px solid var(--ml-border); border-radius: 12px; margin: 2rem 0;
+      box-shadow: var(--ml-shadow); overflow: hidden;
+    }
+    .mockup-header {
+      background: #e2e8f0; padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #cbd5e1; font-size: 0.8rem; font-weight: 600; color: #475569;
+    }
+    .mockup-dots { display: flex; gap: 6px; }
+    .mockup-dot { width: 10px; height: 10px; border-radius: 50%; background: #94a3b8; }
+    .mockup-dot.red { background: #f87171; }
+    .mockup-dot.yellow { background: #fbbf24; }
+    .mockup-dot.green { background: #34d399; }
+    .mockup-body { padding: 1.5rem; background: white; }
+
+    /* UI Components inside Mockups */
+    .ui-panel { border: 1px solid var(--ml-border); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+    .ui-badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; }
+    .ui-badge-success { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .ui-badge-danger { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+    .ui-badge-warning { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+
+    /* Prototype Quick Nav Bar */
+    .quick-proto-nav {
+      background: #072542; padding: 12px 3.5rem; display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+      font-size: 0.8rem; border-bottom: 3px solid var(--ml-accent); color: white;
+    }
+    .quick-proto-nav strong { color: var(--ml-accent-cyan); margin-right: 6px; font-size: 0.825rem; }
+    .quick-proto-nav a {
+      color: white; text-decoration: none; padding: 6px 11px; border-radius: 6px; background: rgba(255,255,255,0.1);
+      transition: all 0.2s; font-weight: 600; display: inline-flex; align-items: center; gap: 5px;
+    }
+    .quick-proto-nav a:hover { background: var(--ml-accent); color: white; transform: translateY(-1px); }
+    .quick-proto-nav a.main-link { background: var(--ml-accent); font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+
+    .proto-btn {
+      display: inline-block; padding: 5px 10px; background: var(--ml-accent); color: white;
+      text-decoration: none; border-radius: 6px; font-weight: 700; font-size: 0.75rem; transition: all 0.2s; white-space: nowrap;
+    }
+    .proto-btn:hover { background: #006dd0; color: white; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+    .proto-link {
+      font-size: 0.725rem; color: #64748b; text-decoration: underline; margin-top: 3px; display: inline-block; white-space: nowrap;
+    }
+    .proto-link:hover { color: var(--ml-primary); }
+
+    .proc-box {
+      border: 1px solid var(--ml-border); border-radius: 10px; padding: 1.25rem; margin-bottom: 1.25rem;
+      background: #ffffff; box-shadow: var(--ml-shadow); transition: border-color 0.2s;
+    }
+    .proc-box:hover { border-color: var(--ml-accent); }
+    .proc-box-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;
+    }
+    .proc-box-title { font-size: 1.05rem; font-weight: 700; color: var(--ml-primary); display: flex; align-items: center; gap: 8px; }
+    .proc-box-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; font-size: 0.825rem;
+      background: #f8fafc; padding: 10px 12px; border-radius: 6px; margin: 10px 0; border: 1px solid var(--ml-border);
+    }
+    .proc-box-grid strong { display: block; color: #475569; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 2px; }
+
+    /* Footer */
+    .doc-footer {
+      background: #f8fafc; border-top: 1px solid var(--ml-border); padding: 2rem 3.5rem; font-size: 0.85rem;
+      color: var(--ml-text-muted); display: flex; justify-content: space-between; align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="doc-container">
+
+  <!-- Document Header -->
+  <header class="doc-header">
+    <div class="header-badge">
+      <span class="dot"></span>
+      <span>ТЕХНІЧНЕ ЗАВДАННЯ • ВЕРСІЯ 1.0 • ПМГ 2026</span>
+    </div>
+    <h1 class="doc-title">Модуль аналітики ПМГ 2026, пре-білінгу, автоматичного розрахунку тарифів та 2-Way зв'язку з ЕМЗ для МІС "Медлінк"</h1>
+    <p class="doc-subtitle">
+      Створення інтегрованої системи пре-валідації взаємодій, автоматичного розрахунку вартості за актуальною нормативною базою ПМГ-2026, ретроспективного аудиту звітів НСЗУ та усунення втрат доходу клініки.
+    </p>
+
+    <div class="meta-grid">
+      <div class="meta-item">
+        <strong>Цільова система:</strong>
+        <span>МІС "Медлінк" (MIS.Api / evomis / App.View)</span>
+      </div>
+      <div class="meta-item">
+        <strong>Нормативна база:</strong>
+        <span>ПМГ 2026 (Постанова КМУ, Таблиці ОДК НСЗУ)</span>
+      </div>
+      <div class="meta-item">
+        <strong>Статус розробки:</strong>
+        <span>Експериментальний зразок готовий (c:\__MEDLINK___\PMG)</span>
+      </div>
+      <div class="meta-item">
+        <strong>Дата складання:</strong>
+        <span>Жовтень 2026 р.</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Interactive Prototypes Quick Bar -->
+  <div class="quick-proto-nav">
+    <strong>🌐 Прототипи та Документація ПМГ-2026:</strong>
+    <a href="TZ_MedLink_PMG_Master_Specification.html" class="main-link" target="_blank" style="background: #e11d48; font-weight: 800; border: 1px solid #ffe4e6;">👑 ГОЛОВНЕ ТЗ СТИЛЮ LABA (12 екранів, .NET Core 10, Повний розбір) ↗</a>
+    <a href="prototype_medlink/index.html" class="main-link" target="_blank">MedLink Quasar Прототип (Всі 7 кроків + 46 пакетів) ↗</a>
+    <a href="docs_html/index.html" target="_blank" style="background: #2563eb;">📚 Технічна документація (10 розділів) ↗</a>
+    <a href="normative_packages/index.html" target="_blank" style="background: #059669;">⚖️ Всі 46 пакетів ПМГ (12 досьє) ↗</a>
+    <a href="docs_html/10_service_directory_norms_methodologies_combinations.html" target="_blank" style="background: #0d9488;">🩺 Справочник послуг та комбінацій (АКПІ) ↗</a>
+    <a href="prototype/index.html" target="_blank">HTML Прототип ↗</a>
+    <a href="prototype/process_1_prebilling.html" target="_blank">П1: Пре-білінг ↗</a>
+    <a href="prototype/process_2_upload.html" target="_blank">П2: Імпорт ↗</a>
+    <a href="prototype/process_3_financial_audit.html" target="_blank">П3: Аудит ↗</a>
+    <a href="prototype/process_4_discrepancies.html" target="_blank">П4: Розбіжності ↗</a>
+    <a href="prototype/process_5_correction.html" target="_blank">П5: Виправлення ↗</a>
+    <a href="prototype/process_6_catalog.html" target="_blank">П6: Довідники ↗</a>
+  </div>
+
+  <!-- Document Body -->
+  <main class="doc-body">
+
+    <!-- 1. Executive Summary & Goals -->
+    <section>
+      <h2 class="section-title">1. Передумови, аналіз реальних звітів НСЗУ та бізнес-мета проєкту</h2>
+      
+      <p>
+        В процесі дослідження проведено детальний аудит двох реальних файлів звітності НСЗУ за 2026 рік:
+      </p>
+      <ul>
+        <li><strong>Файл 1: <code>Вересень 26.xlsx</code></strong> — КНП "Обласний центр онкології" (ЄДРПОУ 40929168), <strong>5 490 ЕМЗ</strong>.</li>
+        <li><strong>Файл 2: <code>02000334_SF_2026_08_20260910.xlsx</code></strong> — КНП "Дитяча клінічна лікарня Святої Зінаїди" СМР (ЄДРПОУ 02000334), <strong>4 394 ЕМЗ</strong>.</li>
+      </ul>
+
+      <p>
+        Аудит структури підтвердив, що кожен офіційний файл НСЗУ складається рівно з <strong>4 аркушів</strong>:
+      </p>
+      <ol>
+        <li><strong>«Розшифровка» (45 колонок)</strong>: повний реєстр усіх ЕМЗ (Взаємодії, Діагностичні звіти, Процедури) з кодами діагнозів, інтервенцій АКПІ, статусом включення («Так», «ГБ», «Ні») та системними кодами помилок (колонки 38–44).</li>
+        <li><strong>«Пацієнти» (9 колонок)</strong>: агрегований реєстр пацієнтів із хешованими ID, номерами послуг за пакетом (напр. <code>17.1</code>, <code>17.3</code>, <code>PA3</code>), статусом у статистиці та переліком зв'язаних UUID медичних записів.</li>
+        <li><strong>«Звіт»</strong>: підсумковий протокол із точними таймстемпами вивантаження, загальною статистикою закладу за пакетами, а також <strong>детальним розрізом за кожним лікарем закладу</strong> (обсяг ЕМЗ та перелік допущених помилок).</li>
+        <li><strong>«Опис помилок»</strong>: офіційний нормативний довідник НСЗУ із <strong>186 визначеннями помилок</strong> та умов невідповідності (МВТН, перекриття у часі, відсутність обов'язкових послуг АКПІ, невідповідність посад тощо).</li>
+      </ol>
+
+      <div class="alert alert-danger">
+        <div class="alert-icon">⚠️</div>
+        <div>
+          <strong>Підтверджений факт 2026 року: НСЗУ повністю припинила виведення вартості та тарифів!</strong><br>
+          В обох реальних звітах (усі 45 колонок «Розшифровки») <strong>колонки суми до оплати, тарифу та коефіцієнтів відсутні повністю</strong>. Присутній лише текстовий статус у колонці 38 («Включення медичного запису до звіту»):
+          <ul style="margin: 6px 0 0 18px;">
+            <li><strong>«Так»</strong> — оплата за окремий пролікований випадок або тарифну послугу (6.5% в онкоцентрі, 30.3% у дитячій лікарні).</li>
+            <li><strong>«ГБ»</strong> — зараховано до виконання глобального бюджету / капітаційної ставки закладу (80.5% в онкоцентрі, 66.4% у дитячій лікарні).</li>
+            <li><strong>«Ні»</strong> — повна відмова в оплаті (0 грн доходу, 13.0% в онкоцентрі, 3.3% у дитячій лікарні).</li>
+          </ul>
+          Без власного розрахункового движка лікарня залишається «сліпою» — керівництво не може оцінити фінансовий результат, перевірити правильність виплат за глобальною ставкою та розрахувати суму збитків.
+        </div>
+      </div>
+
+      <div class="alert alert-warning">
+        <div class="alert-icon">💸</div>
+        <div>
+          <strong>Масштаб фінансових втрат закладів через технічні помилки кодування (Lost Revenue):</strong><br>
+          За результатами нашого прямого математичного аудиту за формулами ПМГ-2026:
+          <ul style="margin: 6px 0 0 18px;">
+            <li>У <strong>КНП "Обласний центр онкології"</strong> через статус «Ні» та помилки кодування <strong>втрачено ~6 162 000 грн</strong> (прийнято лише 426 000 грн за випадками «Так»). <strong>93.5% потенційного додаткового доходу втрачено!</strong></li>
+            <li>У <strong>КНП "ДКЛ Святої Зінаїди"</strong> через статус «Ні» та блокуючі помилки <strong>втрачено ~3 674 400 грн</strong> (прийнято 1 598 400 грн за випадками «Так»). <strong>69.7% потенційного доходу втрачено!</strong></li>
+          </ul>
+          Головні причини відхилень: «Взаємодія для МВТН» (створено листок непрацездатності без клінічної виписки), «Не відповідає жодному пакету/послузі» (невідповідність посади лікаря або коду АКПІ), «Перекриття за часом» та «Відсутній план лікування».
+        </div>
+      </div>
+
+      <h3 class="sub-title">Головні бізнес-цілі розробки:</h3>
+      <ol>
+        <li><strong>Пре-білінг та онлайн-контроль у Медлінку</strong>: під час створення взаємодії лікар отримує підказку щодо очікуваної ДСГ та ризиків неотримання коштів ще ДО підписання КЕП та відправки в eHealth.</li>
+        <li><strong>Автономний розрахунок тарифів за ПМГ-2026</strong>: незалежний математичний модуль розрахунку точної суми кожного випадку за формулами Кабміну, що нівелює відміну виведення вартості з боку НСЗУ.</li>
+        <li><strong>Двосторонній зв'язок (2-Way Matching)</strong>: при завантаженні звіту НСЗУ система прив'язує кожне відхилення до реального <code>Encounter.Id</code> у Медлінку за колонкою 4 (<code>ID ЕМЗ</code>), дає рекомендацію асистента та кнопку «Виправити кодування в один клік».</li>
+        <li><strong>Автономний аналітичний сервіс</strong>: можливість використання як у складі Медлінка, так і у вигляді окремого порталу (SaaS аналог info-pmg.com Pro).</li>
+      </ol>
+    </section>
+
+    <!-- 2. Tariffs & Mathematical Model -->
+    <section>
+      <h2 class="section-title">2. Нормативна база та математична модель розрахунку тарифів ПМГ-2026</h2>
+
+      <p>
+        Розрахунковий движок базується на чинних нормативно-правових актах, що регулюють ПМГ у 2026 році:
+      </p>
+      <ul>
+        <li><strong>Постанова КМУ №1808 від 27.12.2024</strong> «Деякі питання реалізації програми державних гарантій медичного обслуговування населення у 2026 році».</li>
+        <li><strong>Додаток 1 до Постанови №1808</strong>: Таблиця коефіцієнтів складності діагностично-споріднених груп (ДСГ) для стаціонарної допомоги (Пакети 3, 4, 47), коефіцієнти вікових категорій дітей (до 28 днів: 1.54; від 29 днів до 1 року: 1.25) та важкості травм.</li>
+        <li><strong>Додаток 2 до Постанови №1808</strong>: Коефіцієнти складності для операцій на відкритому серці та інтервенційної кардіології (Пакет 4).</li>
+        <li><strong>Наказ МОЗ / НСЗУ №377 від 15.05.2025</strong>: Таблиці співставлення ОДК (Основні діагностичні категорії) та галузеві класифікатори австралійської системи AR-DRG v7.0.</li>
+      </ul>
+
+      <h3 class="sub-title">2.1. Стаціонарна та хірургічна допомога (Пакети 3, 4, 47)</h3>
+      <p>Тариф випадку стаціонарного лікування визначається за формулою:</p>
+      
+      <div class="code-box">
+Тариф (грн) = Базова_ставка × Коефіцієнт_складності_ДСГ × Коригувальний_коефіцієнт × K_гірський
+
+де:
+- Базова ставка (ПМГ-2026) = 8 735.00 грн.
+- Коефіцієнт складності ДСГ = від 0.28 до 16.45 (визначається за матрицею діагнозів МКХ-10 та послуг АКПІ з Додатка 1).
+- Коригувальний коефіцієнт = 0.55 (стаціонар, пакети 3 і 4) або 0.60 (хірургія 1 дня, Пакет 47).
+- K_гірський = 1.25 (для закладів у гірських населених пунктах) або 1.00.
+      </div>
+
+      <h3 class="sub-title">2.2. Амбулаторна допомога (Пакет 9)</h3>
+      <div class="code-box">
+Тариф_послуги (грн) = 155.00 грн × K_класу_послуги × K_гірський
+
+де:
+- Базова ставка = 155.00 грн.
+- K_класу (1..148) = наприклад: Клас 1 (Кардіологія) = 1.29 -> 199.95 грн;
+  Клас 54 (Ендоскопія) = 2.45 -> 379.75 грн.
+- Обов'язкова умова: код посади лікаря в ЕСОЗ повинен входити до списку дозволених для даного класу.
+      </div>
+
+      <h3 class="sub-title">2.3. Спеціалізовані пакети (Онкологія, Ендоскопія, Реабілітація)</h3>
+      <ul>
+        <li><strong>Пакет 17 та 38 (Хіміотерапія та онкогематологія)</strong>: 17 865.00 грн (дорослий) / 90 131.00 грн (діти до 18 років). Обов'язкова наявність діагнозу C00-C97 або D00-D09, а для амбулаторії — основного діагнозу <code>Z51.1</code>.</li>
+        <li><strong>Пакет 18 (Радіологічне лікування)</strong>: 54 089.00 грн (гамма-терапія / лінійний прискорювач).</li>
+        <li><strong>Пакет 10, 12, 13, 15 (Пріоритетна рання діагностика)</strong>: Мамографія = 512.00 грн; Гастроскопія = 749.00 грн; Колоноскопія = 1 180.00 грн; Бронхоскопія = 1 167.00 грн.</li>
+        <li><strong>Пакети 53 та 54 (Реабілітаційна допомога)</strong>: Стаціонарна = 19 776.00 грн за цикл; Амбулаторна = 10 820.00 грн за цикл за умови виконання вимог матриць <strong>АР1..АР4</strong> та <strong>CR</strong>.</li>
+      </ul>
+
+      <h3 class="sub-title">2.4. Повний реєстр 46 пакетів ПМГ-2026 та 12 клініко-економічних кластерів</h3>
+      <p>
+        На вимогу повної відповідності нормативній базі у системі імплементовано регулювання <strong>всіх 46 офіційних пакетів медичних гарантій 2026 року</strong>, згрупованих у 12 кластерів:
+      </p>
+      <div style="background: #f8fafc; border: 1px solid var(--ml-border); border-radius: 8px; padding: 14px; margin-bottom: 14px; font-size: 0.875rem;">
+        <ul style="margin-bottom: 0;">
+          <li><strong>Кластер 1. Первинна медична допомога:</strong> Пакет 1 (ПМД, 1 007.30 ₴/рік, капітація).</li>
+          <li><strong>Кластер 2. Екстрена медична допомога:</strong> Пакет 2 (ЕМД, 340.50 ₴/рік, капітація).</li>
+          <li><strong>Кластер 3. Спеціалізована та хірургічна допомога (ДСГ):</strong> Пакети 3 (Терапія), 4 (Хірургія), 47 (Хірургія 1-дня) — база 8 735.00 ₴, 465 ДСГ, коригувальні 0.55 / 0.60.</li>
+          <li><strong>Кластер 4. Пріоритетні стаціонарні пакети:</strong> Пакети 5 (Інсульт, 15 250..137 000 ₴), 6 (Інфаркт, 44 400..55 200 ₴), 7 (Пологи, 15 137..27 240 ₴), 8 (Неонатологія, 33 000..135 000 ₴), 35 (Ведення вагітності, 800 ₴/міс).</li>
+          <li><strong>Кластер 5. Амбулаторна допомога та онкоскринінги:</strong> Пакет 9 (148 класів, база 155 ₴), Пакети 10..15 (Мамографія, гістеро-, езофагогастро-, колоно-, цисто-, бронхоскопія: 512..1 180 ₴), Пакет 16 (Лікування безпліддя), Пакет 34 (Стоматологія, 145 ₴), Пакет 42 (Мобільна амбулаторія).</li>
+          <li><strong>Кластер 6. Онкологія та онкогематологія:</strong> Пакет 18 (Хіміотерапія, 17 865..35 730 ₴), Пакет 19 (Радіотерапія, 54 089..131 499 ₴), Пакет 26 (Онкогематологія, 61 200..122 400 ₴).</li>
+          <li><strong>Кластер 7. Реабілітаційна допомога:</strong> Пакет 25 (Стаціонарна, 19 776..33 619 ₴), Пакет 53 (Монопрофільна складна, 41 500 ₴), Пакет 54 (Амбулаторна, 10 820 ₴).</li>
+          <li><strong>Кластер 8. Паліативна допомога:</strong> Пакет 23 (Стаціонарна, 18 900 ₴), Пакет 24 (Мобільна, 14 200 ₴).</li>
+          <li><strong>Кластер 9. Психіатрія та терапія залежностей:</strong> Пакет 22 (Стаціонарна психіатрія, 13 151 ₴), Пакет 27 (Мобільна психіатрія, 10 535 ₴), Пакет 28 (ЗПТ), Пакет 30 (Первинка психіатрія, 183 ₴).</li>
+          <li><strong>Кластер 10. Інфекційні патології:</strong> Пакет 20 (Туберкульоз, 43 780 ₴), Пакет 21 (ВІЛ/СНІД, 2 100 ₴), Пакет 29 (Вірусні гепатити).</li>
+          <li><strong>Кластер 11. Високі технології та трансплантація:</strong> Пакет 43 (Гемодіаліз, 2 460 ₴/сеанс), Пакет 46 (Перитонеальний діаліз, 1 820 ₴/доба), Пакет 59 (ДРТ / ЕКЗ, 60 324 ₴), Пакет 60 (Трансплантація органів, 350 000..900 000 ₴), Пакет 61 (ТКМ / ГСК, 750 000..1 400 000 ₴).</li>
+          <li><strong>Кластер 12. Оборонна готовність, ВЛК та ветерани:</strong> Пакет 40 (Готовність ЗОЗ до криз, глобальна ставка), Пакет 41 (НС), Пакет 44 (Медичний огляд ВЛК, 883 ₴), Пакет 45 (Лікування військовослужбовців), Пакет 58 (Зубопротезування ветеранів, 14 984 ₴).</li>
+        </ul>
+      </div>
+      <p>
+        Деталізовані нормативні досьє, законодавчі акти та таблиці валідацій див. у 
+        <a href="docs_html/09_all_pmg_packages_normative_guide.html" target="_blank" style="color: var(--ml-accent); font-weight: 700;">Розділі 9 технічної документації ↗</a>
+        та автономному браузері <a href="normative_packages/index.html" target="_blank" style="color: var(--ml-accent); font-weight: 700;">normative_packages/index.html ↗</a>.
+      </p>
+
+      <h3 class="sub-title">2.5. Справочник послуг (АКПІ): норми, методики та конфігуратор усіх можливих комбінацій (Delphi Re-engineering)</h3>
+      <p>
+        На основі реверс-інжинірингу класичної системи Delphi (модулі <code>fMain.pas</code>, <code>d53_54.pas</code> та таблиці правил <code>dct_mp_service_odk_rule_detail</code>) розширено підсистему класифікатора послуг АКПІ:
+      </p>
+      <div style="background: #f0fdfa; border: 1px solid #99f6e4; border-radius: 8px; padding: 14px; margin-bottom: 14px; font-size: 0.875rem;">
+        <ul style="margin-bottom: 0;">
+          <li><strong>12 клініко-технологічних груп послуг:</strong> загальна хірургія, онкохірургія, ендоскопія, інтенсивна терапія, анестезіологія, діагностика та реабілітація.</li>
+          <li><strong>Паспорт послуги та клінічні норми:</strong> нормативний час виконання (хв), тип анестезії, мінімальний та максимальний термін госпіталізації (ліжко-дні), вікові цензи (мін/макс), статева специфічність, кваліфікаційні вимоги до лікаря (спеціальність та сертифікат).</li>
+          <li><strong>Матриця комбінацій та валідатор:</strong> перевірка комбінацій у реальному часі (обов'язкові супутні ко-реквізити, несумісні інтервенції, сумісні МКХ-10, допустимі/заборонені посади лікарів).</li>
+          <li><strong>Підвищувальний коефіцієнт мультихірургії (1.30):</strong> при одночасному виконанні додаткових хірургічних втручань тариф базової ДСГ помножується на коефіцієнт мультихірургії <strong>1.30</strong> (наприклад, 21 257.50 ₴ → 27 634.75 ₴), захищаючи лікарню від дефектури та недофінансування.</li>
+          <li><strong>Бібліотека еталонних комбінацій (аналог <code>myAddLib</code>):</strong> збереження затверджених шаблонів комбінацій, порівняння з поточним протоколом та підсвічування різниці вартості (зелений прибуток / червоний збиток).</li>
+          <li><strong>Наскрізний Drill-down до реальних пацієнтів та 45 колонок:</strong> прямий перехід від картки послуги та правила до таблиці виписаних ЕМЗ пацієнтів і повного аудиту аркуша «Розшифровка».</li>
+        </ul>
+      </div>
+      <p>
+        Детальний технічний опис, DDL та інтерактивний симулятор див. у 
+        <a href="docs_html/10_service_directory_norms_methodologies_combinations.html" target="_blank" style="color: #0f766e; font-weight: 700;">Розділі 10 технічної документації ↗</a>
+        та SQL-скрипті <code>sql/11_seed_service_combinations_and_groups.sql</code>.
+      </p>
+    </section>
+
+    <!-- 3. Business Process Registry & Interactive Prototypes -->
+    <section id="processes">
+      <h2 class="section-title">3. Реєстр бізнес-процесів системи та перехід до прототипів</h2>
+
+      <p>
+        Функціональна архітектура системи охоплює замкнений життєвий цикл управління фінансуванням медичного закладу в рамках ПМГ-2026: від моменту внесення взаємодії лікарем у МІС («пре-білінг») до щомісячного аудиту офіційних звітів НСЗУ, виявлення розбіжностей та оперативного виправлення помилок із ресинхронізацією в ЕСОЗ (eHealth).
+      </p>
+
+      <div class="alert alert-info">
+        <div class="alert-icon">💡</div>
+        <div>
+          <strong>Усі процеси реалізовані як повнофункціональні інтерактивні прототипи у фірмовому стилі МІС «Медлінк»!</strong><br>
+          Кожен процес має окрему спеціалізовану сторінку для ізольованого тестування кожної ролі, а також повністю інтегрований у головний аналітичний портал.
+          Усі прототипи працюють локально без зовнішніх залежностей (Offline-first) у будь-якому браузері.
+        </div>
+      </div>
+
+      <!-- Process Registry Table -->
+      <table class="doc-table">
+        <thead>
+          <tr>
+            <th style="width: 50px;">Код</th>
+            <th>Назва бізнес-процесу</th>
+            <th>Хто виконує (Роль)</th>
+            <th>Нормативна база</th>
+            <th>Точка входу в Медлінку</th>
+            <th>Очікуваний бізнес-ефект</th>
+            <th style="text-align: center; min-width: 175px;">Інтерактивний прототип</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr id="process-1">
+            <td><strong style="color:var(--ml-accent);">П1</strong></td>
+            <td><strong>Пре-білінг лікаря під час заповнення ЕМЗ</strong></td>
+            <td>Лікуючий лікар (хірург, терапевт, онколог)</td>
+            <td>Постанова КМУ №1808 (Додатки 1, 2)</td>
+            <td><code>EncounterEdit.vue</code> (Картка взаємодії)</td>
+            <td>Попередження 100% технічних помилок до підписання КЕП</td>
+            <td style="text-align: center;">
+              <a href="prototype/process_1_prebilling.html" class="proto-btn" target="_blank">Відкрити екран П1 ↗</a><br>
+              <a href="prototype/index.html#process-1" class="proto-link" target="_blank">у головному порталі</a>
+            </td>
+          </tr>
+          <tr id="process-2">
+            <td><strong style="color:var(--ml-accent);">П2</strong></td>
+            <td><strong>Імпорт та потоковий парсинг звіту НСЗУ</strong></td>
+            <td>Головний економіст / Медичний директор</td>
+            <td>Формат вивантаження ЕСОЗ (4 аркуші, 45 колонок)</td>
+            <td><code>IXlsxProcessor</code> / Модуль імпорту звітів</td>
+            <td>Потоковий розбір 10 000+ рядків менше ніж за 2 сек</td>
+            <td style="text-align: center;">
+              <a href="prototype/process_2_upload.html" class="proto-btn" target="_blank">Відкрити екран П2 ↗</a><br>
+              <a href="prototype/index.html#process-2" class="proto-link" target="_blank">у головному порталі</a>
+            </td>
+          </tr>
+          <tr id="process-3">
+            <td><strong style="color:var(--ml-accent);">П3</strong></td>
+            <td><strong>Автономний розрахунок тарифів та фінансовий аудит</strong></td>
+            <td>Головний економіст, Начмед, Генеральний директор</td>
+            <td>Постанова КМУ №1808 (Тарифи, ДСГ, коефіцієнти)</td>
+            <td>Дашборд фінансового моніторингу ПМГ</td>
+            <td>Точний розрахунок доходу за «Так» / «ГБ» та втрат за «Ні»</td>
+            <td style="text-align: center;">
+              <a href="prototype/process_3_financial_audit.html" class="proto-btn" target="_blank">Відкрити екран П3 ↗</a><br>
+              <a href="prototype/index.html#process-3" class="proto-link" target="_blank">у головному порталі</a>
+            </td>
+          </tr>
+          <tr id="process-4">
+            <td><strong style="color:var(--ml-accent);">П4</strong></td>
+            <td><strong>Двосторонній аудит (2-Way) та журнал розбіжностей</strong></td>
+            <td>Медичний директор, Завідувач відділення</td>
+            <td>Аркуш «Опис помилок» (186 правил НСЗУ)</td>
+            <td><code>Encounter.EhealthId</code> ↔ Реєстр розбіжностей</td>
+            <td>Миттєва локалізація втраченого доходу (Lost Revenue)</td>
+            <td style="text-align: center;">
+              <a href="prototype/process_4_discrepancies.html" class="proto-btn" target="_blank">Відкрити екран П4 ↗</a><br>
+              <a href="prototype/index.html#process-4" class="proto-link" target="_blank">у головному порталі</a>
+            </td>
+          </tr>
+          <tr id="process-5">
+            <td><strong style="color:var(--ml-accent);">П5</strong></td>
+            <td><strong>Інтерактивний асистент коригування та ресинхронізація</strong></td>
+            <td>Лікар-експерт, Лікуючий лікар, Економіст</td>
+            <td>Регламент синхронізації з eHealth</td>
+            <td>Модальне вікно виправлення кодування</td>
+            <td>Відновлення 70–80% відхилених сум доходу закладу</td>
+            <td style="text-align: center;">
+              <a href="prototype/process_5_correction.html" class="proto-btn" target="_blank">Відкрити екран П5 ↗</a><br>
+              <a href="prototype/index.html#process-5" class="proto-link" target="_blank">у головному порталі</a>
+            </td>
+          </tr>
+          <tr id="process-6">
+            <td><strong style="color:var(--ml-accent);">П6</strong></td>
+            <td><strong>Довідник нормативів ПМГ-2026 (ДСГ, Класи, Реабілітація)</strong></td>
+            <td>Економіст, Лікарі всіх спеціальностей</td>
+            <td>Класифікатори ОДК/AR-DRG, 465 ДСГ, 148 класів</td>
+            <td>Довідкова підсистема МІС «Медлінк»</td>
+            <td>Швидкий пошук умов тарифікації, кодів АКПІ та коефіцієнтів</td>
+            <td style="text-align: center;">
+              <a href="prototype/process_6_catalog.html" class="proto-btn" target="_blank">Відкрити екран П6 ↗</a><br>
+              <a href="prototype/index.html#process-6" class="proto-link" target="_blank">у головному порталі</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Detailed Process Cards with Direct Actions -->
+      <h3 class="sub-title">Детальний опис та інтерактивні точки входу за процесами:</h3>
+
+      <!-- Box Process 1 -->
+      <div class="proc-box">
+        <div class="proc-box-header">
+          <div class="proc-box-title">
+            <span class="ui-badge ui-badge-success">П1</span>
+            <span>Процес 1: Пре-білінг та онлайн-контроль у картці лікаря (Encounter Pre-billing)</span>
+          </div>
+          <a href="prototype/process_1_prebilling.html" class="proto-btn" target="_blank">Запустити прототип П1 ↗</a>
+        </div>
+        <p style="margin-bottom:8px; font-size:0.875rem;">
+          <strong>Суть процесу:</strong> У момент заповнення медичного запису лікарем в <code>EncounterEdit.vue</code> система у фоновому режимі перевіряє комбінацію діагнозу МКХ-10, інтервенцій АКПІ та посади лікаря.
+        </p>
+        <div class="proc-box-grid">
+          <div><strong>Хто виконує:</strong> Лікуючий лікар (хірург, онколог, терапевт)</div>
+          <div><strong>Нормативна база:</strong> Постанова КМУ №1808 (Додатки 1, 2)</div>
+          <div><strong>Точка входу:</strong> Інтерфейс створення взаємодії у Медлінку</div>
+          <div><strong>Ефект:</strong> Захист від втрати 24 357.55 ₴ на кожному складному випадку</div>
+        </div>
+        <div style="font-size:0.8rem; color:#64748b;">
+          🔗 <strong>Шляхи переходу:</strong> Окремий екран: <a href="prototype/process_1_prebilling.html" target="_blank"><code>prototype/process_1_prebilling.html</code></a> • У головному порталі: <a href="prototype/index.html#process-1" target="_blank"><code>prototype/index.html#process-1</code></a>
+        </div>
+      </div>
+
+      <!-- Box Process 2 -->
+      <div class="proc-box">
+        <div class="proc-box-header">
+          <div class="proc-box-title">
+            <span class="ui-badge ui-badge-success">П2</span>
+            <span>Процес 2: Завантаження та потоковий парсинг звіту НСЗУ (OpenXML Ingestion)</span>
+          </div>
+          <a href="prototype/process_2_upload.html" class="proto-btn" target="_blank">Запустити прототип П2 ↗</a>
+        </div>
+        <p style="margin-bottom:8px; font-size:0.875rem;">
+          <strong>Суть процесу:</strong> Потокова обробка щомісячного файлу НСЗУ (аркуші «Розшифровка» на 45 колонок, «Пацієнти», «Звіт», «Опис помилок») через <code>NszuReportXlsxProcessor</code> з валідацією структури без перевантаження оперативної пам'яті сервера.
+        </p>
+        <div class="proc-box-grid">
+          <div><strong>Хто виконує:</strong> Головний економіст / Медичний директор</div>
+          <div><strong>Нормативна база:</strong> Регламент обміну даними ЕСОЗ / НСЗУ</div>
+          <div><strong>Точка входу:</strong> Модуль «Імпорт та обробка звітів НСЗУ»</div>
+          <div><strong>Ефект:</strong> Автоматичний розбір 5 490+ ЕМЗ за 1.2 секунди</div>
+        </div>
+        <div style="font-size:0.8rem; color:#64748b;">
+          🔗 <strong>Шляхи переходу:</strong> Окремий екран: <a href="prototype/process_2_upload.html" target="_blank"><code>prototype/process_2_upload.html</code></a> • У головному порталі: <a href="prototype/index.html#process-2" target="_blank"><code>prototype/index.html#process-2</code></a>
+        </div>
+      </div>
+
+      <!-- Box Process 3 -->
+      <div class="proc-box">
+        <div class="proc-box-header">
+          <div class="proc-box-title">
+            <span class="ui-badge ui-badge-success">П3</span>
+            <span>Процес 3: Автономний розрахунок тарифів ПМГ-2026 та фінансовий аудит (45 колонок)</span>
+          </div>
+          <a href="prototype/process_3_financial_audit.html" class="proto-btn" target="_blank">Запустити прототип П3 ↗</a>
+        </div>
+        <p style="margin-bottom:8px; font-size:0.875rem;">
+          <strong>Суть процесу:</strong> Оскільки НСЗУ повністю припинила виведення вартості у звітах 2026 року, модуль автономно розраховує тарифи за формулами КМУ для випадків «Так», обсягів «ГБ» та розраховує точні суми збитків за відхиленими випадками («Ні»).
+        </p>
+        <div class="proc-box-grid">
+          <div><strong>Хто виконує:</strong> Головний економіст, Начмед, Генеральний директор</div>
+          <div><strong>Нормативна база:</strong> Постанова КМУ №1808 (Базові ставки 8 735 грн, 155 грн, ДСГ)</div>
+          <div><strong>Точка входу:</strong> Аналітична панель фінансового моніторингу</div>
+          <div><strong>Ефект:</strong> Повна прозорість доходів та виявлення прихованих втрат</div>
+        </div>
+        <div style="font-size:0.8rem; color:#64748b;">
+          🔗 <strong>Шляхи переходу:</strong> Окремий екран: <a href="prototype/process_3_financial_audit.html" target="_blank"><code>prototype/process_3_financial_audit.html</code></a> • У головному порталі: <a href="prototype/index.html#process-3" target="_blank"><code>prototype/index.html#process-3</code></a>
+        </div>
+      </div>
+
+      <!-- Box Process 4 -->
+      <div class="proc-box">
+        <div class="proc-box-header">
+          <div class="proc-box-title">
+            <span class="ui-badge ui-badge-danger">П4</span>
+            <span>Процес 4: Двосторонній аудит (2-Way Matching) та журнал розбіжностей</span>
+          </div>
+          <a href="prototype/process_4_discrepancies.html" class="proto-btn" target="_blank">Запустити прототип П4 ↗</a>
+        </div>
+        <p style="margin-bottom:8px; font-size:0.875rem;">
+          <strong>Суть процесу:</strong> Автоматичне співставлення кожного запису НСЗУ з внутрішньою базою Медлінка за ключем <code>Encounter.EhealthId == ID ЕМЗ</code>. Зведення відхилених записів у єдиний реєстр розбіжностей із категоризацією помилок за офіційним словником НСЗУ (186 правил).
+        </p>
+        <div class="proc-box-grid">
+          <div><strong>Хто виконує:</strong> Медичний директор, Завідувачі клінічних відділень</div>
+          <div><strong>Нормативна база:</strong> Аркуш «Опис помилок» НСЗУ 2026 року</div>
+          <div><strong>Точка входу:</strong> Розділ «Журнал розбіжностей та втраченого доходу»</div>
+          <div><strong>Ефект:</strong> Локалізація 4.97 млн грн втрат у КНП «ОЦО» та 3.67 млн грн у КНП «ДКЛ»</div>
+        </div>
+        <div style="font-size:0.8rem; color:#64748b;">
+          🔗 <strong>Шляхи переходу:</strong> Окремий екран: <a href="prototype/process_4_discrepancies.html" target="_blank"><code>prototype/process_4_discrepancies.html</code></a> • У головному порталі: <a href="prototype/index.html#process-4" target="_blank"><code>prototype/index.html#process-4</code></a>
+        </div>
+      </div>
+
+      <!-- Box Process 5 -->
+      <div class="proc-box">
+        <div class="proc-box-header">
+          <div class="proc-box-title">
+            <span class="ui-badge ui-badge-warning">П5</span>
+            <span>Процес 5: Інтерактивний асистент коригування та ресинхронізація (2-Way AI Correction)</span>
+          </div>
+          <a href="prototype/process_5_correction.html" class="proto-btn" target="_blank">Запустити прототип П5 ↗</a>
+        </div>
+        <p style="margin-bottom:8px; font-size:0.875rem;">
+          <strong>Суть процесу:</strong> Розумний асистент підказує лікарю або експерту точну причину відхилення (відсутність АКПІ, некоректний тип епізоду для МВТН, перекриття) та пропонує виправлення в 1 клік із розрахунком суми відновленого фінансування (+24 357.55 ₴).
+        </p>
+        <div class="proc-box-grid">
+          <div><strong>Хто виконує:</strong> Лікар-експерт, Лікуючий лікар, Оператор МІС</div>
+          <div><strong>Нормативна база:</strong> Регламент ведення ЕМЗ та накладання повторного КЕП</div>
+          <div><strong>Точка входу:</strong> Модальне вікно коригування з журналу відхилень</div>
+          <div><strong>Ефект:</strong> Повернення від 800 тис. до 3.2 млн грн щомісяця</div>
+        </div>
+        <div style="font-size:0.8rem; color:#64748b;">
+          🔗 <strong>Шляхи переходу:</strong> Окремий екран: <a href="prototype/process_5_correction.html" target="_blank"><code>prototype/process_5_correction.html</code></a> • У головному порталі: <a href="prototype/index.html#process-5" target="_blank"><code>prototype/index.html#process-5</code></a>
+        </div>
+      </div>
+
+      <!-- Box Process 6 -->
+      <div class="proc-box">
+        <div class="proc-box-header">
+          <div class="proc-box-title">
+            <span class="ui-badge ui-badge-success">П6</span>
+            <span>Процес 6: Нормативно-довідковий модуль ПМГ (465 ДСГ, 148 класів, реабілітація)</span>
+          </div>
+          <a href="prototype/process_6_catalog.html" class="proto-btn" target="_blank">Запустити прототип П6 ↗</a>
+        </div>
+        <p style="margin-bottom:8px; font-size:0.875rem;">
+          <strong>Суть процесу:</strong> Повний інтерактивний довідник актуальних нормативів ПМГ-2026: фільтрація та миттєвий пошук за 465 діагностично-спорідненими групами, 148 амбулаторними класами та матрицями складності реабілітації АР1–АР4 та CR.
+        </p>
+        <div class="proc-box-grid">
+          <div><strong>Хто виконує:</strong> Економіст, Начмед, Лікарі всіх профілів</div>
+          <div><strong>Нормативна база:</strong> Постанова КМУ №1808, Наказ МОЗ №377 (ОДК / AR-DRG)</div>
+          <div><strong>Точка входу:</strong> Внутрішній довідник класифікаторів МІС</div>
+          <div><strong>Ефект:</strong> Миттєва перевірка тарифів без потреби звернення до паперових таблиць</div>
+        </div>
+        <div style="font-size:0.8rem; color:#64748b;">
+          🔗 <strong>Шляхи переходу:</strong> Окремий екран: <a href="prototype/process_6_catalog.html" target="_blank"><code>prototype/process_6_catalog.html</code></a> • У головному порталі: <a href="prototype/index.html#process-6" target="_blank"><code>prototype/index.html#process-6</code></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Architecture in MedLink / evomis -->
+    <section>
+      <h2 class="section-title">4. Архітектурне рішення в системі Медлінк (evomis)</h2>
+
+      <p>
+        Рішення проєктується як внутрішній модуль <code>App.PmgAnalyzer.Module</code> (розширення існуючого <code>App.Mdc.Module</code> та <code>App.XlsxAnalyzer.Module</code>), повністю сумісний із доменною моделлю Медлінка.
+      </p>
+
+      <table class="doc-table">
+        <thead>
+          <tr>
+            <th>Компонент системи</th>
+            <th>Файли / Шляхи в evomis</th>
+            <th>Призначення та реалізація</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Доменні моделі (EF Core)</strong></td>
+            <td><code>src/App.Domain/Models/pmg/</code></td>
+            <td>
+              <code>PmgDsg</code>, <code>PmgDsgDiagnosis</code>, <code>PmgDsgService</code>, <code>PmgOutpatientClass</code>, <code>PmgRehabRule</code>.<br>
+              <code>NszuReport</code>, <code>NszuReportDetail</code>, <code>EncounterPmgDiscrepancy</code>.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Движок аналізу Excel</strong></td>
+            <td><code>src/App.XlsxAnalyzer.Module/Processors/Internal/</code></td>
+            <td>
+              Реалізація <code>NszuReportXlsxProcessor : IXlsxProcessor</code>.<br>
+              Потокове читання великих файлів (10 000+ рядків), мапінг колонок <code>ID ЕМЗ</code>, <code>Основний діагноз</code>, <code>Інтервенції</code>, <code>Помилки</code>.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Розрахунковий сервіс</strong></td>
+            <td><code>src/App.Business/Services/ApplicationServices/</code></td>
+            <td>
+              <code>PmgTariffCalculatorService</code>:<br>
+              - Метод <code>CalculateEncounterTariff(EncounterDto)</code> (пре-білінг)<br>
+              - Метод <code>ProcessNszuReportAsync(reportId)</code> (аудит та 2-way зв'язок)
+            </td>
+          </tr>
+          <tr>
+            <td><strong>API Контролери</strong></td>
+            <td><code>src/App.Api/Controllers/PmgAnalyzerController.cs</code></td>
+            <td>
+              REST эндпоинты для завантаження звітів, отримання фінансової аналітики та виклику пре-валідатора.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Фронтенд (Quasar/Vue)</strong></td>
+            <td><code>src/App.View/src/utils/mdc-helpers/</code><br><code>src/App.View/src/components/encounters/</code></td>
+            <td>
+              Оновлення <code>mdcHelpers.js</code> до нормативів ПМГ-2026.<br>
+              Вбудовування плашки пре-білінгу в екран лікаря <code>EncounterEdit.vue</code>.<br>
+              Окремий розділ «Фінансовий моніторинг ПМГ» для економістів.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 5. UI Mockups and Interactive Screen Designs -->
+    <section>
+      <h2 class="section-title">5. Інтерактивні макети інтерфейсу (UI/UX у стилі Медлінка)</h2>
+
+      <!-- Mockup 1: Pre-billing in Encounter Card -->
+      <h3 class="sub-title">Макет 1. Онлайн-індикатор пре-білінгу в картці лікаря (MedLink Encounter View — Процес 1)</h3>
+      <p>
+        Відображається безпосередньо в процесі заповнення взаємодії лікарем. При зміні діагнозу або послуги система миттєво інформує про статус тарифікації та ризики відхилення НСЗУ:
+      </p>
+
+      <div class="mockup-container">
+        <div class="mockup-header">
+          <div class="mockup-dots">
+            <span class="mockup-dot red"></span>
+            <span class="mockup-dot yellow"></span>
+            <span class="mockup-dot green"></span>
+          </div>
+          <span>MedLink — Робоче місце лікаря • Інтерактивний пре-білінг симулятор ПМГ 2026</span>
+          <a href="prototype/process_1_prebilling.html" class="proto-btn" target="_blank" style="margin-left:auto;">Запустити прототип П1 ↗</a>
+        </div>
+        <div class="mockup-body" style="padding:0;">
+          <img src="prototype/screenshots/04_prebilling_simulator.png" alt="Пре-білінг симулятор" style="width:100%; display:block; border-bottom:1px solid #e2e8f0;">
+        </div>
+      </div>
+
+      <!-- Mockup 2: Chief Economist / CMO Dashboard -->
+      <h3 class="sub-title">Макет 2. Аналітичний дашборд звіту НСЗУ для економіста та начмеда (Процес 3)</h3>
+      <p>
+        Забезпечує ретроспективний аудит після імпорту Excel-звіту від НСЗУ (45 колонок, розрахунок сум, статус «Так» / «ГБ» / «Ні»):
+      </p>
+
+      <div class="mockup-container">
+        <div class="mockup-header">
+          <div class="mockup-dots">
+            <span class="mockup-dot red"></span>
+            <span class="mockup-dot yellow"></span>
+            <span class="mockup-dot green"></span>
+          </div>
+          <span>MedLink Analytics — Фінансовий аудит звітів НСЗУ • КНП "ОЦО" (5 490 ЕМЗ • Вересень 2026)</span>
+          <a href="prototype/process_3_financial_audit.html" class="proto-btn" target="_blank" style="margin-left:auto;">Запустити прототип П3 ↗</a>
+        </div>
+        <div class="mockup-body" style="padding:0;">
+          <img src="prototype/screenshots/01_dashboard_report.png" alt="Дашборд звіту НСЗУ" style="width:100%; display:block; border-bottom:1px solid #e2e8f0;">
+        </div>
+      </div>
+
+      <!-- Mockup 3: Rejected Cases & Lost Revenue -->
+      <h3 class="sub-title">Макет 3. Журнал відхилених записів та втраченого доходу (Lost Revenue — Процес 4)</h3>
+      <p>
+        Фільтрація випадків з нульовим тарифом, аналіз причин відхилень (МВТН, перекриття, помилки групування) та розрахунок суми збитку:
+      </p>
+
+      <div class="mockup-container">
+        <div class="mockup-header">
+          <div class="mockup-dots">
+            <span class="mockup-dot red"></span>
+            <span class="mockup-dot yellow"></span>
+            <span class="mockup-dot green"></span>
+          </div>
+          <span>MedLink Analytics — Реєстр відхилених записів та фінансових втрат (714 помилок • 4 974 842 ₴)</span>
+          <a href="prototype/process_4_discrepancies.html" class="proto-btn" target="_blank" style="margin-left:auto;">Запустити прототип П4 ↗</a>
+        </div>
+        <div class="mockup-body" style="padding:0;">
+          <img src="prototype/screenshots/02_rejected_lost_revenue.png" alt="Відхилені випадки" style="width:100%; display:block; border-bottom:1px solid #e2e8f0;">
+        </div>
+      </div>
+
+      <!-- Mockup 4: 2-Way Correction Modal -->
+      <h3 class="sub-title">Макет 4. Модальне вікно 2-Way коригування взаємодії з AI асистентом (Процес 5)</h3>
+      <p>
+        Відкривається в один клік з таблиці відхилень. Дані підтягуються з Медлінка за <code>ID ЕМЗ</code>:
+      </p>
+
+      <div class="mockup-container">
+        <div class="mockup-header" style="background:var(--ml-primary); color:white;">
+          <div class="mockup-dots">
+            <span class="mockup-dot red"></span>
+            <span class="mockup-dot yellow"></span>
+            <span class="mockup-dot green"></span>
+          </div>
+          <span>MedLink — 2-Way Коригування ЕМЗ #b967f3de-67e8... (+24 357.55 ₴ відновлення)</span>
+          <a href="prototype/process_5_correction.html" class="proto-btn" target="_blank" style="margin-left:auto; background:white; color:var(--ml-primary);">Запустити прототип П5 ↗</a>
+        </div>
+        <div class="mockup-body" style="padding:0;">
+          <img src="prototype/screenshots/06_modal_2way_correction.png" alt="2-Way коригування" style="width:100%; display:block; border-bottom:1px solid #e2e8f0;">
+        </div>
+      </div>
+
+      <!-- Mockup 5: Full 45 Columns Grid -->
+      <h3 class="sub-title">Макет 5. Повний інспектор 45 колонок офіційного вивантаження НСЗУ (Процес 3)</h3>
+      <p>
+        Деталізований структурний перегляд усіх атрибутів запису (клінічні дати, посади, направлення, JSON парних конфліктів):
+      </p>
+
+      <div class="mockup-container">
+        <div class="mockup-header">
+          <div class="mockup-dots">
+            <span class="mockup-dot red"></span>
+            <span class="mockup-dot yellow"></span>
+            <span class="mockup-dot green"></span>
+          </div>
+          <span>MedLink — Інспектор 45 колонок аркуша «Розшифровка»</span>
+          <a href="prototype/process_3_financial_audit.html" class="proto-btn" target="_blank" style="margin-left:auto;">Інспектор у П3 ↗</a>
+        </div>
+        <div class="mockup-body" style="padding:0;">
+          <img src="prototype/screenshots/07_modal_45_columns.png" alt="45 колонок НСЗУ" style="width:100%; display:block; border-bottom:1px solid #e2e8f0;">
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Database Schema & SQLite Bridge -->
+    <section>
+      <h2 class="section-title">6. Специфікація бази даних та міграцій</h2>
+
+      <p>
+        Вилучені дані структуровано у реляційну базу даних <code>pmg_database.sqlite</code> (127 МБ, 285 554 індексованих зв'язків). Вона переноситься у PostgreSQL Медлінка через наступні таблиці EF Core:
+      </p>
+
+      <div class="code-box">
+// 1. Справочник ДСГ (Пакети 3, 4, 47)
+CREATE TABLE pmg_dsg (
+    id UUID PRIMARY KEY,
+    package_id VARCHAR(10) NOT NULL,
+    drg_name VARCHAR(255) NOT NULL,
+    coefficient VARCHAR(50),
+    coeff_numeric NUMERIC(8, 4),
+    base_rate NUMERIC(12, 2) DEFAULT 8735.00,
+    price NUMERIC(12, 2),
+    additional_requirements TEXT,
+    req_package_1 VARCHAR(20),
+    diag_count INT,
+    svc_count INT,
+    diags_json JSONB,
+    services_json JSONB,
+    diag_notes_json JSONB
+);
+
+// 2. Індекс діагнозів ДСГ
+CREATE TABLE pmg_dsg_diagnoses (
+    package_id VARCHAR(10),
+    dsg_id UUID,
+    diag_code VARCHAR(20),
+    diag_name VARCHAR(255),
+    notes JSONB,
+    PRIMARY KEY (package_id, dsg_id, diag_code)
+);
+CREATE INDEX idx_pmg_dsg_diag ON pmg_dsg_diagnoses(diag_code);
+
+// 3. Індекс послуг ДСГ (АКПІ)
+CREATE TABLE pmg_dsg_services (
+    package_id VARCHAR(10),
+    dsg_id UUID,
+    service_code VARCHAR(30),
+    service_name VARCHAR(255),
+    PRIMARY KEY (package_id, dsg_id, service_code)
+);
+CREATE INDEX idx_pmg_dsg_svc ON pmg_dsg_services(service_code);
+
+// 4. Деталізований запис розшифровки НСЗУ (45 колонок аркуша «Розшифровка»)
+CREATE TABLE nszu_report_details (
+    id UUID PRIMARY KEY,
+    report_id UUID REFERENCES nszu_reports(id),
+    row_number INT,
+    report_year INT,                    -- Кол 1: Звітний рік
+    report_month INT,                   -- Кол 2: Звітний місяць
+    emz_type VARCHAR(100),              -- Кол 3: Тип ЕМЗ (Взаємодія, Діагностичний звіт, Процедура)
+    ehealth_emz_id VARCHAR(100) NOT NULL, -- Кол 4: ID ЕМЗ (UUID зв'язку з Encounter.EhealthId)
+    ehealth_inserted_at TIMESTAMP,      -- Кол 5: Внесено до ЕСОЗ
+    practitioner_position VARCHAR(255), -- Кол 6: Посада медичного працівника (виконавця)
+    practitioner_name VARCHAR(255),     -- Кол 7: Медичний працівник (виконавець)
+    service_location TEXT,              -- Кол 8: Місце надання послуг зазначене в ЕМЗ
+    referral_type VARCHAR(100),         -- Кол 9: Тип направлення
+    referral_edrpou VARCHAR(20),        -- Кол 10: Код ЄДРПОУ закладу де видано направлення
+    referral_doc_pos VARCHAR(255),      -- Кол 11: Посада лікаря який видав направлення
+    episode_id VARCHAR(100),            -- Кол 12: ID епізоду
+    episode_type VARCHAR(100),          -- Кол 13: Тип епізоду
+    start_date TIMESTAMP,               -- Кол 14: Початок епізоду / госпіталізації
+    period_start TIMESTAMP,             -- Кол 15: Початок періоду / забору (ДЗ)
+    end_date TIMESTAMP,                 -- Кол 16: Кінець періоду / виписки
+    length_of_stay INT,                 -- Кол 17: Тривалість лікування, в днях
+    primary_diagnosis VARCHAR(50),      -- Кол 18: Основний діагноз (МКХ-10)
+    primary_diag_conf_status VARCHAR(50),-- Кол 19: Статус достовірності основного діагнозу
+    primary_diag_clin_status VARCHAR(50),-- Кол 20: Клінічний статус основного діагнозу
+    secondary_diagnoses TEXT,           -- Кол 21: Додаткові/супутні діагнози
+    rejected_diagnoses TEXT,            -- Кол 22: Спростовані та помилкові діагнози
+    interventions TEXT,                 -- Кол 23: Перелік інтервенцій (АКПІ / послуги / процедури)
+    interaction_class VARCHAR(100),     -- Кол 24: Клас взаємодії
+    priority VARCHAR(50),               -- Кол 25: Приорітет
+    interaction_type VARCHAR(100),      -- Кол 26: Тип взаємодії
+    admission_reason VARCHAR(255),      -- Кол 27: Підстава звернення в стаціонар
+    discharge_outcome VARCHAR(255),     -- Кол 28: Результат лікування (виписки)
+    patient_id_hash VARCHAR(150),       -- Кол 29: Унікальний код пацієнта
+    has_declaration BOOLEAN,            -- Кол 30: Наявність декларації
+    patient_gender VARCHAR(20),         -- Кол 31: Стать пацієнта
+    patient_age INT,                    -- Кол 32: Вік пацієнта в роках
+    additional_emz_info TEXT,           -- Кол 33: Додаткова інформація з ЕМЗ
+    adsg_code VARCHAR(50),              -- Кол 34: АДСГ (ДСГ)
+    package_name TEXT,                  -- Кол 35: Пакет послуг
+    service_code VARCHAR(50),           -- Кол 36: Номер послуги
+    included_in_stats VARCHAR(10),      -- Кол 37: Включення до статистики (Так/Ні)
+    included_in_report VARCHAR(10),     -- Кол 38: Включення до звіту (Так, ГБ, Ні)
+    error_comment TEXT,                 -- Кол 39: Коментар щодо виявлених помилок
+    completeness_details JSONB,         -- Кол 40: Деталі помилок критеріїв повноти (JSON парних ЕМЗ)
+    verification_details TEXT,          -- Кол 41: Деталі невідповідностей верифікації
+    grouping_conflict_details TEXT,     -- Кол 42: Деталі помилок/конфліктів при групуванні
+    nszu_review_details TEXT,           -- Кол 43: Деталі перегляду НСЗУ
+    additional_remarks TEXT,            -- Кол 44: Додаткові коментарі/зауваження
+    nszu_review_date DATE,              -- Кол 45: Дата перегляду НСЗУ пакету медичних послуг
+    -- Автономно розраховані поля модуля Медлінк:
+    calculated_tariff NUMERIC(12, 2),   -- Автономний розрахунок за ПМГ-2026
+    calculated_lost_revenue NUMERIC(12, 2), -- Сума збитку (якщо included_in_report = 'Ні')
+    linked_encounter_id UUID            -- 2-way зв'язок з реальним Encounter у Медлінку
+);
+CREATE INDEX idx_nszu_rep_emz ON nszu_report_details(ehealth_emz_id);
+CREATE INDEX idx_nszu_rep_pkg ON nszu_report_details(package_name);
+CREATE INDEX idx_nszu_rep_inc ON nszu_report_details(included_in_report);
+
+// 6. Довідник груп послуг (12 клінічних груп)
+CREATE TABLE pmg_service_groups (
+    id VARCHAR(50) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    parent_id VARCHAR(50),
+    description TEXT,
+    service_count INT DEFAULT 0
+);
+
+// 7. Справочник послуг АКПІ з клінічними нормами
+CREATE TABLE pmg_service_catalog (
+    service_code VARCHAR(30) PRIMARY KEY,
+    service_name VARCHAR(500) NOT NULL,
+    group_id VARCHAR(50) REFERENCES pmg_service_groups(id),
+    category VARCHAR(50),
+    base_time_minutes INT,
+    anesthesia_type VARCHAR(50),
+    min_bed_days INT,
+    max_bed_days INT,
+    allowed_gender VARCHAR(10),
+    min_age INT,
+    max_age INT,
+    doctor_qualification_req TEXT,
+    standard_cost_uah NUMERIC(12,2),
+    is_active BOOLEAN DEFAULT TRUE
+);
+
+// 8. Матриця комбінацій послуг (Delphi dct_mp_service_odk_rule_detail)
+CREATE TABLE pmg_service_combinations (
+    id UUID PRIMARY KEY,
+    service_code VARCHAR(30) REFERENCES pmg_service_catalog(service_code),
+    rule_name VARCHAR(255) NOT NULL,
+    allowed_icd_codes TEXT,
+    mandatory_companion_services TEXT,
+    multi_surgery_companion_services TEXT,
+    multi_surgery_coefficient NUMERIC(4,2) DEFAULT 1.30,
+    prohibited_companion_services TEXT,
+    allowed_doctor_positions TEXT,
+    prohibited_doctor_positions TEXT,
+    standard_tariff_uah NUMERIC(12,2),
+    is_library_standard BOOLEAN DEFAULT FALSE
+);
+
+// 5. Журнал розбіжностей звіту НСЗУ з ЕМЗ Медлінка
+CREATE TABLE nszu_encounter_discrepancies (
+    id UUID PRIMARY KEY,
+    report_id UUID REFERENCES nszu_reports(id),
+    report_detail_id UUID REFERENCES nszu_report_details(id),
+    encounter_id UUID REFERENCES mis_encounters(id),
+    ehealth_emz_id VARCHAR(100) NOT NULL,
+    error_code VARCHAR(50),
+    error_description TEXT,
+    calculated_tariff NUMERIC(12, 2),
+    suggested_correction TEXT,
+    status VARCHAR(30) DEFAULT 'PendingCorrection', -- PendingCorrection, Corrected, Closed
+    corrected_on TIMESTAMP,
+    corrected_by UUID
+);
+      </div>
+    </section>
+
+    <!-- 7. Project Roadmap & ROI -->
+    <section>
+      <h2 class="section-title">7. Етапи впровадження, терміни та очікуваний ROI</h2>
+
+      <table class="doc-table">
+        <thead>
+          <tr>
+            <th>Етап</th>
+            <th>Зміст робіт</th>
+            <th>Термін</th>
+            <th>Результат</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Етап 1</strong></td>
+            <td>Перенесення структури з <code>pmg_database.sqlite</code> у міграції EF Core <code>evomis</code>.</td>
+            <td>1 тиждень</td>
+            <td>Актуальні таблиці ПМГ-2026 у базі даних Медлінка.</td>
+          </tr>
+          <tr>
+            <td><strong>Етап 2</strong></td>
+            <td>Реалізація процесора <code>NszuReportXlsxProcessor</code> у <code>App.XlsxAnalyzer.Module</code>.</td>
+            <td>1.5 тижні</td>
+            <td>Автоматичний парсинг звітів НСЗУ (будь-якого обсягу) з розрахунком сум.</td>
+          </tr>
+          <tr>
+            <td><strong>Етап 3</strong></td>
+            <td>Реалізація 2-way зв'язку за <code>emz_id</code> та модального вікна виправлення в Медлінку.</td>
+            <td>1.5 тижні</td>
+            <td>Перехід від звіту до взаємодії лікаря та автокоригування кодування.</td>
+          </tr>
+          <tr>
+            <td><strong>Етап 4</strong></td>
+            <td>Інтеграція віджета пре-білінгу в <code>App.View</code> (Quasar/Vue) при створенні взаємодії.</td>
+            <td>1 тиждень</td>
+            <td>Попередження помилок лікаря в момент внесення медичного запису.</td>
+          </tr>
+          <tr>
+            <td><strong>Етап 5</strong></td>
+            <td>Пілотне тестування на даних КНП "ОЦО", навчання економістів, реліз.</td>
+            <td>1 тиждень</td>
+            <td>Повнофункціональна експлуатація в лікарні.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="alert alert-success">
+        <div class="alert-icon">📈</div>
+        <div>
+          <strong>Оцінка фінансового ефекту (ROI):</strong><br>
+          Для медичного закладу середнього та великого рівня (1 500 – 4 000 взаємодій на місяць) усунення помилок кодування та відновлення відхилених випадків дозволяє повертати від <strong>800 000 до 3 200 000 грн додаткового доходу щомісяця</strong>. Термін окупності модуля — перший звітний період.
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Document Footer -->
+  <footer class="doc-footer" style="flex-direction:column; gap:12px; align-items:flex-start;">
+    <div style="display:flex; justify-content:space-between; width:100%; align-items:center; flex-wrap:wrap; gap:8px;">
+      <div>
+        <strong>МІС "Медлінк" (SimplexMed / evomis)</strong> • Відділ медичної інформатики та фінансового моніторингу
+      </div>
+      <div>
+        Нормативна база: <strong>Постанова КМУ №1808 (ПМГ-2026)</strong> • Додатки 1, 2
+      </div>
+    </div>
+    <div style="width:100%; border-top:1px solid #e2e8f0; padding-top:10px; display:flex; flex-wrap:wrap; gap:10px; font-size:0.775rem;">
+      <span style="color:#64748b; font-weight:700;">Інтерактивні прототипи системи:</span>
+      <a href="prototype/index.html" class="proto-btn" target="_blank">Головний портал (Всі процеси) ↗</a>
+      <a href="prototype/process_1_prebilling.html" class="proto-btn" style="background:#0284c7;" target="_blank">П1: Пре-білінг ↗</a>
+      <a href="prototype/process_2_upload.html" class="proto-btn" style="background:#0284c7;" target="_blank">П2: Імпорт звіту ↗</a>
+      <a href="prototype/process_3_financial_audit.html" class="proto-btn" style="background:#0284c7;" target="_blank">П3: Фінансовий аудит ↗</a>
+      <a href="prototype/process_4_discrepancies.html" class="proto-btn" style="background:#dc2626;" target="_blank">П4: Журнал розбіжностей ↗</a>
+      <a href="prototype/process_5_correction.html" class="proto-btn" style="background:#d97706;" target="_blank">П5: Асистент виправлення ↗</a>
+      <a href="prototype/process_6_catalog.html" class="proto-btn" style="background:#059669;" target="_blank">П6: Довідник нормативів ↗</a>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>

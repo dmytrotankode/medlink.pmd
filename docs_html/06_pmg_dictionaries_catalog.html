@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Розділ 6: Довідники ПМГ-2026, Аудит MedProfit та SQL-пакети — MedLink PMG Pro</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" rel="stylesheet">
+  <link rel="stylesheet" href="modal_viewer.css">
+
+  <style>
+    :root {
+      --primary: #4274A7;
+      --primary-dark: #2c5277;
+      --accent: #0178BC;
+      --positive: #21ba45;
+      --negative: #d04f45;
+      --warning: #f2c037;
+      --dark-sidebar: #212121;
+      --bg-page: #f8fafc;
+      --border-color: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Source Sans Pro', sans-serif;
+      font-size: 15px;
+      color: #334155;
+      background-color: var(--bg-page);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 280px;
+      background-color: var(--dark-sidebar);
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      border-right: 1px solid #333;
+    }
+
+    .brand-header {
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #333;
+      background: #1a1a1a;
+    }
+    .brand-title { font-weight: 700; font-size: 16px; color: #fff; letter-spacing: 0.5px; }
+    .brand-sub { font-size: 11px; color: #94a3b8; }
+
+    .nav-list { list-style: none; padding: 12px 8px; overflow-y: auto; flex-grow: 1; }
+    .nav-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      padding: 12px 14px 6px 14px;
+    }
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      color: #cbd5e1;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .nav-item a:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+    .nav-item.active a {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 600;
+    }
+    .nav-item i { font-size: 18px; width: 20px; text-align: center; }
+
+    .prototype-btn-box {
+      padding: 16px;
+      border-top: 1px solid #333;
+      background: #1a1a1a;
+    }
+    .btn-prototype-launch {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: #fff;
+      padding: 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 4px 12px rgba(1, 120, 188, 0.3);
+      transition: transform 0.15s;
+    }
+    .btn-prototype-launch:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Main Content */
+    .main-container {
+      flex-grow: 1;
+      padding: 36px 48px;
+      overflow-y: auto;
+      max-width: 1280px;
+    }
+
+    .page-header {
+      margin-bottom: 28px;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 20px;
+    }
+    .breadcrumb {
+      font-size: 13px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    .page-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+    }
+    .page-subtitle {
+      font-size: 15px;
+      color: #64748b;
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    /* Content Cards */
+    .card {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 28px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card-title i { color: var(--primary); }
+
+    /* Tables */
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: 14px;
+    }
+    .styled-table th {
+      background: #f1f5f9;
+      color: #334155;
+      font-weight: 700;
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 2px solid #cbd5e1;
+    }
+    .styled-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+      color: #475569;
+    }
+    .styled-table tr:hover td {
+      background: #f8fafc;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-primary { background: #e0f2fe; color: #0369a1; }
+    .badge-success { background: #dcfce7; color: #15803d; }
+    .badge-warning { background: #fef9c3; color: #a16207; }
+    .badge-danger { background: #fee2e2; color: #b91c1c; }
+
+    /* Action Buttons */
+    .btn-file-open {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s;
+      text-decoration: none;
+    }
+    .btn-file-open:hover { background: var(--primary-dark); }
+    .btn-file-open.btn-outline {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+    }
+    .btn-file-open.btn-outline:hover {
+      background: #e2e8f0;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .code-preview {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 16px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-x: auto;
+      margin-top: 12px;
+    }
+
+    .info-callout {
+      background: #f0fdf4;
+      border-left: 4px solid var(--positive);
+      padding: 14px 18px;
+      border-radius: 0 6px 6px 0;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #166534;
+      line-height: 1.5;
+    }
+    .warning-callout {
+      background: #fffbeb;
+      border-left: 4px solid var(--warning);
+      padding: 14px 18px;
+      border-radius: 0 6px 6px 0;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #92400e;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Left Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="brand-header">
+      <i class="fas fa-hospital-alt fa-2x" style="color: #60a5fa;"></i>
+      <div>
+        <div class="brand-title">MEDLINK PMG</div>
+        <div class="brand-sub">Довідники та Тарифікація</div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li class="nav-section-title">Архітектура та ТЗ</li>
+      <li class="nav-item"><a href="index.html"><i class="fas fa-home"></i> Загальний огляд</a></li>
+      <li class="nav-item"><a href="01_database_schema.html"><i class="fas fa-database"></i> 1. Схема БД PostgreSQL</a></li>
+      <li class="nav-item"><a href="02_api_endpoints.html"><i class="fas fa-plug"></i> 2. Специфікація API</a></li>
+      <li class="nav-item"><a href="03_business_logic_and_math.html"><i class="fas fa-calculator"></i> 3. Бізнес-логіка і Тарифи</a></li>
+      <li class="nav-item"><a href="04_openxml_processor.html"><i class="fas fa-file-excel"></i> 4. Обробка OpenXML (НСЗУ)</a></li>
+      <li class="nav-item"><a href="05_frontend_integration_guide.html"><i class="fas fa-layer-group"></i> 5. Інтеграція Quasar / Vue</a></li>
+      <li class="nav-item active"><a href="06_pmg_dictionaries_catalog.html"><i class="fas fa-book-medical"></i> 6. Довідники та MedProfit</a></li>
+      <li class="nav-item">
+        <a href="07_nszu_file_analysis_literal_compliance.html"><i class="material-icons">verified</i> 7. Аудит відповідності (info-pmg)</a>
+      </li>
+      <li class="nav-item">
+        <a href="08_medlink_existing_ui_augmentation_guide.html"><i class="material-icons">extension</i> 8. Доповнення існуючих форм МІС</a>
+      </li>
+      <li class="nav-item">
+        <a href="09_all_pmg_packages_normative_guide.html"><i class="material-icons">library_books</i> 9. Всі 46 пакетів ПМГ-2026</a>
+      </li>
+      <li class="nav-item">
+        <a href="10_service_directory_norms_methodologies_combinations.html"><i class="material-icons">miscellaneous_services</i> 10. Справочник послуг та комбінації</a>
+      </li>
+
+      <li class="nav-section-title">SQL Скрипти та DDL</li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('01_ddl_tables.sql')"><i class="fas fa-table"></i> 01_ddl_tables.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('02_queries_2way_matching.sql')"><i class="fas fa-search"></i> 02_queries_matching.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('04_seed_dsg_catalog_465.sql')"><i class="fas fa-dna"></i> 04_dsg_catalog_465.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('05_seed_package9_classes_148.sql')"><i class="fas fa-stethoscope"></i> 05_pkg9_classes_148.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('06_seed_nhsu_error_dictionary_186.sql')"><i class="fas fa-bug"></i> 06_errors_186.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('07_seed_doctor_position_requirements.sql')"><i class="fas fa-user-md"></i> 07_doctor_positions.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('08_seed_laboratory_tests_408.sql')"><i class="fas fa-vial"></i> 08_lab_tests_408.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('10_seed_all_pmg2026_packages.sql')"><i class="material-icons">collections_bookmark</i> 10_seed_all_46_packages.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('11_seed_service_combinations_and_groups.sql')"><i class="material-icons">schema</i> 11_service_combinations.sql</a></li>
+    </ul>
+
+    <div class="prototype-btn-box">
+      <a href="../prototype_medlink/index.html" target="_blank" class="btn-prototype-launch">
+        <i class="fas fa-external-link-alt"></i> Запустити Прототип
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    <div class="page-header">
+      <div class="breadcrumb">MedLink PMG Pro / Довідники та Тарифікація / Розділ 6</div>
+      <h1 class="page-title">Справочники ПМГ-2026, Аудит MedProfit и SQL-пакеты</h1>
+      <p class="page-subtitle">
+        Полный перечень полезных клинических и тарифных справочников, извлеченных с портала <strong>info-pmg.com</strong>, 
+        программы <strong>MedProfit / MedProfit2</strong> (базы <code>medprofit</code> и <code>medprofit_dsg</code>), 
+        актуализированных под Постановление КМУ № 1808 (ПМГ-2026) и подготовленных в виде готовых SQL-пакетов.
+      </p>
+    </div>
+
+    <!-- Executive Summary Callout -->
+    <div class="info-callout">
+      <i class="fas fa-check-circle" style="margin-right: 8px;"></i>
+      <strong>Результат аудита источников данных:</strong> Все полезные справочники структурированы, очищены от устаревших квартальных цен, 
+      синхронизированы с базовой ставкой <strong>8 735,00 грн</strong> (стационар) и <strong>155,00 грн</strong> (амбулатория), 
+      и упакованы в 6 специализированных <code>.sql</code> файлов с возможностью открытия в интерактивном модальном окне и копирования в буфер обмена.
+    </div>
+
+    <!-- Summary Catalog Table -->
+    <div class="card">
+      <div class="card-title">
+        <i class="fas fa-list-alt"></i> Сводная таблица справочников, готовых к мгновенной загрузке
+      </div>
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>Файл SQL</th>
+            <th>Справочник</th>
+            <th>Источник</th>
+            <th>Количество записей</th>
+            <th>Ключевое назначение в MedLink</th>
+            <th>Действие</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>04_seed_dsg_catalog_465.sql</code></td>
+            <td><strong>465 ДСГ (Диагностически-родственные группы)</strong></td>
+            <td><code>info-pmg.com</code> + Пост. №1808</td>
+            <td><span class="badge badge-primary">465 ДСГ</span></td>
+            <td>Полная тарифная сетка стационара: весовые коэффициенты $W_g$, пакеты 3, 4, 47, базовый тариф 8 735 ₴, расчет 55% глобальной ставки</td>
+            <td>
+              <button class="btn-file-open" onclick="openFileModal('04_seed_dsg_catalog_465.sql')">
+                <i class="fas fa-eye"></i> Просмотр
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td><code>05_seed_package9_classes_148.sql</code></td>
+            <td><strong>148 Амбулаторных Классов (Пакет 9)</strong></td>
+            <td><code>info-pmg.com</code> + Пост. №1808</td>
+            <td><span class="badge badge-primary">148 классов</span></td>
+            <td>Тарификация поликлиники: коэффициенты от 1.29 до 11.22, базовая ставка 155 ₴, JSON-списки кодов АКПІ интервенций</td>
+            <td>
+              <button class="btn-file-open" onclick="openFileModal('05_seed_package9_classes_148.sql')">
+                <i class="fas fa-eye"></i> Просмотр
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td><code>06_seed_nhsu_error_dictionary_186.sql</code></td>
+            <td><strong>186 Ошибок Дефектуры НСЗУ</strong></td>
+            <td>НСЗУ + Регламент дефектуры</td>
+            <td><span class="badge badge-danger">186 ошибок</span></td>
+            <td>Справочник причин отклонения оплаты (Overlap, возраст, специальность, дни) с текстами авто-рекомендаций для врачей</td>
+            <td>
+              <button class="btn-file-open" onclick="openFileModal('06_seed_nhsu_error_dictionary_186.sql')">
+                <i class="fas fa-eye"></i> Просмотр
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td><code>07_seed_doctor_position_requirements.sql</code></td>
+            <td><strong>Соответствие Услуг и Должностей Врачей</strong></td>
+            <td><code>MedProfit</code> (БД <code>medprofit</code>)</td>
+            <td><span class="badge badge-success">1 257 услуг</span></td>
+            <td>Предбиллинговая валидация: проверка должности врача (<code>org_employee</code>) против разрешенных кодов (<code>P157, P122</code>) до отправки в eHealth!</td>
+            <td>
+              <button class="btn-file-open" onclick="openFileModal('07_seed_doctor_position_requirements.sql')">
+                <i class="fas fa-eye"></i> Просмотр
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td><code>08_seed_laboratory_tests_408.sql</code></td>
+            <td><strong>408 Лабораторных Исследований</strong></td>
+            <td><code>MedProfit</code> (БД <code>medprofit</code>)</td>
+            <td><span class="badge badge-primary">408 тестов</span></td>
+            <td>Каталог лаб. тестов eHealth (A34xxx, A35xxx) по клиническим направлениям (Гематология, Биохимия, Иммунология)</td>
+            <td>
+              <button class="btn-file-open" onclick="openFileModal('08_seed_laboratory_tests_408.sql')">
+                <i class="fas fa-eye"></i> Просмотр
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td><code>09_seed_medprofit_rules_185.sql</code></td>
+            <td><strong>185 Правил Классификации MedProfit</strong></td>
+            <td><code>MedProfit2</code> (БД <code>medprofit_dsg</code>)</td>
+            <td><span class="badge badge-warning">185 правил</span></td>
+            <td>Логические правила группировки ОДК/ДСГ, сопоставление кодов АКПІ и диагнозов МКБ-10</td>
+            <td>
+              <button class="btn-file-open" onclick="openFileModal('09_seed_medprofit_rules_185.sql')">
+                <i class="fas fa-eye"></i> Просмотр
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Comparison: MedProfit vs PMG-2026 -->
+    <div class="card">
+      <div class="card-title">
+        <i class="fas fa-balance-scale"></i> Сравнительный анализ: Прошлогодний MedProfit vs Нормативка ПМГ-2026
+      </div>
+      <p style="margin-bottom: 14px; line-height: 1.6;">
+        При анализе баз данных <code>medprofit</code> и <code>medprofit_dsg</code> (сервер <code>116.203.124.180:3399</code> / исходники <code>C:\Projects\MedProfit</code>) 
+        было выявлено, какие структуры являются устаревшими, а какие представляют <strong>критическую ценность для MedLink</strong>:
+      </p>
+
+      <div class="grid-2">
+        <div style="background: #fef2f2; border: 1px solid #fecaca; padding: 16px; border-radius: 6px;">
+          <h4 style="color: #991b1b; margin-bottom: 8px;"><i class="fas fa-times-circle"></i> Что устарело в MedProfit и НЕ используется:</h4>
+          <ul style="padding-left: 20px; font-size: 13px; line-height: 1.6; color: #7f1d1d;">
+            <li><strong>Квартальное снижение цен:</strong> колонки <code>first_quarter_price</code>, <code>second_quarter_price</code> и т.д. В ПМГ-2026 базовая ставка едина на весь год (8 735,00 грн).</li>
+            <li><strong>Устаревшие веса ДСГ (всего 92 группы):</strong> таблица <code>dct_drgs_weights</code> содержала лишь 92 ДСГ редакции 2024 года. В ПМГ-2026 действует 465 ДСГ.</li>
+            <li><strong>Устаревшие коэффициенты пакетов:</strong> старые понижающие коэффициенты заменены единой долей глобальной ставки 0,55 (Постановление № 1808).</li>
+          </ul>
+        </div>
+
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 16px; border-radius: 6px;">
+          <h4 style="color: #166534; margin-bottom: 8px;"><i class="fas fa-check-circle"></i> Что из MedProfit взято и интегрировано в MedLink:</h4>
+          <ul style="padding-left: 20px; font-size: 13px; line-height: 1.6; color: #14532d;">
+            <li><strong>Связка услуг с должностями врачей (1 257 записей):</strong> требования к позициям врачей (<code>P157, P158, P122</code>) и MDC (<code>6,7</code>). Это позволяет MedLink валидировать врача до отправки в НСЗУ!</li>
+            <li><strong>Каталог лабораторных тестов (408 записей):</strong> таблица <code>laboratory_tests</code> с кодировкой eHealth A34xxx.</li>
+            <li><strong>Клинические правила ОДК:</strong> 185 логических блоков группировки услуг и интервенций.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Deep Dive: Doctor Specialty Validation -->
+    <div class="card">
+      <div class="card-title">
+        <i class="fas fa-user-md"></i> Алгоритм предбиллинговой валидации должности врача (Anti-Defektura)
+      </div>
+      <p style="margin-bottom: 12px; line-height: 1.6;">
+        Одной из частых причин отказа НСЗУ в оплате хирургических или диагностических вмешательств является ошибка 
+        <strong>ERR_DOC_SPEC</strong> (<em>«Спеціальність лікаря, який провів інтервенцію, не відповідає вимогам стандарту НСЗУ»</em>). 
+        Благодаря загрузке справочника из MedProfit (<code>07_seed_doctor_position_requirements.sql</code>), MedLink предотвращает этот отказ на лету:
+      </p>
+
+      <div class="code-preview">
+-- Пример SQL-запроса в MedLink при формировании электронного медицинского случая:
+SELECT 
+    e.id AS encounter_id,
+    p.code AS intervention_code,
+    req.service_name,
+    emp.caption AS doctor_name,
+    emp.position_code AS doctor_position,
+    req.position_requirements AS allowed_positions,
+    CASE 
+        WHEN req.position_requirements LIKE '%' || emp.position_code || '%' THEN 'VALID'
+        ELSE 'MISMATCH_RISK_ERR_DOC_SPEC'
+    END AS validation_status
+FROM mis_encounter e
+JOIN mis_encounter_procedure p ON p.encounter_id = e.id
+JOIN pmg_service_doctor_positions req ON req.service_code = p.code
+JOIN org_employee emp ON emp.id = e.author_employee_id
+WHERE e.id = 'a6410001-0000-4000-8000-000000000001';
+      </div>
+
+      <div class="warning-callout" style="margin-top: 14px;">
+        <i class="fas fa-shield-alt" style="margin-right: 8px;"></i>
+        <strong>Экономический эффект для больницы:</strong> Если врач с позицией <code>P130</code> (Дерматовенеролог) кодирует процедуру <code>11820-00</code> (Гастроскопия, требующая <code>P157, P158, P159, P58</code>), 
+        MedLink блокирует отправку до исправления ответственного специалиста. Это предотвращает потерю от 8 735 ₴ до 62 455 ₴ на одном клиническом случае!
+      </div>
+    </div>
+
+    <!-- SQL Loading Guide -->
+    <div class="card">
+      <div class="card-title">
+        <i class="fas fa-terminal"></i> Инструкция по загрузке справочников в БД PostgreSQL
+      </div>
+      <p style="margin-bottom: 12px;">
+        Для применения всех справочников к целевой базе данных (<code>evomis-test</code> или рабочей БД MedLink) выполните следующую последовательность команд:
+      </p>
+
+      <div class="code-preview">
+# Переход в папку со скриптами
+cd c:/__MEDLINK___/PMG/sql
+
+# 1. Применение базовой DDL-схемы таблиц
+psql -h 192.168.255.1 -U d.tanko -d evomis-test -f 01_ddl_tables.sql
+
+# 2. Загрузка 465 ДСГ стационара (Постановление №1808)
+psql -h 192.168.255.1 -U d.tanko -d evomis-test -f 04_seed_dsg_catalog_465.sql
+
+# 3. Загрузка 148 амбулаторных классов (Пакет 9)
+psql -h 192.168.255.1 -U d.tanko -d evomis-test -f 05_seed_package9_classes_148.sql
+
+# 4. Загрузка справочника 186 ошибок НСЗУ
+psql -h 192.168.255.1 -U d.tanko -d evomis-test -f 06_seed_nhsu_error_dictionary_186.sql
+
+# 5. Загрузка связки процедур и должностей врачей (MedProfit)
+psql -h 192.168.255.1 -U d.tanko -d evomis-test -f 07_seed_doctor_position_requirements.sql
+
+# 6. Загрузка справочника 408 лабораторных тестов
+psql -h 192.168.255.1 -U d.tanko -d evomis-test -f 08_seed_laboratory_tests_408.sql
+
+# 7. Загрузка правил классификации MedProfit
+psql -h 192.168.255.1 -U d.tanko -d evomis-test -f 09_seed_medprofit_rules_185.sql
+      </div>
+    </div>
+
+    <!-- Quick Navigation -->
+    <div style="display: flex; justify-content: space-between; margin-top: 32px;">
+      <a href="05_frontend_integration_guide.html" class="btn-file-open btn-outline">
+        <i class="fas fa-arrow-left"></i> Назад: Розділ 5. Інтеграція Quasar / Vue
+      </a>
+      <a href="../prototype_medlink/index.html" target="_blank" class="btn-file-open">
+        Перейти до прототипу MedLink PMG <i class="fas fa-external-link-alt"></i>
+      </a>
+    </div>
+  </main>
+
+  <!-- Script for Modal Popup Viewer -->
+  <script src="modal_viewer.js"></script>
+</body>
+</html>

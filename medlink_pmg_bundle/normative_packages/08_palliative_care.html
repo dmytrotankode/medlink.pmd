@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Паліативна допомога: Стаціонарна та Мобільна (Пакети 23, 24) — MedLink PMG 2026 Нормативне досьє</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../docs_html/modal_viewer.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f4f7fb;
+            color: #2c3e50;
+            margin: 0;
+            padding: 24px;
+            line-height: 1.6;
+        }
+        .header {
+            background: linear-gradient(135deg, #1976D2 0%, #0D47A1 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        .header h1 { margin: 0 0 8px 0; font-size: 24px; font-weight: 500; }
+        .header p { margin: 0; opacity: 0.9; font-size: 14px; }
+        .nav-back {
+            display: inline-block;
+            margin-bottom: 16px;
+            color: #1976D2;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .package-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            padding: 24px;
+            margin-bottom: 24px;
+            border-left: 5px solid #1976D2;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            background: #e3f2fd;
+            color: #1565c0;
+            margin-right: 8px;
+        }
+        .badge-tariff {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .badge-model {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        h2 { color: #1565c0; margin-top: 0; font-size: 20px; }
+        h3 { color: #37474f; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 6px; margin-top: 20px; }
+        .formula-box {
+            background: #f8f9fa;
+            border-left: 4px solid #4CAF50;
+            padding: 12px 16px;
+            font-family: monospace;
+            font-size: 14px;
+            border-radius: 0 4px 4px 0;
+            margin: 12px 0;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th { background: #fafafa; font-weight: 500; color: #555; }
+        .law-link {
+            color: #1976D2;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .law-link:hover { text-decoration: underline; }
+        ul { padding-left: 20px; margin: 8px 0; }
+        li { margin-bottom: 4px; }
+        .normative-docs-panel {
+            background: #e8eaf6;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="nav-back">← До повного реєстру всіх 46 пакетів ПМГ</a>
+    <div class="header">
+        <h1>Паліативна допомога: Стаціонарна та Мобільна (Пакети 23, 24)</h1>
+        <p>Офіційні специфікації, тарифи, формули та правила контролю НСЗУ відповідно до Постанови КМУ № 1808</p>
+    </div>
+
+    <div class="package-card" id="pkg-23">
+        <div>
+            <span class="badge">PKG-23 (Пакет 23)</span>
+            <span class="badge badge-tariff">Базовий тариф: 8,735.00 ₴ (за пролікований випадок)</span>
+            <span class="badge badge-model">Оплата за випадок за кодами складності</span>
+        </div>
+        <h2>Стаціонарна паліативна медична допомога дорослим та дітям</h2>
+        <p>Цілодобовий медичний та сестринський догляд за пацієнтами з невиліковними термінальними станами, адекватне знеболення згідно трисхідчастої шкали ВООЗ (наркотичні анальгетики), нутритивна підтримка, психологічна допомога пацієнту та родичам.</p>
+
+        <h3>1. Нормативно-правове регулювання</h3>
+        <p><b>Базовий розділ:</b> Глава 10 Порядку (Постанова КМУ № 1808, п. 85)</p>
+        <ul>
+            <li><a href="https://zakon.rada.gov.ua/laws/show/1808-2025-%D0%BF#n198" target="_blank" class="law-link">Постанова КМУ № 1808 (Глава 10, п. 85) ↗</a></li><li><a href="https://moz.gov.ua" target="_blank" class="law-link">Наказ МОЗ № 1308 (Порядок надання паліативної допомоги) ↗</a></li>
+        </ul>
+
+        <h3>2. Формула та алгоритм розрахунку вартості</h3>
+        <div class="formula-box">
+            Тариф = 8735.00 * K_послуги (PI1-PI6, від 0.34 до 7.00, від 2969.90 до 61145.00 грн)
+        </div>
+        <table><thead><tr><th>Тип коефіцієнта</th><th>Значення / Градація</th></tr></thead><tbody><tr><td><b>PI1 (базовий паліативний догляд)</b></td><td>1.35</td></tr><tr><td><b>PI2 (інтенсивне знеболення опіоїдами)</b></td><td>1.8</td></tr><tr><td><b>PI3a (респіраторна підтримка, ШВЛ/кисень)</b></td><td>7.0</td></tr><tr><td><b>PI3b (короткотривале перебування)</b></td><td>0.34</td></tr><tr><td><b>PI4 (хірургічна корекція стом/дренажів)</b></td><td>1.54</td></tr><tr><td><b>PI5 (паліативна педіатрія)</b></td><td>1.7</td></tr><tr><td><b>PI6 (висока складність симптом-контролю)</b></td><td>6.5</td></tr></tbody></table>
+
+        <h3>3. Критерії верифікації ЕСОЗ та умови оплати НСЗУ</h3>
+        <ul>
+            <li>Оцінка за шкалою паліативного статусу PPS або шкалою болю VAS</li><li>Наявність інкурабельного діагнозу у виписці/направленні</li><li>Застосування коригувальних коефіцієнтів у разі невідповідності референтним строкам лікування</li>
+        </ul>
+
+        <div class="normative-docs-panel">
+            <b>Пов'язані офіційні документи:</b>
+            <ul>
+                <li><a href="../extracted_data/normative_docs/pmg-2026.pdf" target="_blank" class="law-link">Посібник та огляд ПМГ-2026 (Офіційний PDF НСЗУ, 43 стор.) 📄</a></li>
+                <li><a href="../extracted_data/normative_docs/Додаток-1.pdf" target="_blank" class="law-link">Додаток 1 до Порядку: Вагові коефіцієнти ДСГ-2026 (PDF) 📄</a></li>
+                <li><a href="../extracted_data/normative_docs/Додаток-2.pdf" target="_blank" class="law-link">Додаток 2 до Порядку: Коефіцієнти стаціонару одного дня (PDF) 📄</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="package-card" id="pkg-24">
+        <div>
+            <span class="badge">PKG-24 (Пакет 24)</span>
+            <span class="badge badge-tariff">Базовий тариф: 69,326.04 ₴ (на 1 пацієнта на рік (1333.19 грн/тиждень))</span>
+            <span class="badge badge-model">Капітаційна ставка на тиждень візитів</span>
+        </div>
+        <h2>Мобільна паліативна медична допомога дорослим і дітям</h2>
+        <p>Виїзна паліативна допомога мультидисциплінарної команди за місцем перебування пацієнта (вдома): контроль больового синдрому, догляд за стомами, катетерами, забезпечення кисневими концентраторами, навчання родичів догляду.</p>
+
+        <h3>1. Нормативно-правове регулювання</h3>
+        <p><b>Базовий розділ:</b> Глава 10 Порядку (Постанова КМУ № 1808, п. 88)</p>
+        <ul>
+            <li><a href="https://zakon.rada.gov.ua/laws/show/1808-2025-%D0%BF#n205" target="_blank" class="law-link">Постанова КМУ № 1808 (Глава 10, п. 88) ↗</a></li>
+        </ul>
+
+        <h3>2. Формула та алгоритм розрахунку вартості</h3>
+        <div class="formula-box">
+            Тариф = (69326.04 / 52) * N_тижнів_візитів * K_послуги (PA1-PA6, від 0.73 до 1.20)
+        </div>
+        <table><thead><tr><th>Тип коефіцієнта</th><th>Значення / Градація</th></tr></thead><tbody><tr><td><b>PA1</b></td><td>0.78</td></tr><tr><td><b>PA2</b></td><td>1.15</td></tr><tr><td><b>PA3</b></td><td>1.2</td></tr><tr><td><b>PA4</b></td><td>0.74</td></tr><tr><td><b>PA5</b></td><td>0.79</td></tr><tr><td><b>PA6</b></td><td>0.73</td></tr></tbody></table>
+
+        <h3>3. Критерії верифікації ЕСОЗ та умови оплати НСЗУ</h3>
+        <ul>
+            <li>Здійснення не менше 1 візиту на тиждень для зарахування оплати</li><li>Обмеження: не більше 6 виїздів на день на одного лікаря мобільної бригади</li><li>Ведення щоденника паліативного пацієнта в ЕСОЗ</li>
+        </ul>
+
+        <div class="normative-docs-panel">
+            <b>Пов'язані офіційні документи:</b>
+            <ul>
+                <li><a href="../extracted_data/normative_docs/pmg-2026.pdf" target="_blank" class="law-link">Посібник та огляд ПМГ-2026 (Офіційний PDF НСЗУ, 43 стор.) 📄</a></li>
+                <li><a href="../extracted_data/normative_docs/Додаток-1.pdf" target="_blank" class="law-link">Додаток 1 до Порядку: Вагові коефіцієнти ДСГ-2026 (PDF) 📄</a></li>
+                <li><a href="../extracted_data/normative_docs/Додаток-2.pdf" target="_blank" class="law-link">Додаток 2 до Порядку: Коефіцієнти стаціонару одного дня (PDF) 📄</a></li>
+            </ul>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "id": 145,
+  "class_number": "e5010",
+  "class_name": "Больовий синдром",
+  "coefficient": 2.35,
+  "cost": "364.25",
+  "diags": [
+    {
+      "code": "R52.9",
+      "name": "Біль, неуточнений"
+    }
+  ],
+  "services": [],
+  "positions": []
+}

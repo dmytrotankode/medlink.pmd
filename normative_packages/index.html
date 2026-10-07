@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Повний реєстр 46 пакетів ПМГ-2026 — MedLink</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="../docs_html/modal_viewer.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f4f7fb;
+            color: #2c3e50;
+            margin: 0;
+            padding: 24px;
+        }
+        .top-banner {
+            background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);
+            color: white;
+            padding: 24px 32px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-bottom: 24px;
+        }
+        .top-banner h1 { margin: 0 0 8px 0; font-size: 26px; }
+        .top-banner p { margin: 0; opacity: 0.9; font-size: 15px; }
+        .filter-panel {
+            background: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .search-box {
+            flex: 1;
+            min-width: 280px;
+            padding: 10px 14px;
+            border: 1px solid #cfd8dc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .category-select {
+            padding: 10px 14px;
+            border: 1px solid #cfd8dc;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-top: 4px solid #1976D2;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        .pkg-badge {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1a237e;
+            margin: 6px 0;
+            line-height: 1.4;
+        }
+        .card-meta {
+            font-size: 13px;
+            color: #546e7a;
+            margin-bottom: 8px;
+        }
+        .card-rate {
+            font-size: 15px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 12px;
+        }
+        .card-desc {
+            font-size: 13px;
+            color: #455a64;
+            line-height: 1.5;
+            flex-grow: 1;
+            margin-bottom: 16px;
+        }
+        .btn-view {
+            background: #1976D2;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-view:hover { background: #1565c0; }
+        .law-tag {
+            font-size: 11px;
+            background: #eceff1;
+            color: #37474f;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-banner">
+        <h1>Реєстр усіх 46 медичних пакетів ПМГ-2026</h1>
+        <p>Офіційний каталог нормативно-правового регулювання, тарифних сіток, формул та умов фінансування НСЗУ (Постанова КМУ № 1808)</p>
+    </div>
+
+    <div class="filter-panel">
+        <input type="text" id="searchInput" class="search-box" placeholder="Пошук за назвою, номером пакета або діагнозом/інтервенцією...">
+        <select id="catSelect" class="category-select">
+            <option value="ALL">Всі категорії медичної допомоги (46)</option>
+            <option value="Первинна допомога">Первинна допомога</option>
+            <option value="Екстрена допомога">Екстрена допомога</option>
+            <option value="Стаціонарна допомога (ДСГ)">Стаціонарна допомога (ДСГ)</option>
+            <option value="Пріоритетні стаціонарні стани">Пріоритетні стаціонарні стани (Інсульт, Інфаркт)</option>
+            <option value="Материнство та дитинство">Материнство та дитинство</option>
+            <option value="Амбулаторна допомога">Амбулаторна допомога та Діаліз</option>
+            <option value="Пріоритетні амбулаторні обстеження">Пріоритетні ендоскопічні обстеження</option>
+            <option value="Онкологія та гематологія">Онкологія та гематологія</option>
+            <option value="Реабілітація">Реабілітація</option>
+            <option value="Паліативна допомога">Паліативна допомога</option>
+            <option value="Психіатрія та наркологія">Психіатрія та наркологія</option>
+            <option value="Інфекційні захворювання">Інфекційні захворювання (ТБ, ВІЛ)</option>
+            <option value="Високотехнологічна допомога">Високотехнологічна медицина (Трансплантація, ДРТ)</option>
+            <option value="Військова та ветеранська медицина">Військова та ветеранська медицина (ВЛК, зубопротезування)</option>
+            <option value="Медицина катастроф та готовність">Медицина катастроф та готовність</option>
+        </select>
+        <span id="counter" style="font-size: 14px; color: #546e7a; font-weight: 500;">Показано: 46 із 46</span>
+    </div>
+
+    <div class="grid" id="packagesGrid">
+
+        <div class="card" data-cat="Первинна допомога" data-text="первинна медична допомога pkg-01 пакет 1 первинна допомога капітаційна ставка">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-01 (Пакет 1)</span>
+                    <span style="font-size: 12px; color: #78909c;">Капітаційна ставка</span>
+                </div>
+                <div class="card-title">Первинна медична допомога</div>
+                <div class="law-tag">Глава 1 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">1,007.30 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(рік на 1 декларацію)</span></div>
+                <div class="card-desc">Базова амбулаторна медична допомога: консультації, профілактичні огляди, скринінги, базові аналізи, вакцинація, ведення хронічних пацієнтів,...</div>
+            </div>
+            <a href="01_primary_care.html#pkg-1" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Екстрена допомога" data-text="екстрена медична допомога pkg-02 пакет 2 екстрена допомога глобальна ставка">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-02 (Пакет 2)</span>
+                    <span style="font-size: 12px; color: #78909c;">Глобальна ставка</span>
+                </div>
+                <div class="card-title">Екстрена медична допомога</div>
+                <div class="law-tag">Глава 2 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">289.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(рік на 1 жителя області)</span></div>
+                <div class="card-desc">Цілодобове надання екстреної медичної допомоги виїзними бригадами центрів ЕМД та медицини катастроф пацієнтам у невідкладних станах з дотрим...</div>
+            </div>
+            <a href="02_emergency_care.html#pkg-2" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Стаціонарна допомога (ДСГ)" data-text="хірургічні операції дорослим та дітям у стаціонарних умовах pkg-03 пакет 3 стаціонарна допомога (дсг) комбінована оплата (дсг + гб)">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-03 (Пакет 3)</span>
+                    <span style="font-size: 12px; color: #78909c;">Комбінована оплата (ДСГ + ГБ)</span>
+                </div>
+                <div class="card-title">Хірургічні операції дорослим та дітям у стаціонарних умовах</div>
+                <div class="law-tag">Глава 3 Порядку (Постанова КМУ № 1808, Додаток 1)</div>
+                <div class="card-rate">8,735.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за пролікований випадок)</span></div>
+                <div class="card-desc">Цілодобова стаціонарна хірургічна допомога, включаючи планові та ургентні операції, анестезію, реанімацію, цілодобовий догляд, ліки з Нацпер...</div>
+            </div>
+            <a href="03_specialized_surgery_and_therapy_dsg.html#pkg-3" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Стаціонарна допомога (ДСГ)" data-text="стаціонарна допомога дорослим та дітям без проведення хірургічних операцій pkg-04 пакет 4 стаціонарна допомога (дсг) комбінована оплата (дсг + гб)">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-04 (Пакет 4)</span>
+                    <span style="font-size: 12px; color: #78909c;">Комбінована оплата (ДСГ + ГБ)</span>
+                </div>
+                <div class="card-title">Стаціонарна допомога дорослим та дітям без проведення хірургічних операцій</div>
+                <div class="law-tag">Глава 3 Порядку (Постанова КМУ № 1808, Додаток 1)</div>
+                <div class="card-rate">8,735.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за пролікований випадок)</span></div>
+                <div class="card-desc">Терапевтичне, педіатричне, неврологічне, кардіологічне лікування в умовах цілодобового стаціонару без необхідності хірургічного втручання....</div>
+            </div>
+            <a href="03_specialized_surgery_and_therapy_dsg.html#pkg-4" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Пріоритетні стаціонарні стани" data-text="медична допомога при гострому мозковому інсульті pkg-05 пакет 5 пріоритетні стаціонарні стани оплата за пролікований випадок">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-05 (Пакет 5)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за пролікований випадок</span>
+                </div>
+                <div class="card-title">Медична допомога при гострому мозковому інсульті</div>
+                <div class="law-tag">Глава 4 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">15,636.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за пролікований випадок)</span></div>
+                <div class="card-desc">Пріоритетний пакет надання екстреної спеціалізованої допомоги при ішемічному та геморагічному інсультах. Цілодобове нейровізуалізаційне обст...</div>
+            </div>
+            <a href="04_priority_stroke_infarct_maternity.html#pkg-5" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Пріоритетні стаціонарні стани" data-text="медична допомога при гострому інфаркті міокарда pkg-06 пакет 6 пріоритетні стаціонарні стани оплата за пролікований випадок">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-06 (Пакет 6)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за пролікований випадок</span>
+                </div>
+                <div class="card-title">Медична допомога при гострому інфаркті міокарда</div>
+                <div class="law-tag">Глава 4 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">25,261.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за пролікований випадок)</span></div>
+                <div class="card-desc">Цілодобова інтервенційна кардіологічна допомога пацієнтам з гострим коронарним синдромом (STEMI / NSTEMI). Екстрена коронарографія, механічн...</div>
+            </div>
+            <a href="04_priority_stroke_infarct_maternity.html#pkg-6" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Материнство та дитинство" data-text="медична допомога при пологах pkg-07 пакет 7 материнство та дитинство оплата за пролікований випадок">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-07 (Пакет 7)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за пролікований випадок</span>
+                </div>
+                <div class="card-title">Медична допомога при пологах</div>
+                <div class="law-tag">Глава 4 Порядку (Постанова КМУ № 1808, п. 45)</div>
+                <div class="card-rate">15,137.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за пролікований випадок)</span></div>
+                <div class="card-desc">Безоплатні пологи: фізіологічні, ускладнені, кесарів розтин, епідуральна аналгезія за бажанням жінки, спільне перебування, первинна реанімац...</div>
+            </div>
+            <a href="04_priority_stroke_infarct_maternity.html#pkg-7" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Материнство та дитинство" data-text="медична допомога новонародженим у складних неонатальних випадках pkg-08 пакет 8 материнство та дитинство оплата за випадок за кодами послуг">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-08 (Пакет 8)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за випадок за кодами послуг</span>
+                </div>
+                <div class="card-title">Медична допомога новонародженим у складних неонатальних випадках</div>
+                <div class="law-tag">Глава 5 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">8,735.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за пролікований випадок)</span></div>
+                <div class="card-desc">Високотехнологічне виходжування передчасно народжених та тяжкохворих немовлят у відділеннях неонатальної реанімації та постнатального догляд...</div>
+            </div>
+            <a href="04_priority_stroke_infarct_maternity.html#pkg-8" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Амбулаторна допомога" data-text="профілактика, діагностика, спостереження та лікування в амбулаторних умовах pkg-09 пакет 9 амбулаторна допомога оплата за медичну послугу (одк/achi)">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-09 (Пакет 9)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за медичну послугу (ОДК/ACHI)</span>
+                </div>
+                <div class="card-title">Профілактика, діагностика, спостереження та лікування в амбулаторних умовах</div>
+                <div class="law-tag">Глава 6 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">155.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за одиницю амбулаторної послуги)</span></div>
+                <div class="card-desc">Спеціалізовані амбулаторні консультації лікарів усіх спеціальностей, інструментальні обстеження (УЗД, ЕКГ, рентген, КТ, МРТ), клініко-лабора...</div>
+            </div>
+            <a href="05_ambulatory_outpatient_and_screening.html#pkg-9" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Пріоритетні амбулаторні обстеження" data-text="мамографія pkg-10 пакет 10 пріоритетні амбулаторні обстеження оплата за дослідження">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-10 (Пакет 10)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за дослідження</span>
+                </div>
+                <div class="card-title">Мамографія</div>
+                <div class="law-tag">Глава 6 Порядку (Постанова КМУ № 1808, п. 64)</div>
+                <div class="card-rate">248.64 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за 1 дослідження)</span></div>
+                <div class="card-desc">Рентгенографічне скринінгове обстеження молочних залоз у двох проекціях (краніокаудальна, медіолатеральна) для раннього виявлення раку молоч...</div>
+            </div>
+            <a href="05_ambulatory_outpatient_and_screening.html#pkg-10" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Пріоритетні амбулаторні обстеження" data-text="гістероскопія pkg-11 пакет 11 пріоритетні амбулаторні обстеження оплата за дослідження">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-11 (Пакет 11)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за дослідження</span>
+                </div>
+                <div class="card-title">Гістероскопія</div>
+                <div class="law-tag">Глава 6 Порядку (Постанова КМУ № 1808, п. 64)</div>
+                <div class="card-rate">2,394.20 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за 1 дослідження)</span></div>
+                <div class="card-desc">Ендоскопічне дослідження порожнини матки з обов'язковою біопсією патологічних ділянок ендометрію та наступним патогістологічним дослідженням...</div>
+            </div>
+            <a href="05_ambulatory_outpatient_and_screening.html#pkg-11" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Пріоритетні амбулаторні обстеження" data-text="езофагогастродуоденоскопія (егдс) pkg-12 пакет 12 пріоритетні амбулаторні обстеження оплата за дослідження">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-12 (Пакет 12)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за дослідження</span>
+                </div>
+                <div class="card-title">Езофагогастродуоденоскопія (ЕГДС)</div>
+                <div class="law-tag">Глава 6 Порядку (Постанова КМУ № 1808, п. 64)</div>
+                <div class="card-rate">912.72 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за 1 дослідження)</span></div>
+                <div class="card-desc">Ендоскопічний огляд стравоходу, шлунка та дванадцятипалої кишки для виявлення неопластичних процесів, виразок, передракових станів (хвороба ...</div>
+            </div>
+            <a href="05_ambulatory_outpatient_and_screening.html#pkg-12" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Пріоритетні амбулаторні обстеження" data-text="колоноскопія pkg-13 пакет 13 пріоритетні амбулаторні обстеження оплата за дослідження">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-13 (Пакет 13)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за дослідження</span>
+                </div>
+                <div class="card-title">Колоноскопія</div>
+                <div class="law-tag">Глава 6 Порядку (Постанова КМУ № 1808, п. 64)</div>
+                <div class="card-rate">1,149.96 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за 1 дослідження)</span></div>
+                <div class="card-desc">Ендоскопічне дослідження всієї товстої кишки до купола сліпої кишки/термінального відділу клубової кишки, виявлення та видалення поліпів, бі...</div>
+            </div>
+            <a href="05_ambulatory_outpatient_and_screening.html#pkg-13" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Пріоритетні амбулаторні обстеження" data-text="цистоскопія pkg-14 пакет 14 пріоритетні амбулаторні обстеження оплата за дослідження">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-14 (Пакет 14)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за дослідження</span>
+                </div>
+                <div class="card-title">Цистоскопія</div>
+                <div class="law-tag">Глава 6 Порядку (Постанова КМУ № 1808, п. 64)</div>
+                <div class="card-rate">976.95 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за 1 дослідження)</span></div>
+                <div class="card-desc">Ендоскопічний огляд уретри та сечового міхура гнучким або жорстким цистоскопом для раннього виявлення уротеліальної карциноми та інших пухли...</div>
+            </div>
+            <a href="05_ambulatory_outpatient_and_screening.html#pkg-14" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Пріоритетні амбулаторні обстеження" data-text="бронхоскопія pkg-15 пакет 15 пріоритетні амбулаторні обстеження оплата за дослідження">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-15 (Пакет 15)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за дослідження</span>
+                </div>
+                <div class="card-title">Бронхоскопія</div>
+                <div class="law-tag">Глава 6 Порядку (Постанова КМУ № 1808, п. 64)</div>
+                <div class="card-rate">1,178.97 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за 1 дослідження)</span></div>
+                <div class="card-desc">Відеобронхоскопія трахеї та бронхіального дерева для ранньої верифікації центрального та периферичного раку легень, отримання клітинного мат...</div>
+            </div>
+            <a href="05_ambulatory_outpatient_and_screening.html#pkg-15" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Ниркова замісна терапія" data-text="лікування пацієнтів методом гемодіалізу в амбулаторних умовах pkg-16 пакет 16 ниркова замісна терапія оплата за процедуру">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-16 (Пакет 16)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за процедуру</span>
+                </div>
+                <div class="card-title">Лікування пацієнтів методом гемодіалізу в амбулаторних умовах</div>
+                <div class="law-tag">Глава 7 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">2,492.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за 1 сеанс діалізу)</span></div>
+                <div class="card-desc">Проведення інтермітуючого амбулаторного гемодіалізу або гемодіафільтрації хворим на термінальну ниркову недостатність (ХХН 5 стадії). Повне ...</div>
+            </div>
+            <a href="05_ambulatory_outpatient_and_screening.html#pkg-16" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Ниркова замісна терапія" data-text="лікування пацієнтів методом перитонеального діалізу в амбулаторних умовах pkg-17 пакет 17 ниркова замісна терапія капітаційна ставка на місяць">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-17 (Пакет 17)</span>
+                    <span style="font-size: 12px; color: #78909c;">Капітаційна ставка на місяць</span>
+                </div>
+                <div class="card-title">Лікування пацієнтів методом перитонеального діалізу в амбулаторних умовах</div>
+                <div class="law-tag">Глава 7 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">42,630.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(на 1 пацієнта на місяць)</span></div>
+                <div class="card-desc">Забезпечення щоденного перитонеального діалізу в домашніх умовах: доставка спеціальних діалізуючих розчинів, магістралей, катетерів, монітор...</div>
+            </div>
+            <a href="05_ambulatory_outpatient_and_screening.html#pkg-17" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Онкологія та гематологія" data-text="хіміотерапевтичне лікування дорослих та дітей з онкологічними захворюваннями pkg-18 пакет 18 онкологія та гематологія оплата за курс лікування">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-18 (Пакет 18)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за курс лікування</span>
+                </div>
+                <div class="card-title">Хіміотерапевтичне лікування дорослих та дітей з онкологічними захворюваннями</div>
+                <div class="law-tag">Глава 8 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">36,000.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за курс хіміотерапії)</span></div>
+                <div class="card-desc">Проведення курсів системної цитотоксичної, таргетної та імунотерапії онкологічних хворих у стаціонарних та денних амбулаторних умовах із заб...</div>
+            </div>
+            <a href="06_oncology_and_hematology.html#pkg-18" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Онкологія та гематологія" data-text="радіологічне лікування дорослих та дітей з онкологічними захворюваннями pkg-19 пакет 19 онкологія та гематологія оплата за курс променевої терапії">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-19 (Пакет 19)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за курс променевої терапії</span>
+                </div>
+                <div class="card-title">Радіологічне лікування дорослих та дітей з онкологічними захворюваннями</div>
+                <div class="law-tag">Глава 8 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">51,311.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за повний курс радіотерапії)</span></div>
+                <div class="card-desc">Дистанційна променева терапія, брахітерапія, стереотаксична радіотерапія з використанням медичних лінійних прискорювачів, систем планування ...</div>
+            </div>
+            <a href="06_oncology_and_hematology.html#pkg-19" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Інфекційні захворювання" data-text="діагностика та лікування дорослих і дітей, хворих на туберкульоз pkg-20 пакет 20 інфекційні захворювання капітаційна ставка за пацієнта">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-20 (Пакет 20)</span>
+                    <span style="font-size: 12px; color: #78909c;">Капітаційна ставка за пацієнта</span>
+                </div>
+                <div class="card-title">Діагностика та лікування дорослих і дітей, хворих на туберкульоз</div>
+                <div class="law-tag">Глава 9 Порядку (Постанова КМУ № 1808, п. 75)</div>
+                <div class="card-rate">49,620.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за весь курс лікування одного пацієнта)</span></div>
+                <div class="card-desc">Стаціонарна та амбулаторна допомога пацієнтам з чутливими та мультирезистентними формами туберкульозу. Швидка молекулярно-генетична діагност...</div>
+            </div>
+            <a href="10_infectious_tb_hiv.html#pkg-20" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Інфекційні захворювання" data-text="діагностика, лікування та супровід осіб із віл-інфекцією pkg-21 пакет 21 інфекційні захворювання капітаційна ставка на рік">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-21 (Пакет 21)</span>
+                    <span style="font-size: 12px; color: #78909c;">Капітаційна ставка на рік</span>
+                </div>
+                <div class="card-title">Діагностика, лікування та супровід осіб із ВІЛ-інфекцією</div>
+                <div class="law-tag">Глава 9 Порядку (Постанова КМУ № 1808, п. 78)</div>
+                <div class="card-rate">4,091.04 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(на 1 пацієнта на рік)</span></div>
+                <div class="card-desc">Скринінг швидкими тестами, дотестове та післятестове консультування, призначення та безперебійна видача антиретровірусної терапії (АРТ), рег...</div>
+            </div>
+            <a href="10_infectious_tb_hiv.html#pkg-21" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Психіатрія та наркологія" data-text="лікування осіб із розладами внаслідок вживання опіоїдів (зпт) pkg-22 пакет 22 психіатрія та наркологія капітаційна ставка на рік">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-22 (Пакет 22)</span>
+                    <span style="font-size: 12px; color: #78909c;">Капітаційна ставка на рік</span>
+                </div>
+                <div class="card-title">Лікування осіб із розладами внаслідок вживання опіоїдів (ЗПТ)</div>
+                <div class="law-tag">Глава 9 Порядку (Постанова КМУ № 1808, п. 81)</div>
+                <div class="card-rate">6,874.20 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(на 1 пацієнта на рік)</span></div>
+                <div class="card-desc">Медикаментозне лікування залежності від опіоїдів з використанням препаратів метадону гідрохлориду та бупренорфіну гідрохлориду, психосоціаль...</div>
+            </div>
+            <a href="09_psychiatry_and_addiction.html#pkg-22" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Паліативна допомога" data-text="стаціонарна паліативна медична допомога дорослим та дітям pkg-23 пакет 23 паліативна допомога оплата за випадок за кодами складності">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-23 (Пакет 23)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за випадок за кодами складності</span>
+                </div>
+                <div class="card-title">Стаціонарна паліативна медична допомога дорослим та дітям</div>
+                <div class="law-tag">Глава 10 Порядку (Постанова КМУ № 1808, п. 85)</div>
+                <div class="card-rate">8,735.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за пролікований випадок)</span></div>
+                <div class="card-desc">Цілодобовий медичний та сестринський догляд за пацієнтами з невиліковними термінальними станами, адекватне знеболення згідно трисхідчастої ш...</div>
+            </div>
+            <a href="08_palliative_care.html#pkg-23" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Паліативна допомога" data-text="мобільна паліативна медична допомога дорослим і дітям pkg-24 пакет 24 паліативна допомога капітаційна ставка на тиждень візитів">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-24 (Пакет 24)</span>
+                    <span style="font-size: 12px; color: #78909c;">Капітаційна ставка на тиждень візитів</span>
+                </div>
+                <div class="card-title">Мобільна паліативна медична допомога дорослим і дітям</div>
+                <div class="law-tag">Глава 10 Порядку (Постанова КМУ № 1808, п. 88)</div>
+                <div class="card-rate">69,326.04 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(на 1 пацієнта на рік (1333.19 грн/тиждень))</span></div>
+                <div class="card-desc">Виїзна паліативна допомога мультидисциплінарної команди за місцем перебування пацієнта (вдома): контроль больового синдрому, догляд за стома...</div>
+            </div>
+            <a href="08_palliative_care.html#pkg-24" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Реабілітація" data-text="медична реабілітація немовлят перших трьох років життя pkg-25 пакет 25 реабілітація ставка за медичну послугу/курс">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-25 (Пакет 25)</span>
+                    <span style="font-size: 12px; color: #78909c;">Ставка за медичну послугу/курс</span>
+                </div>
+                <div class="card-title">Медична реабілітація немовлят перших трьох років життя</div>
+                <div class="law-tag">Глава 11 Порядку (Постанова КМУ № 1808, п. 92)</div>
+                <div class="card-rate">8,735.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за курс реабілітації)</span></div>
+                <div class="card-desc">Раннє втручання та реабілітація дітей з перинатальними ураженнями нервової системи, вродженими аномаліями розвитку, ДЦП: фізична терапія, ер...</div>
+            </div>
+            <a href="07_rehabilitation_care.html#pkg-25" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Онкологія та гематологія" data-text="діагностика та лікування пацієнтів з гематологічними захворюваннями pkg-26 пакет 26 онкологія та гематологія оплата за випадок">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-26 (Пакет 26)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за випадок</span>
+                </div>
+                <div class="card-title">Діагностика та лікування пацієнтів з гематологічними захворюваннями</div>
+                <div class="law-tag">Глава 8 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">54,000.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за пролікований випадок)</span></div>
+                <div class="card-desc">Спеціалізована терапія захворювань системи крові (гострі та хронічні лейкози, мієлодиспластичні синдроми, мієломна хвороба, гемофілії): цито...</div>
+            </div>
+            <a href="06_oncology_and_hematology.html#pkg-26" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Психіатрія та наркологія" data-text="психіатрична допомога дорослим та дітям у стаціонарних умовах pkg-27 пакет 27 психіатрія та наркологія комбінована оплата (ставка за випадок + гб)">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-27 (Пакет 27)</span>
+                    <span style="font-size: 12px; color: #78909c;">Комбінована оплата (ставка за випадок + ГБ)</span>
+                </div>
+                <div class="card-title">Психіатрична допомога дорослим та дітям у стаціонарних умовах</div>
+                <div class="law-tag">Глава 12 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">13,151.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за пролікований випадок)</span></div>
+                <div class="card-desc">Цілодобова стаціонарна допомога пацієнтам з важкими психічними розладами (шизофренія, біполярний афективний розлад, важкі депресії з суїцида...</div>
+            </div>
+            <a href="09_psychiatry_and_addiction.html#pkg-27" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Психіатрія та наркологія" data-text="психіатрична допомога мобільними мультидисциплінарними командами pkg-28 пакет 28 психіатрія та наркологія глобальна ставка на команду">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-28 (Пакет 28)</span>
+                    <span style="font-size: 12px; color: #78909c;">Глобальна ставка на команду</span>
+                </div>
+                <div class="card-title">Психіатрична допомога мобільними мультидисциплінарними командами</div>
+                <div class="law-tag">Глава 12 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">105,300.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(на 1 команду на місяць)</span></div>
+                <div class="card-desc">Виїзні мультидисциплінарні команди (психіатр, психолог, соціальний працівник, медична сестра) для надання психіатричної допомоги за місцем п...</div>
+            </div>
+            <a href="09_psychiatry_and_addiction.html#pkg-28" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Інфекційні захворювання" data-text="супровід і лікування хворих на туберкульоз на первинному рівні pkg-29 пакет 29 інфекційні захворювання капітаційна ставка на місяць">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-29 (Пакет 29)</span>
+                    <span style="font-size: 12px; color: #78909c;">Капітаційна ставка на місяць</span>
+                </div>
+                <div class="card-title">Супровід і лікування хворих на туберкульоз на первинному рівні</div>
+                <div class="law-tag">Глава 9 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">835.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(на 1 пацієнта на місяць)</span></div>
+                <div class="card-desc">Супровід пацієнтів з туберкульозом сімейним лікарем після припинення бактеріовиділення: контроль прийому протитуберкульозних препаратів, мон...</div>
+            </div>
+            <a href="10_infectious_tb_hiv.html#pkg-29" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Первинна допомога" data-text="супровід осіб з психічними розладами на первинному рівні (mhgap) pkg-30 пакет 30 первинна допомога капітаційна ставка за пацієнта">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-30 (Пакет 30)</span>
+                    <span style="font-size: 12px; color: #78909c;">Капітаційна ставка за пацієнта</span>
+                </div>
+                <div class="card-title">Супровід осіб з психічними розладами на первинному рівні (mhGAP)</div>
+                <div class="law-tag">Глава 12 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">183.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(на 1 пацієнта на місяць)</span></div>
+                <div class="card-desc">Діагностика та ведення поширених психічних розладів (депресія, тривожність, гострий стрес, ПТСР) сімейними лікарями та медсестрами, які прой...</div>
+            </div>
+            <a href="09_psychiatry_and_addiction.html#pkg-30" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Амбулаторна допомога" data-text="стоматологічна допомога дорослим та дітям pkg-34 пакет 34 амбулаторна допомога глобальна ставка за послуги">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-34 (Пакет 34)</span>
+                    <span style="font-size: 12px; color: #78909c;">Глобальна ставка за послуги</span>
+                </div>
+                <div class="card-title">Стоматологічна допомога дорослим та дітям</div>
+                <div class="law-tag">Глава 13 Порядку (Постанова КМУ № 1808, п. 98)</div>
+                <div class="card-rate">134.68 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за 1 стоматологічну послугу)</span></div>
+                <div class="card-desc">Ургентна стоматологічна допомога всім пацієнтам (гострий біль, пульпіт, перістит, травми щелеп) та повна планова стоматологічна допомога діт...</div>
+            </div>
+            <a href="05_ambulatory_outpatient_and_screening.html#pkg-34" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Материнство та дитинство" data-text="ведення вагітності в амбулаторних умовах pkg-35 пакет 35 материнство та дитинство капітаційна ставка на місяць">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-35 (Пакет 35)</span>
+                    <span style="font-size: 12px; color: #78909c;">Капітаційна ставка на місяць</span>
+                </div>
+                <div class="card-title">Ведення вагітності в амбулаторних умовах</div>
+                <div class="law-tag">Глава 14 Порядку (Постанова КМУ № 1808, п. 102)</div>
+                <div class="card-rate">921.82 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(на 1 вагітну на місяць)</span></div>
+                <div class="card-desc">Комплексне динамічне спостереження вагітних жінок акушером-гінекологом: обов'язкові лабораторні аналізи, УЗД скринінги плода 1-го, 2-го та 3...</div>
+            </div>
+            <a href="04_priority_stroke_infarct_maternity.html#pkg-35" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Медицина катастроф та готовність" data-text="готовність закладу охорони здоров'я до надання допомоги в надзвичайних ситуаціях pkg-40 пакет 40 медицина катастроф та готовність фіксована глобальна ставка">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-40 (Пакет 40)</span>
+                    <span style="font-size: 12px; color: #78909c;">Фіксована глобальна ставка</span>
+                </div>
+                <div class="card-title">Готовність закладу охорони здоров'я до надання допомоги в надзвичайних ситуаціях</div>
+                <div class="law-tag">Глава 18 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">1,053,842.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(на заклад на місяць)</span></div>
+                <div class="card-desc">Цільове фінансування готовності інфекційних та багатопрофільних стаціонарів до спалахів епідемій, біологічних, хімічних загроз, надзвичайних...</div>
+            </div>
+            <a href="12_defense_readiness_vlk.html#pkg-40" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Медицина катастроф та готовність" data-text="готовність та забезпечення надання допомоги на територіях бойових дій pkg-41 пакет 41 медицина катастроф та готовність глобальний бюджет підтримки">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-41 (Пакет 41)</span>
+                    <span style="font-size: 12px; color: #78909c;">Глобальний бюджет підтримки</span>
+                </div>
+                <div class="card-title">Готовність та забезпечення надання допомоги на територіях бойових дій</div>
+                <div class="law-tag">Глава 18 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">Глобальний кошторис <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за розрахунком фонду зарплати)</span></div>
+                <div class="card-desc">Фінансова гарантія збереження медичних закладів у прифронтових зонах та зонах бойових дій: пряме покриття заробітної плати та операційних ви...</div>
+            </div>
+            <a href="12_defense_readiness_vlk.html#pkg-41" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Ниркова замісна терапія" data-text="лікування гострого ушкодження нирок та замісна ниркова терапія у віт pkg-42 пакет 42 ниркова замісна терапія оплата за добу лікування">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-42 (Пакет 42)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за добу лікування</span>
+                </div>
+                <div class="card-title">Лікування гострого ушкодження нирок та замісна ниркова терапія у ВІТ</div>
+                <div class="law-tag">Глава 7 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">11,500.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за добу постійної гемофільтрації (CVVH))</span></div>
+                <div class="card-desc">Проведення постійної замісної ниркової терапії (CVVH, CVVHD) пацієнтам у критичному стані у відділенні інтенсивної терапії....</div>
+            </div>
+            <a href="05_ambulatory_outpatient_and_screening.html#pkg-42" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Високотехнологічна допомога" data-text="секвенування геному та високовартісні молекулярно-генетичні дослідження pkg-43 пакет 43 високотехнологічна допомога оплата за дослідження">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-43 (Пакет 43)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за дослідження</span>
+                </div>
+                <div class="card-title">Секвенування геному та високовартісні молекулярно-генетичні дослідження</div>
+                <div class="law-tag">Глава 19 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">18,500.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за 1 молекулярно-генетичне дослідження (NGS))</span></div>
+                <div class="card-desc">NGS-секвенування пухлинних мутацій для вибору таргетних препаратів та генетична діагностика рідкісних синдромів....</div>
+            </div>
+            <a href="11_high_tech_art_transplant.html#pkg-43" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Служба крові та трансфузіологія" data-text="забезпечення заготівлі, тестування та переробки донорської крові pkg-44 пакет 44 служба крові та трансфузіологія оплата за донацію">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-44 (Пакет 44)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за донацію</span>
+                </div>
+                <div class="card-title">Забезпечення заготівлі, тестування та переробки донорської крові</div>
+                <div class="law-tag">Глава 20 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">1,240.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за 1 протестовану донацію)</span></div>
+                <div class="card-desc">Заготівля донорської крові, двохетапне інфекційне тестування, лейкофільтрація, вірус-інактивація плазми та тромбоцитів....</div>
+            </div>
+            <a href="12_defense_readiness_vlk.html#pkg-44" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Військова та ветеранська медицина" data-text="медичний огляд осіб за направленням тцк та сп (влк) pkg-45 пакет 45 військова та ветеранська медицина оплата за комплексний медогляд">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-45 (Пакет 45)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за комплексний медогляд</span>
+                </div>
+                <div class="card-title">Медичний огляд осіб за направленням ТЦК та СП (ВЛК)</div>
+                <div class="law-tag">Глава 21 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">883.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за 1 огляд військовозобов'язаного)</span></div>
+                <div class="card-desc">Комплексний медичний огляд військовозобов'язаних громадян позаштатними ВЛК при цивільних ЗОЗ: 7 лікарів-спеціалістів, флюорографія, аналізи,...</div>
+            </div>
+            <a href="12_defense_readiness_vlk.html#pkg-45" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Спеціалізована допомога" data-text="лікування пацієнтів з рідкісними (орфанними) захворюваннями pkg-46 пакет 46 спеціалізована допомога капітаційна ставка на квартал">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-46 (Пакет 46)</span>
+                    <span style="font-size: 12px; color: #78909c;">Капітаційна ставка на квартал</span>
+                </div>
+                <div class="card-title">Лікування пацієнтів з рідкісними (орфанними) захворюваннями</div>
+                <div class="law-tag">Глава 22 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">28,400.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(на 1 пацієнта на квартал)</span></div>
+                <div class="card-desc">Спеціалізоване ведення пацієнтів зі СМА, муковісцидозом, хворобою Гоше, Фабрі, первинними імунодефіцитами в референтних центрах....</div>
+            </div>
+            <a href="11_high_tech_art_transplant.html#pkg-46" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Стаціонарна допомога (ДСГ)" data-text="хірургічні операції в умовах стаціонару одного дня pkg-47 пакет 47 стаціонарна допомога (дсг) оплата за випадок за дсг стаціонару 1 дня">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-47 (Пакет 47)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за випадок за ДСГ стаціонару 1 дня</span>
+                </div>
+                <div class="card-title">Хірургічні операції в умовах стаціонару одного дня</div>
+                <div class="law-tag">Глава 3 Порядку (Постанова КМУ № 1808, Додаток 2)</div>
+                <div class="card-rate">8,735.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за пролікований випадок)</span></div>
+                <div class="card-desc">Малоінвазивні планові операції (лапароскопічні, офтальмологічні, урологічні), що не потребують перебування у стаціонарі довше 24 годин....</div>
+            </div>
+            <a href="03_specialized_surgery_and_therapy_dsg.html#pkg-47" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Реабілітація" data-text="реабілітаційна допомога дорослим і дітям у стаціонарних умовах pkg-53 пакет 53 реабілітація оплата за реабілітаційний цикл">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-53 (Пакет 53)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за реабілітаційний цикл</span>
+                </div>
+                <div class="card-title">Реабілітаційна допомога дорослим і дітям у стаціонарних умовах</div>
+                <div class="law-tag">Глава 15 Порядку (Постанова КМУ № 1808, п. 106-115)</div>
+                <div class="card-rate">19,776.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за 1 стаціонарний цикл)</span></div>
+                <div class="card-desc">Інтенсивна стаціонарна нейрореабілітація, опорно-рухова та кардіопульмональна реабілітація мультидисциплінарною командою не менше 3 годин те...</div>
+            </div>
+            <a href="07_rehabilitation_care.html#pkg-53" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Реабілітація" data-text="реабілітаційна допомога дорослим і дітям у амбулаторних умовах pkg-54 пакет 54 реабілітація оплата за цикл амбулаторної реабілітації">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-54 (Пакет 54)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за цикл амбулаторної реабілітації</span>
+                </div>
+                <div class="card-title">Реабілітаційна допомога дорослим і дітям у амбулаторних умовах</div>
+                <div class="law-tag">Глава 15 Порядку (Постанова КМУ № 1808, п. 116-120)</div>
+                <div class="card-rate">10,820.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за 1 цикл)</span></div>
+                <div class="card-desc">Амбулаторна реабілітація мультидисциплінарною командою: курс не менше 14 днів занять тривалістю не менше 1-2 годин щодня....</div>
+            </div>
+            <a href="07_rehabilitation_care.html#pkg-54" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Військова та ветеранська медицина" data-text="безоплатне зубопротезування та зуболікування ветеранів війни pkg-58 пакет 58 військова та ветеранська медицина оплата за випадок за каталогом">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-58 (Пакет 58)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за випадок за каталогом</span>
+                </div>
+                <div class="card-title">Безоплатне зубопротезування та зуболікування ветеранів війни</div>
+                <div class="law-tag">Постанова КМУ від 27.02.2024 № 212</div>
+                <div class="card-rate">14,984.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(на 1 ветерана (зубопротезування))</span></div>
+                <div class="card-desc">Державна програма зубопротезування та лікування зубів для учасників бойових дій та інвалідів війни....</div>
+            </div>
+            <a href="12_defense_readiness_vlk.html#pkg-58" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Високотехнологічна допомога" data-text="лікування безпліддя за допомогою дрт (екз / запліднення in vitro) pkg-59 пакет 59 високотехнологічна допомога оплата за повний курс дрт">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-59 (Пакет 59)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за повний курс ДРТ</span>
+                </div>
+                <div class="card-title">Лікування безпліддя за допомогою ДРТ (ЕКЗ / запліднення in vitro)</div>
+                <div class="law-tag">Глава 16 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">60,324.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за 1 курс ЕКЗ)</span></div>
+                <div class="card-desc">Повний цикл екстракорпорального запліднення (IVF/ICSI) для жінок віком до 40 років за рахунок держави....</div>
+            </div>
+            <a href="11_high_tech_art_transplant.html#pkg-59" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Високотехнологічна допомога" data-text="трансплантація солідних органів (нирки, печінки, серця, легень) pkg-60 пакет 60 високотехнологічна допомога оплата за трансплантацію">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-60 (Пакет 60)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за трансплантацію</span>
+                </div>
+                <div class="card-title">Трансплантація солідних органів (нирки, печінки, серця, легень)</div>
+                <div class="law-tag">Глава 17 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">801,071.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за 1 операцію (нирка))</span></div>
+                <div class="card-desc">Вилучення органів, HLA-типування, трансплантація, інтенсивна імуносупресія та нагляд....</div>
+            </div>
+            <a href="11_high_tech_art_transplant.html#pkg-60" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+        <div class="card" data-cat="Високотехнологічна допомога" data-text="трансплантація гемопоетичних стовбурових клітин (тгск) pkg-61 пакет 61 високотехнологічна допомога оплата за процедуру тгск">
+            <div>
+                <div class="card-header">
+                    <span class="pkg-badge">PKG-61 (Пакет 61)</span>
+                    <span style="font-size: 12px; color: #78909c;">Оплата за процедуру ТГСК</span>
+                </div>
+                <div class="card-title">Трансплантація гемопоетичних стовбурових клітин (ТГСК)</div>
+                <div class="law-tag">Глава 17 Порядку (Постанова КМУ № 1808)</div>
+                <div class="card-rate">1,300,000.00 ₴ <span style="font-size: 11px; font-weight: normal; color: #78909c;">(за 1 аутологічну ТГСК)</span></div>
+                <div class="card-desc">Пересадка кісткового мозку та стовбурових клітин онкогематологічним пацієнтам у ламінарних боксах....</div>
+            </div>
+            <a href="11_high_tech_art_transplant.html#pkg-61" class="btn-view">Відкрити нормативне досьє →</a>
+        </div>
+
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const catSelect = document.getElementById('catSelect');
+        const cards = document.querySelectorAll('.card');
+        const counter = document.getElementById('counter');
+
+        function filter() {
+            const q = searchInput.value.toLowerCase().trim();
+            const cat = catSelect.value;
+            let visible = 0;
+
+            cards.forEach(card => {
+                const text = card.getAttribute('data-text');
+                const cardCat = card.getAttribute('data-cat');
+                const matchSearch = !q || text.includes(q);
+                const matchCat = cat === 'ALL' || cardCat.includes(cat);
+
+                if (matchSearch && matchCat) {
+                    card.style.display = 'flex';
+                    visible++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            counter.textContent = `Показано: ${visible} із ${cards.length}`;
+        }
+
+        searchInput.addEventListener('input', filter);
+        catSelect.addEventListener('change', filter);
+    </script>
+</body>
+</html>

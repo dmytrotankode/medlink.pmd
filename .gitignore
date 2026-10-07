@@ -1,0 +1,6 @@
+
+*.sqlite
+*.db
+__pycache__/
+bin/
+obj/

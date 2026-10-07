@@ -1,0 +1,166 @@
+﻿<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Перелік роз’яснень</title>
+
+<link rel="stylesheet" href="/serve.php?f=css/info-pages">
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="head">
+
+
+      <div class="toolbar card" style="padding:10px 12px;">
+        <div class="search">
+          <input id="q" type="text" placeholder="Пошук... по назві, опису або тегах" autocomplete="off" />
+        </div>
+        <span class="pill"><span id="count">0</span> документи (ів)</span>
+      </div>
+    </div>
+
+    <div id="list" class="list" aria-live="polite"></div>
+    <div id="empty" class="empty" style="display:none;">Нічого не знайдено за вашим запитом.</div>
+  </div>
+
+  <script>
+    // ====== Налаштування ======
+    // Якщо хочеш відкривати PDF в модалці (iframe) — постав true
+    const USE_MODAL = false;
+
+    // Якщо сторінка для різних пакетів — можна підставляти номер з URL ?pkg=stac
+    const pkgFromUrl = new URLSearchParams(location.search).get('pkg') || 'stac';
+
+    // База документів (ти просто редагуєш цей список)
+    // url: шлях до pdf (може бути абсолютний або через твій serve.php)
+    const ITEMS = [
+	      {
+        id: 1,
+        title: "Амбулаторно-асоційовані стани та амбулаторно-асоційовані втручання",
+        date: "15-05-2025",
+        desc: "Перелік амбулаторно-асоційованих станів та амбулаторно-асоційованих втручань за пакетами медичних послуг \"Стаціонарна допомога дорослим та дітям без проведення хірургічних операцій\", \"Хірургічні операції дорослим та дітям у стаціонарних умовах\", \"Хірургічні операції дорослим та дітям в умовах стаціонару одного дня\"",
+        tags: ["амбулаторні стани", "амбулаторні встручання", "діагнози", "послуги"],
+        url: "/serve.php/info/files/stac-package/Амбулаторно-асоційовані_стани.PDF"
+      },
+      {
+        id: 2,
+        title: "Роз’яснення щодо внесення платних послуг",
+        date: "14-02-2025",
+        desc: "Інформація, щодо процедури внесення до ЕСОЗ медичних записів про надання медичних послуг, які оплачуються за рахунок коштів інших джерел (платні послуги)",
+        tags: ["платна послуга", "інші джерела фінансування"],
+        url: "/serve.php/info/files/stac-package/Роз'яснення_платні_послуги.PDF"
+      },
+      {
+        id: 3,
+        title: "Особливості використання електронних підписів у сфері охорони здоров’я",
+        date: "30-09-2025",
+        desc: "Інформація від МОЗ щодо необхідності використовувати кваліфіковані електронні підписи або удосконалені електронні підписи, що базуються на кваліфікованих сертифікатах електронного підпису, в якості уповноважених представників юридичних осіб (а не фізичних осіб!)",
+        tags: ["КЕП", "УЕП", "ЕЦП", "підпис"],
+        url: "/serve.php/info/files/stac-package/Інформація_по_КЕП_(ключах).PDF"
+      }
+    ];
+
+    // ====== Рендер ======
+    const listEl = document.getElementById('list');
+    const emptyEl = document.getElementById('empty');
+    const countEl = document.getElementById('count');
+    const qEl = document.getElementById('q');
+
+    function normalize(s) {
+      return (s || "")
+        .toLowerCase()
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function matches(item, query) {
+      if (!query) return true;
+      const hay = normalize([
+        item.title,
+        item.desc,
+        (item.tags || []).join(" "),
+        item.date
+      ].join(" "));
+      return hay.includes(query);
+    }
+
+function openPdf(item) {
+  if (!USE_MODAL) {
+    window.open(item.url, '_blank', 'noopener');
+    return;
+  }
+}
+
+function downloadPdf(item) {
+  const a = document.createElement('a');
+  a.href = item.url;
+  a.download = '';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+    function render(query) {
+      const q = normalize(query);
+      const filtered = ITEMS.filter(it => matches(it, q));
+
+      listEl.innerHTML = "";
+      countEl.textContent = filtered.length;
+      emptyEl.style.display = filtered.length ? "none" : "block";
+
+      filtered.forEach((item, idx) => {
+        const el = document.createElement('div');
+        el.className = 'item';
+
+        el.innerHTML = `
+          <div class="badge">${String(idx+1).padStart(2,'0')}</div>
+          <div class="meta">
+            <p class="title">${escapeHtml(item.title)}</p>
+            <p class="desc">${escapeHtml(item.desc || "")}</p>
+            <div class="row">
+              <span>📅 ${escapeHtml(item.date || "")}</span>
+              <div class="tags">
+                ${(item.tags || []).slice(0, 6).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("")}
+              </div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" type="button">Завантажити PDF</button>
+	  		</div>
+			`;
+
+		// Клік на кнопку
+        el.querySelector('button')
+  			.addEventListener('click', (e) => {
+    		e.stopPropagation();
+    		downloadPdf(item);
+  		});
+        
+        // Клік на заголовок
+        el.querySelector('.title').addEventListener('click', () => openPdf(item));
+
+        listEl.appendChild(el);
+      });
+    }
+
+    // XSS-safe простий escape
+    function escapeHtml(str) {
+      return String(str ?? "").replace(/[&<>"']/g, (ch) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[ch]));
+    }
+
+    // ====== Події ======
+    qEl.addEventListener('input', () => render(qEl.value));
+    render("");
+
+
+</script>
+</body>
+</html>

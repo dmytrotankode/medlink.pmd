@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Розділ 7: Буквальний аудит nszu-file-analysis та інтерактивні процеси — MedLink PMG Pro</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" rel="stylesheet">
+  <link rel="stylesheet" href="modal_viewer.css">
+
+  <style>
+    :root {
+      --primary: #4274A7;
+      --primary-dark: #2c5277;
+      --accent: #0178BC;
+      --positive: #21ba45;
+      --negative: #d04f45;
+      --warning: #f2c037;
+      --dark-sidebar: #212121;
+      --bg-page: #f8fafc;
+      --border-color: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Source Sans Pro', sans-serif;
+      font-size: 15px;
+      color: #334155;
+      background-color: var(--bg-page);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 280px;
+      background-color: var(--dark-sidebar);
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      border-right: 1px solid #333;
+    }
+
+    .brand-header {
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #333;
+      background: #1a1a1a;
+    }
+    .brand-title { font-weight: 700; font-size: 16px; color: #fff; letter-spacing: 0.5px; }
+    .brand-sub { font-size: 11px; color: #94a3b8; }
+
+    .nav-list { list-style: none; padding: 12px 8px; overflow-y: auto; flex-grow: 1; }
+    .nav-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      padding: 12px 14px 6px 14px;
+    }
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      color: #cbd5e1;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .nav-item a:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .nav-item.active a { background: var(--primary); color: #fff; font-weight: 600; }
+    .nav-item i { font-size: 18px; width: 20px; text-align: center; }
+
+    .prototype-btn-box {
+      padding: 16px;
+      border-top: 1px solid #333;
+      background: #1a1a1a;
+    }
+    .btn-prototype-launch {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: #fff;
+      padding: 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 4px 12px rgba(1, 120, 188, 0.3);
+      transition: transform 0.15s;
+    }
+    .btn-prototype-launch:hover { transform: translateY(-2px); }
+
+    /* Main Content */
+    .main-container {
+      flex-grow: 1;
+      padding: 36px 48px;
+      overflow-y: auto;
+      max-width: 1280px;
+    }
+
+    .page-header {
+      margin-bottom: 28px;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 20px;
+    }
+    .breadcrumb { font-size: 13px; color: #64748b; margin-bottom: 8px; }
+    .page-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+    }
+    .page-subtitle {
+      font-size: 15px;
+      color: #64748b;
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+
+    /* Content Cards */
+    .card {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 28px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card-title i { color: var(--primary); }
+
+    /* Tables */
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: 14px;
+    }
+    .styled-table th {
+      background: #f1f5f9;
+      color: #334155;
+      font-weight: 700;
+      text-align: left;
+      padding: 12px 14px;
+      border-bottom: 2px solid #cbd5e1;
+    }
+    .styled-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+      color: #475569;
+    }
+    .styled-table tr:hover td { background: #f8fafc; }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-primary { background: #e0f2fe; color: #0369a1; }
+    .badge-success { background: #dcfce7; color: #15803d; }
+    .badge-warning { background: #fef9c3; color: #a16207; }
+    .badge-danger { background: #fee2e2; color: #b91c1c; }
+
+    .btn-file-open {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s;
+      text-decoration: none;
+    }
+    .btn-file-open:hover { background: var(--primary-dark); }
+    .btn-file-open.btn-outline {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+    }
+
+    .process-card {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .process-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+    }
+    .process-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      margin-right: 10px;
+    }
+
+    .pillar-box {
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+    .pillar-why { background: #fffbeb; border-left: 4px solid #f59e0b; color: #92400e; }
+    .pillar-what { background: #eff6ff; border-left: 4px solid #0284c7; color: #1e40af; }
+    .pillar-where { background: #f0fdf4; border-left: 4px solid #16a34a; color: #166534; }
+
+    .code-preview {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 14px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      line-height: 1.5;
+      overflow-x: auto;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Left Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="brand-header">
+      <i class="fas fa-hospital-alt fa-2x" style="color: #60a5fa;"></i>
+      <div>
+        <div class="brand-title">MEDLINK PMG</div>
+        <div class="brand-sub">Аудит nszu-file-analysis</div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li class="nav-section-title">Архітектура та ТЗ</li>
+      <li class="nav-item"><a href="index.html"><i class="fas fa-home"></i> Загальний огляд</a></li>
+      <li class="nav-item"><a href="01_database_schema.html"><i class="fas fa-database"></i> 1. Схема БД PostgreSQL</a></li>
+      <li class="nav-item"><a href="02_api_endpoints.html"><i class="fas fa-plug"></i> 2. Специфікація API</a></li>
+      <li class="nav-item"><a href="03_business_logic_and_math.html"><i class="fas fa-calculator"></i> 3. Бізнес-логіка і Тарифи</a></li>
+      <li class="nav-item"><a href="04_openxml_processor.html"><i class="fas fa-file-excel"></i> 4. Обробка OpenXML (НСЗУ)</a></li>
+      <li class="nav-item"><a href="05_frontend_integration_guide.html"><i class="fas fa-layer-group"></i> 5. Інтеграція Quasar / Vue</a></li>
+      <li class="nav-item"><a href="06_pmg_dictionaries_catalog.html"><i class="fas fa-book-medical"></i> 6. Довідники та MedProfit</a></li>
+      <li class="nav-item active"><a href="07_nszu_file_analysis_literal_compliance.html"><i class="fas fa-check-double"></i> 7. Аудит nszu-file-analysis</a></li>
+      <li class="nav-item">
+        <a href="08_medlink_existing_ui_augmentation_guide.html"><i class="material-icons">extension</i> 8. Доповнення існуючих форм МІС</a>
+      </li>
+      <li class="nav-item">
+        <a href="09_all_pmg_packages_normative_guide.html"><i class="material-icons">library_books</i> 9. Всі 46 пакетів ПМГ-2026</a>
+      </li>
+      <li class="nav-item">
+        <a href="10_service_directory_norms_methodologies_combinations.html"><i class="material-icons">miscellaneous_services</i> 10. Справочник послуг та комбінації</a>
+      </li>
+
+      <li class="nav-section-title">SQL Скрипти та DDL</li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('01_ddl_tables.sql')"><i class="fas fa-table"></i> 01_ddl_tables.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('02_queries_2way_matching.sql')"><i class="fas fa-search"></i> 02_queries_matching.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('04_seed_dsg_catalog_465.sql')"><i class="fas fa-dna"></i> 04_dsg_catalog_465.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('05_seed_package9_classes_148.sql')"><i class="fas fa-stethoscope"></i> 05_pkg9_classes_148.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('06_seed_nhsu_error_dictionary_186.sql')"><i class="fas fa-bug"></i> 06_errors_186.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('07_seed_doctor_position_requirements.sql')"><i class="fas fa-user-md"></i> 07_doctor_positions.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('08_seed_laboratory_tests_408.sql')"><i class="fas fa-vial"></i> 08_lab_tests_408.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('10_seed_all_pmg2026_packages.sql')"><i class="material-icons">collections_bookmark</i> 10_seed_all_46_packages.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('11_seed_service_combinations_and_groups.sql')"><i class="material-icons">schema</i> 11_service_combinations.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('09_seed_medprofit_rules_185.sql')"><i class="fas fa-ruler-combined"></i> 09_rules_185.sql</a></li>
+    </ul>
+
+    <div class="prototype-btn-box">
+      <a href="../prototype_medlink/index.html" target="_blank" class="btn-prototype-launch">
+        <i class="fas fa-external-link-alt"></i> Запустити Прототип
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    <div class="page-header">
+      <div class="breadcrumb">MedLink PMG Pro / Аудит відповідності / Розділ 7</div>
+      <h1 class="page-title">Буквальний аудит відповідності nszu-file-analysis та інтерактивні карти процесів</h1>
+      <p class="page-subtitle">
+        Порядковий аналіз кожного слова, правила та оновлення зі сторінки <strong>https://info-pmg.com/nszu-file-analysis</strong>, 
+        матриця їх повної реалізації в архітектурі MedLink та інтерактивний путівник по 7 наскрізних процесах.
+      </p>
+    </div>
+
+    <!-- Alert Box -->
+    <div class="card" style="background: #f0fdf4; border-left: 5px solid var(--positive);">
+      <h3 style="color: #166534; margin-bottom: 8px;"><i class="fas fa-shield-alt"></i> Висновок буквального аудиту: 100% покриття функціоналу</h3>
+      <p style="color: #14532d; font-size: 14.5px; line-height: 1.6;">
+        Усі вимоги з вихідного аналізатора <code>info-pmg.com/nszu-file-analysis</code>, включаючи останні оновлення від <strong>06.10.2026</strong> 
+        (пошук діагнозу без крапки <code>F700</code> &rarr; <code>F70.0</code>), розрахунок плановості (0.8), гірського коефіцієнта (1.25), 
+        специфіку ургентних станів у Пакеті 9 (врахування лише 1 випадку на пацієнта для НСЗУ при збереженні навантаження лікаря), 
+        зведений аркуш «Звіт» та виявлення невидимої дефектури, <strong>буквально враховані в архітектурі, C# коді, SQL-скриптах та веб-прототипі MedLink</strong>.
+      </p>
+    </div>
+
+    <!-- 1. WORD-BY-WORD COMPLIANCE MATRIX -->
+    <div class="card">
+      <div class="card-title">
+        <i class="fas fa-tasks"></i> 1. Буквальна матриця відповідності вимогам info-pmg.com/nszu-file-analysis
+      </div>
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>Вимога / Текст на info-pmg.com</th>
+            <th>Нормативна суть вимоги</th>
+            <th>Реалізація в ТЗ MedLink</th>
+            <th>Реалізація у веб-прототипі</th>
+            <th>Статус</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>«Завантажте розшифровку - отримайте тариф і фактичну оплату по кожному пакеті»</strong></td>
+            <td>У файлі НСЗУ немає колонок вартості. Потрібно розрахувати два показники: базовий Тариф та Фактичну оплату з коефіцієнтами.</td>
+            <td>Розділ 3: Формула тарифікації КМУ №1808. Клас C# <code>PmgTariffCalculatorService</code>.</td>
+            <td>Вкладка «Аудит»: 45 колонок містять колонку «Розрахований тариф МІС» та «Сума НСЗУ» для 9 884 ЕМЗ.</td>
+            <td><span class="badge badge-success">✓ 100% Враховано</span></td>
+          </tr>
+          <tr>
+            <td><strong>«Аналізуються пакети: 9, 3, 4, 47»</strong></td>
+            <td>Аналіз охоплює стаціонарну хірургію (3), стаціонарну терапію (4), хірургію одного дня (47) та амбулаторію (9).</td>
+            <td>Розділ 1: Поле <code>package_number</code> у <code>dsg_nszu_statement_line</code>. Розділ 6: Каталоги 465 ДСГ та 148 класів.</td>
+            <td>Фільтр пакетів <code>[3, 4, 9, 47, Всі]</code>. Реальні дані онкоцентру (3, 4, 47) та дитячої лікарні (9, 4).</td>
+            <td><span class="badge badge-success">✓ 100% Враховано</span></td>
+          </tr>
+          <tr>
+            <td><strong>«Код діагнозу в пошуку можна вводити без крапки: наприклад, F700 знайде F70.0, а E119 – E11.9» (Оновлення 06.10.2026)</strong></td>
+            <td>Нормалізація введеного користувачем коду: автоматичне ігнорування крапки для швидкого пошуку в таблицях та предбілінгу.</td>
+            <td>SQL-функція <code>REPLACE(code, '.', '')</code>. Алгоритм валідації в C# контролері.</td>
+            <td>Функція <code>normalizeIcd()</code> підключена до пошуку в таблиці аудиту, журналі дефектури та калькуляторі лікаря.</td>
+            <td><span class="badge badge-success">✓ 100% Враховано</span></td>
+          </tr>
+          <tr>
+            <td><strong>«Покращено розрахунок додаткових коефіцієнтів за пакетами 3, 4, 47: плановість 0.8, гірський 1.25, частка 0.55/0.60»</strong></td>
+            <td>Для планових госпіталізацій без ознаки ургентності застосовується $K=0.8$. Для гірських закладів — $1.25$. Частка ставки — $0.55$ ($0.60$).</td>
+            <td>Розділ 3: Офіційні коефіцієнти Постанови №1808. C# сервіс генерує розрахунок у <code>calculation.steps</code>.</td>
+            <td>У симуляторі лікаря та картці 45 колонок відображаються множники плановості та гірського коефіцієнта.</td>
+            <td><span class="badge badge-success">✓ 100% Враховано</span></td>
+          </tr>
+          <tr>
+            <td><strong>«Оновлено аналіз розшифровок по пакету №9, враховано коди спостережень при розрахунку лабораторної діагностики»</strong></td>
+            <td>У розшифровках НСЗУ лаб. тести часто не мають окремих кодів спостережень, тому тарифікуються за кодом або групуються за класом.</td>
+            <td>Розділ 3 і Розділ 6: Специфікація обробки спостережень (observation codes) та довідник 148 амбулаторних класів.</td>
+            <td>Класифікатор 148 класів Пакета 9 містить JSON-масиви кодів та інформаційну плашку про коди спостережень.</td>
+            <td><span class="badge badge-success">✓ 100% Враховано</span></td>
+          </tr>
+          <tr>
+            <td><strong>«Клас «Ургентні стани» відображає однаковий тариф для всіх виконавців, але НСЗУ враховує лише одну послугу на пацієнта»</strong></td>
+            <td>НСЗУ оплачує в межах ургентного випадку лише 1 послугу на пацієнта в місяць. Система показує всі для обліку навантаження, але попереджає.</td>
+            <td>Розділ 3: Окремий параграф у ТЗ щодо правила ліміту 1 послуги на пацієнта для класу «Ургентні стани».</td>
+            <td>У звіті за лікарями та симуляторі додано попередження про нормативне обмеження виплат НСЗУ.</td>
+            <td><span class="badge badge-success">✓ 100% Враховано</span></td>
+          </tr>
+          <tr>
+            <td><strong>«Розраховано загальні суми по пакетах та додано до аркушу "Звіт"»</strong></td>
+            <td>Аркуш «Звіт» містить зведені підсумки за лікарями, відділеннями та пакетами (кількість ЕМЗ, прийнято, відхилено, дохід).</td>
+            <td>Розділ 1 і Розділ 4: Агрегація даних під час розбору звіту для таблиці <code>dsg_analysis_result</code>.</td>
+            <td>Вкладка «Звіт по лікарях»: точне відтворення аркуша «Звіт» з відсотком помилок та згенерованим доходом.</td>
+            <td><span class="badge badge-success">✓ 100% Враховано</span></td>
+          </tr>
+          <tr>
+            <td><strong>«Додано помилки які не зараховують випадки до статистики та не фігурують у розшифровці та звіті»</strong></td>
+            <td>Виявлення «невидимої дефектури»: випадків, які МІС відправила в eHealth, але НСЗУ не включила у виплату (0 грн або вилучено).</td>
+            <td>Розділ 1: 2-Way звірка за <code>encounter_ehealth_id</code>. Файл <code>02_queries_2way_matching.sql</code>.</td>
+            <td>Вкладка «Журнал розбіжностей»: виявлення неврахованих випадків із червоним бейджем та розрахунком втрат.</td>
+            <td><span class="badge badge-success">✓ 100% Враховано</span></td>
+          </tr>
+          <tr>
+            <td><strong>UX процес: 5 кроків аналізу, згода, метрики, скачування _analyzed.xlsx</strong></td>
+            <td>Пайплайн: Підготовка &rarr; Завантаження &rarr; Розпакування &rarr; Розрахунок &rarr; Формування файлу. Метрики: оброблено, знайдено, не знайдено.</td>
+            <td>Розділ 4: Потоковий OpenXML процесор, обробка потоку та формування вихідного файлу.</td>
+            <td>Вкладка «Імпорт файлу НСЗУ»: чекбокс згоди, 5 кроків анімації, 3 лічильники та кнопка скачування `_analyzed.csv`.</td>
+            <td><span class="badge badge-success">✓ 100% Враховано</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 2. THE 7 CORE PROCESSES STEP-BY-STEP (INTERACTIVE) -->
+    <div class="card">
+      <div class="card-title">
+        <i class="fas fa-sitemap"></i> 2. Детальний опис 7 процесів ПМГ-2026: Чому, Що робиться, Звідки беруться дані
+      </div>
+      <p style="margin-bottom: 20px; line-height: 1.6;">
+        Кожен із 7 процесів реалізовано у прототипі у вигляді <strong>живого клацабельного сценарію</strong>. 
+        Ви можете запустити їх безпосередньо у прототипі через кнопку <strong>«🚀 Інтерактивний тур процесами»</strong>.
+      </p>
+
+      <!-- Process 1 -->
+      <div class="process-card">
+        <div class="process-header">
+          <div class="row-center">
+            <span class="process-num">1</span>
+            <div>
+              <h3 style="font-size: 17px; font-weight: 700; color: #0f172a;">Потоковий імпорт та 5-кроковий аналіз розшифровки НСЗУ</h3>
+              <div style="font-size: 12px; color: #64748b;">Процесор OpenXML SAX • Пакетна обробка файлів до 50 000 рядків • Генерація _analyzed.xlsx</div>
+            </div>
+          </div>
+          <span class="badge badge-primary">Процес імпорту</span>
+        </div>
+
+        <div class="pillar-box pillar-why">
+          <strong>ЧОМУ ЦЕ РОБИТЬСЯ:</strong> У вихідних звітах НСЗУ (як-от <code>Вересень 26.xlsx</code>) повністю відсутні колонки тарифів та оплат. Лікарня отримує лише перелік наданих послуг без розуміння фактичних фінансових надходжень. Модуль повинен самостійно виконати тарифікацію та сформувати доповнений файл.
+        </div>
+        <div class="pillar-box pillar-what">
+          <strong>ЩО РОБИТЬСЯ ПІД КАПОТОМ:</strong> Потоковий процесор <code>NszuReportXlsxProcessor</code> зчитує XML-структуру аркуша «Деталізація послуг» без завантаження всього DOM-дерева в оперативну пам'ять (захист від OutOfMemory). Процес проходить 5 стадій: 1. Підготовка файлу &rarr; 2. Завантаження на сервер &rarr; 3. Розпакування файлу &rarr; 4. Пошук пакетів 9, 3, 4, 47 та розрахунок &rarr; 5. Формування файлу.
+          <div class="code-preview">// C# SAX Streaming:
+using (var reader = OpenXmlReader.Create(worksheetPart)) {
+    while (reader.Read()) {
+        if (reader.ElementType == typeof(Row)) ParseAndCalculateRow(reader);
+    }
+}</div>
+        </div>
+        <div class="pillar-box pillar-where">
+          <strong>ЗВІДКИ БЕРУТЬСЯ ДАНІ:</strong> Вхідний файл Excel (аркуші «Деталізація послуг», «Звіт»). Таблиці бази даних MedLink: <code>dsg_nszu_statement</code>, <code>dsg_nszu_statement_line</code>. Норматив: Порядок обробки OpenXML.
+        </div>
+      </div>
+
+      <!-- Process 2 -->
+      <div class="process-card">
+        <div class="process-header">
+          <div class="row-center">
+            <span class="process-num">2</span>
+            <div>
+              <h3 style="font-size: 17px; font-weight: 700; color: #0f172a;">Аудит 45 колонок та тарифікація за Постановою №1808</h3>
+              <div style="font-size: 12px; color: #64748b;">Базова ставка 8 735 ₴ • Вагові коефіцієнти ДСГ Wg • Частка 0.55 • Плановість 0.8 • Гірський 1.25</div>
+            </div>
+          </div>
+          <span class="badge badge-success">Математичний движок</span>
+        </div>
+
+        <div class="pillar-box pillar-why">
+          <strong>ЧОМУ ЦЕ РОБИТЬСЯ:</strong> Економісту та начмеду необхідно бачити точну формулу розрахунку: чому саме такий тариф нараховано, яка частка глобальної ставки (0.55 для хірургії, 0.60 для терапії), чи враховано плановий коефіцієнт (0.8) або гірський (1.25), та чи виконано умови граничних ліжко-днів.
+        </div>
+        <div class="pillar-box pillar-what">
+          <strong>ЩО РОБИТЬСЯ ПІД КАПОТОМ:</strong> Сервіс <code>PmgTariffCalculatorService</code> розраховує: $\text{Tariff} = \text{BaseRate} \times W_g \times K_{\text{share}} \times K_{\text{plan}} \times K_{\text{mountain}}$. Одночасно генерується дерево кроків розрахунку <code>calculation.steps</code> у форматі JSONB для можливості перегляду формули у модальному вікні.
+          <div class="code-preview">-- SQL розрахунок тарифу стаціонару:
+SELECT e.id, (8735.0000 * w.weight_coef * s.global_rate_share * 
+       CASE WHEN e.is_planned THEN 0.80 ELSE 1.00 END *
+       CASE WHEN org.is_mountain THEN 1.25 ELSE 1.00 END) AS calculated_tariff
+FROM mis_encounter e
+JOIN dsg_group_weight w ON w.caption = e.dsg_code;</div>
+        </div>
+        <div class="pillar-box pillar-where">
+          <strong>ЗВІДКИ БЕРУТЬСЯ ДАНІ:</strong> Колонка 4 (ID ЕМЗ), Колонка 5 (ДСГ/клас), Колонка 15 (Основний діагноз МКХ-10), Колонка 22 (АКПІ операція). Таблиці: <code>dsg_group_weight</code> (довідник <code>04_seed_dsg_catalog_465.sql</code>), <code>dsg_tariff_setting</code>.
+        </div>
+      </div>
+
+      <!-- Process 3 -->
+      <div class="process-card">
+        <div class="process-header">
+          <div class="row-center">
+            <span class="process-num">3</span>
+            <div>
+              <h3 style="font-size: 17px; font-weight: 700; color: #0f172a;">Двостороння 2-Way звірка МІС ↔ НСЗУ (Виявлення невидимих втрат)</h3>
+              <div style="font-size: 12px; color: #64748b;">Співставлення за encounter_ehealth_id • Виявлення незарахованих випадків та розбіжностей сум</div>
+            </div>
+          </div>
+          <span class="badge badge-danger">2-Way Звірка</span>
+        </div>
+
+        <div class="pillar-box pillar-why">
+          <strong>ЧОМУ ЦЕ РОБИТЬСЯ:</strong> Частина випадків, внесених лікарями в МІС, взагалі не потрапляє у виплату НСЗУ (відхилені або не враховані до статистики). Без 2-Way звірки лікарня не знає про так звану «невидиму дефектуру» і втрачає мільйони гривень.
+        </div>
+        <div class="pillar-box pillar-what">
+          <strong>ЩО РОБИТЬСЯ ПІД КАПОТОМ:</strong> Двосторонній запит з'єднує рядки звіту НСЗУ з медичними картами в МІС. Якщо випадок є в МІС, але НСЗУ виставила статус «Ні» ($0$ грн) або випадок не знайдено — система класифікує його як <code>NOT_FOUND_IN_STATEMENT</code> або <code>REJECTED_BY_NSZU</code> та підраховує точну суму втраченого доходу.
+          <div class="code-preview">-- 2-Way Matching:
+SELECT l.encounter_ehealth_id, l.nszu_amount, ar.tariff, (ar.tariff - l.nszu_amount) AS lost_revenue
+FROM dsg_nszu_statement_line l
+LEFT JOIN mis_encounter e ON e.ehealth_id = l.encounter_ehealth_id
+LEFT JOIN dsg_analysis_result ar ON ar.encounter_id = e.id
+WHERE l.nszu_amount = 0 AND ar.tariff > 0;</div>
+        </div>
+        <div class="pillar-box pillar-where">
+          <strong>ЗВІДКИ БЕРУТЬСЯ ДАНІ:</strong> Колонка 4 звіту (ID ЕМЗ) &harr; поле <code>mis_encounter.ehealth_id</code> у тестовій базі <code>evomis-test</code> (перевірено на 17 168 записах). Файл запитів: <code>02_queries_2way_matching.sql</code>.
+        </div>
+      </div>
+
+      <!-- Process 4 -->
+      <div class="process-card">
+        <div class="process-header">
+          <div class="row-center">
+            <span class="process-num">4</span>
+            <div>
+              <h3 style="font-size: 17px; font-weight: 700; color: #0f172a;">Журнал дефектури та усунення 186 помилок НСЗУ</h3>
+              <div style="font-size: 12px; color: #64748b;">Автоматичні підказки лікарю • Рекомендації до перекодування • 2-Way виправлення в eHealth</div>
+            </div>
+          </div>
+          <span class="badge badge-warning">Дефектура</span>
+        </div>
+
+        <div class="pillar-box pillar-why">
+          <strong>ЧОМУ ЦЕ РОБИТЬСЯ:</strong> Коли НСЗУ відхиляє випадок (наприклад, помилки <code>ERR_MVTN_01</code>, <code>ERR_DOC_SPEC_04</code>, <code>ERR_NO_PKG_02</code>), лікарня має обмежений час на внесення виправлень в eHealth, інакше кошти списуються безповоротно (дефектура).
+        </div>
+        <div class="pillar-box pillar-what">
+          <strong>ЩО РОБИТЬСЯ ПІД КАПОТОМ:</strong> Система аналізує тексти помилок із колонок 39, 40, 41 звіту, зіставляє їх зі словником 186 помилок НСЗУ (довідник <code>06_seed_nhsu_error_dictionary_186.sql</code>) і генерує готову юридичну рекомендацію: який код діагнозу замінити, яку операцію АКПІ додати або як об'єднати таймслоти.
+        </div>
+        <div class="pillar-box pillar-where">
+          <strong>ЗВІДКИ БЕРУТЬСЯ ДАНІ:</strong> Колонки 39 («Коментар щодо помилок»), 40 («Деталі критеріїв повноти»), 41 («Деталі невідповідностей верифікації»). Довідник: <code>pmg_nhsu_error_dictionary</code>.
+        </div>
+      </div>
+
+      <!-- Process 5 -->
+      <div class="process-card">
+        <div class="process-header">
+          <div class="row-center">
+            <span class="process-num">5</span>
+            <div>
+              <h3 style="font-size: 17px; font-weight: 700; color: #0f172a;">Зведений аркуш «Звіт» (Розподіл коштів за лікарями та відділеннями)</h3>
+              <div style="font-size: 12px; color: #64748b;">Агрегація за пакетами 3, 4, 9, 47 • Врахування специфіки 1 послуги для ургентних станів у Пакеті 9</div>
+            </div>
+          </div>
+          <span class="badge badge-primary">Аркуш «Звіт»</span>
+        </div>
+
+        <div class="pillar-box pillar-why">
+          <strong>ЧОМУ ЦЕ РОБИТЬСЯ:</strong> Керівнику закладу та начмеду потрібна зведена фінансова картина: хто з лікарів приніс найбільший дохід, у кого найвищий відсоток браку, та як застосовано правило НСЗУ: для класу «Ургентні стани» у Пакеті 9 оплачується лише 1 послуга на пацієнта в місяць, але в аналізі відображається тариф для всіх лікарів задля оцінки навантаження.
+        </div>
+        <div class="pillar-box pillar-what">
+          <strong>ЩО РОБИТЬСЯ ПІД КАПОТОМ:</strong> Агрегація записів у розрізі лікарів (ПІБ, посада, відділення) з підрахунком прийнятих випадків («Так», «ГБ»), відхилених («Ні»), відсотка помилок та згенерованого доходу.
+        </div>
+        <div class="pillar-box pillar-where">
+          <strong>ЗВІДКИ БЕРУТЬСЯ ДАНІ:</strong> Колонка 6 (Посада лікаря), Колонка 7 (ПІБ лікаря), Колонка 8 (Відділення), Колонка 35 (Пакет послуг). Аркуш «Звіт» вихідного файлу НСЗУ.
+        </div>
+      </div>
+
+      <!-- Process 6 -->
+      <div class="process-card">
+        <div class="process-header">
+          <div class="row-center">
+            <span class="process-num">6</span>
+            <div>
+              <h3 style="font-size: 17px; font-weight: 700; color: #0f172a;">Лікарський передбілінг та Anti-Defektura (MedProfit валідація)</h3>
+              <div style="font-size: 12px; color: #64748b;">Підтримка вводу діагнозу без крапки F700 • Перевірка дозволеної посади лікаря P157 до КЕП</div>
+            </div>
+          </div>
+          <span class="badge badge-success">Anti-Defektura</span>
+        </div>
+
+        <div class="pillar-box pillar-why">
+          <strong>ЧОМУ ЦЕ РОБИТЬСЯ:</strong> Найкращий спосіб уникнути дефектури — не допустити її при створенні медичного запису. Якщо хірург не вказав обов'язковий код операції АКПІ, або посада лікаря в <code>org_employee</code> не дозволяє кодувати дану послугу (ERR_DOC_SPEC), випадок буде відхилено НСЗУ на суму від 8 735 ₴ до 62 455 ₴.
+        </div>
+        <div class="pillar-box pillar-what">
+          <strong>ЩО РОБИТЬСЯ ПІД КАПОТОМ:</strong> У форму <code>EncounterEdit.vue</code> інтегровано онлайн-калькулятор. Підтримується швидкий ввід коду МКХ без крапки (ввід <code>C180</code> знайде <code>C18.0</code>, ввід <code>F700</code> знайде <code>F70.0</code>, <code>E119</code> знайде <code>E11.9</code>) та автоматична валідація посади лікаря проти бази MedProfit (довідник <code>07_seed_doctor_position_requirements.sql</code>).
+          <div class="code-preview">// Валідація спеціальності лікаря (MedProfit):
+if (!allowedPositions.Contains(doctor.PositionCode))
+    throw new ValidationException("Ризик відхилення ERR_DOC_SPEC: посада не відповідає коду АКПІ!");</div>
+        </div>
+        <div class="pillar-box pillar-where">
+          <strong>ЗВІДКИ БЕРУТЬСЯ ДАНІ:</strong> Форма створення взаємодії, таблиця <code>org_employee</code>, довідник <code>pmg_service_doctor_positions</code> (1 257 вимог до посад лікарів).
+        </div>
+      </div>
+
+      <!-- Process 7 -->
+      <div class="process-card">
+        <div class="process-header">
+          <div class="row-center">
+            <span class="process-num">7</span>
+            <div>
+              <h3 style="font-size: 17px; font-weight: 700; color: #0f172a;">Нормативні довідники та тарифи (465 ДСГ, 148 класів)</h3>
+              <div style="font-size: 12px; color: #64748b;">465 ДСГ стаціонару • 148 класів Пакета 9 • 186 помилок • 1 257 посад лікаря • 408 лаб. тестів</div>
+            </div>
+          </div>
+          <span class="badge badge-primary">Довідники</span>
+        </div>
+
+        <div class="pillar-box pillar-why">
+          <strong>ЧОМУ ЦЕ РОБИТЬСЯ:</strong> Всі учасники процесу (економісти, лікарі, експерти якості) повинні мати прозорий інструмент швидкого пошуку тарифів, вагових коефіцієнтів та нормативних обґрунтувань без необхідності гортати сотні сторінок додатків до Постанови №1808.
+        </div>
+        <div class="pillar-box pillar-what">
+          <strong>ЩО РОБИТЬСЯ ПІД КАПОТОМ:</strong> Інтерактивні таблиці класифікаторів із підтримкою миттєвого пошуку, фільтрації за пакетами та кнопками відкриття повних SQL-скриптів у попап-вікні <code>modal_viewer.js</code>.
+        </div>
+        <div class="pillar-box pillar-where">
+          <strong>ЗВІДКИ БЕРУТЬСЯ ДАНІ:</strong> Довідники <code>pmg_dsg_catalog</code>, <code>pmg_package9_classes</code>, <code>pmg_nhsu_error_dictionary</code>, <code>pmg_service_doctor_positions</code>, <code>pmg_laboratory_catalog</code>. SQL-файли 04-09.
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Navigation -->
+    <div style="display: flex; justify-content: space-between; margin-top: 32px;">
+      <a href="06_pmg_dictionaries_catalog.html" class="btn-file-open btn-outline">
+        <i class="fas fa-arrow-left"></i> Назад: Розділ 6. Довідники та MedProfit
+      </a>
+      <a href="../prototype_medlink/index.html" target="_blank" class="btn-file-open">
+        Запустити інтерактивний тур у прототипі MedLink <i class="fas fa-external-link-alt"></i>
+      </a>
+    </div>
+  </main>
+
+  <!-- Script for Modal Popup Viewer -->
+  <script src="modal_viewer.js"></script>
+</body>
+</html>

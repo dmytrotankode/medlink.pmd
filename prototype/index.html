@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedLink PMG Analytics Pro — Система моніторингу, автономного розрахунку тарифів та зв'язку з ЕМЗ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ml-primary: #0e508b;
+      --ml-primary-dark: #0a3a66;
+      --ml-primary-light: #166ba8;
+      --ml-accent: #0086ff;
+      --ml-accent-cyan: #00c0f0;
+      --ml-bg: #f8fafc;
+      --ml-card-bg: #ffffff;
+      --ml-text: #1e293b;
+      --ml-text-muted: #64748b;
+      --ml-border: #e2e8f0;
+      --ml-success: #10b981;
+      --ml-success-light: #ecfdf5;
+      --ml-warning: #f59e0b;
+      --ml-warning-light: #fffbeb;
+      --ml-danger: #ef4444;
+      --ml-danger-light: #fef2f2;
+      --ml-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --ml-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+      --radius: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+    body { background-color: var(--ml-bg); color: var(--ml-text); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* Header */
+    .ml-header {
+      background: linear-gradient(135deg, var(--ml-primary-dark) 0%, var(--ml-primary) 100%);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 3px solid var(--ml-accent);
+      box-shadow: var(--ml-shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .ml-brand { display: flex; align-items: center; gap: 12px; }
+    .ml-logo-box {
+      width: 42px; height: 42px; background: white; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-weight: 800; color: var(--ml-primary); font-size: 1.2rem;
+    }
+    .ml-brand-titles h1 { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+    .ml-brand-titles h1 span.badge-pro {
+      background: var(--ml-accent-cyan); color: #0a3a66; font-size: 0.65rem;
+      padding: 2px 7px; border-radius: 4px; font-weight: 800; text-transform: uppercase;
+    }
+    .ml-brand-titles p { font-size: 0.75rem; color: #cbd5e1; }
+    
+    .ml-header-center { display: flex; align-items: center; gap: 10px; }
+    .hosp-select {
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+      color: white; padding: 7px 12px; border-radius: 8px; font-size: 0.825rem; font-weight: 600;
+      cursor: pointer; outline: none; transition: background 0.2s;
+    }
+    .hosp-select option { background: #0a3a66; color: white; }
+    .hosp-select:hover { background: rgba(255,255,255,0.25); }
+
+    .ml-header-status { display: flex; align-items: center; gap: 15px; font-size: 0.8rem; }
+    .status-badge {
+      display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.12);
+      padding: 6px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2);
+    }
+    .pulse-dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; }
+    .org-info { text-align: right; }
+    .org-info strong { display: block; color: white; font-size: 0.85rem; }
+    .org-info span { color: #94a3b8; font-size: 0.75rem; }
+
+    /* Navigation Bar */
+    .ml-nav {
+      background: white; border-bottom: 1px solid var(--ml-border);
+      padding: 0 1.5rem; display: flex; gap: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .nav-btn {
+      padding: 12px 18px; border: none; background: transparent; font-size: 0.875rem; font-weight: 600;
+      color: var(--ml-text-muted); cursor: pointer; display: flex; align-items: center; gap: 8px;
+      border-bottom: 3px solid transparent; transition: all 0.2s ease;
+    }
+    .nav-btn:hover { color: var(--ml-primary); background: #f8fafc; }
+    .nav-btn.active { color: var(--ml-primary); border-bottom-color: var(--ml-accent); }
+    .nav-btn .pill-counter {
+      background: #e2e8f0; color: #475569; font-size: 0.7rem; padding: 2px 7px;
+      border-radius: 10px; font-weight: 700;
+    }
+    .nav-btn.active .pill-counter { background: var(--ml-accent); color: white; }
+
+    /* Container */
+    .ml-container { max-width: 1560px; margin: 1.5rem auto; padding: 0 1.5rem; flex: 1; width: 100%; }
+
+    /* Top KPI Cards */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .kpi-card {
+      background: white; border-radius: var(--radius); padding: 1.15rem;
+      border: 1px solid var(--ml-border); box-shadow: var(--ml-shadow);
+      display: flex; flex-direction: column; justify-content: space-between; position: relative;
+      overflow: hidden;
+    }
+    .kpi-card::before {
+      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--ml-accent);
+    }
+    .kpi-card.success::before { background: var(--ml-success); }
+    .kpi-card.danger::before { background: var(--ml-danger); }
+    .kpi-card.warning::before { background: var(--ml-warning); }
+    .kpi-card.info::before { background: #3b82f6; }
+    .kpi-label { font-size: 0.725rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ml-text-muted); margin-bottom: 6px; }
+    .kpi-value { font-size: 1.5rem; font-weight: 800; color: var(--ml-text); line-height: 1.1; }
+    .kpi-sub { font-size: 0.725rem; color: var(--ml-text-muted); margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+    .kpi-sub.up { color: var(--ml-success); font-weight: 600; }
+    .kpi-sub.warn { color: var(--ml-danger); font-weight: 600; }
+    .kpi-sub.blue { color: #2563eb; font-weight: 600; }
+
+    /* Content Cards */
+    .content-card {
+      background: white; border-radius: var(--radius); border: 1px solid var(--ml-border);
+      box-shadow: var(--ml-shadow); padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--ml-border);
+    }
+    .card-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--ml-primary); display: flex; align-items: center; gap: 8px; }
+    .card-header p { font-size: 0.8rem; color: var(--ml-text-muted); }
+
+    /* Filters & Controls */
+    .toolbar-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 1rem; align-items: center; }
+    .search-input {
+      padding: 9px 14px; border: 1px solid var(--ml-border); border-radius: 8px; font-size: 0.875rem;
+      min-width: 280px; flex: 1; transition: border-color 0.2s;
+    }
+    .search-input:focus { outline: none; border-color: var(--ml-accent); box-shadow: 0 0 0 3px rgba(0, 134, 255, 0.15); }
+    .select-input {
+      padding: 9px 14px; border: 1px solid var(--ml-border); border-radius: 8px; font-size: 0.875rem;
+      background: white; color: var(--ml-text); cursor: pointer;
+    }
+    .btn {
+      padding: 9px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+      border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;
+    }
+    .btn-primary { background: var(--ml-accent); color: white; }
+    .btn-primary:hover { background: #0070d6; }
+    .btn-outline { background: white; border: 1px solid var(--ml-border); color: var(--ml-text); }
+    .btn-outline:hover { background: #f1f5f9; border-color: #cbd5e1; }
+    .btn-success { background: var(--ml-success); color: white; }
+    .btn-success:hover { background: #059669; }
+
+    /* Data Table */
+    .table-responsive { width: 100%; overflow-x: auto; border: 1px solid var(--ml-border); border-radius: 8px; }
+    .ml-table { width: 100%; border-collapse: collapse; font-size: 0.825rem; text-align: left; }
+    .ml-table th {
+      background: #f8fafc; color: #475569; font-weight: 700; padding: 10px 12px;
+      border-bottom: 2px solid var(--ml-border); white-space: nowrap;
+    }
+    .ml-table td { padding: 9px 12px; border-bottom: 1px solid var(--ml-border); color: var(--ml-text); vertical-align: middle; }
+    .ml-table tr:hover { background-color: #f1f5f9; }
+    .ml-table tr.row-rejected { background-color: #fffafb; }
+    .ml-table tr.row-rejected:hover { background-color: #fee2e2; }
+
+    /* Badges */
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.725rem; font-weight: 700; white-space: nowrap; }
+    .badge-success { background: var(--ml-success-light); color: var(--ml-success); border: 1px solid #a7f3d0; }
+    .badge-info { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .badge-danger { background: var(--ml-danger-light); color: var(--ml-danger); border: 1px solid #fecaca; }
+    .badge-warning { background: var(--ml-warning-light); color: #b45309; border: 1px solid #fde68a; }
+    .badge-gray { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+    .code-tag {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.775rem; background: #f1f5f9;
+      padding: 2px 6px; border-radius: 4px; border: 1px solid #cbd5e1; color: #0f172a;
+    }
+
+    /* Tabs */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center;
+      z-index: 1000; padding: 1rem;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-card {
+      background: white; border-radius: 12px; max-width: 920px; width: 100%;
+      box-shadow: var(--ml-shadow-lg); overflow: hidden; max-height: 92vh; display: flex; flex-direction: column;
+    }
+    .modal-header {
+      background: var(--ml-primary); color: white; padding: 1rem 1.5rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .modal-header h3 { font-size: 1.05rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .modal-close { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+    .modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
+    .modal-footer {
+      padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid var(--ml-border);
+      display: flex; justify-content: flex-end; gap: 10px;
+    }
+
+    .encounter-field { background: #f8fafc; border: 1px solid var(--ml-border); padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; }
+    .encounter-field strong { display: block; color: #64748b; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 2px; }
+    .ai-assist-box {
+      background: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid var(--ml-accent);
+      padding: 12px 14px; border-radius: 8px; margin: 12px 0; font-size: 0.825rem; color: #1e3a8a;
+    }
+    .ai-assist-box h4 { font-size: 0.85rem; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+
+    /* 45 Columns Grid in Details Modal */
+    .cols45-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; font-size: 0.8rem; }
+    .col-item { background: #f8fafc; border: 1px solid var(--ml-border); padding: 8px 10px; border-radius: 6px; }
+    .col-item .c-num { font-size: 0.675rem; font-weight: 700; color: #94a3b8; }
+    .col-item .c-label { font-size: 0.725rem; font-weight: 600; color: #475569; display: block; margin-bottom: 2px; }
+    .col-item .c-val { font-weight: 600; color: #0f172a; word-break: break-word; }
+
+    /* Alert Banner */
+    .banner-legal {
+      background: #fef3c7; border: 1px solid #fde68a; border-left: 5px solid #d97706;
+      padding: 12px 16px; border-radius: 8px; margin-bottom: 1.25rem; font-size: 0.825rem; color: #92400e;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="ml-header">
+    <div class="ml-brand">
+      <div class="ml-logo-box">ML</div>
+      <div class="ml-brand-titles">
+        <h1>MedLink PMG Analytics <span class="badge-pro">PRO 2026</span></h1>
+        <p>Модуль розрахунку тарифів, пре-білінгу та 2-way аудиту звітів НСЗУ</p>
+      </div>
+    </div>
+
+    <!-- Hospital Selector -->
+    <div class="ml-header-center">
+      <label style="font-size:0.75rem; color:#cbd5e1; font-weight:600;">Заклад:</label>
+      <select id="hosp-select" class="hosp-select" onchange="onHospitalChange()">
+        <option value="oco">🏥 КНП "Обласний центр онкології" (5 490 ЕМЗ • Вересень 2026)</option>
+        <option value="dkl">🏥 КНП "ДКЛ Святої Зінаїди" СМР (4 394 ЕМЗ • Серпень 2026)</option>
+      </select>
+    </div>
+
+    <div class="ml-header-status">
+      <div class="status-badge">
+        <span class="pulse-dot"></span>
+        <span id="hosp-edrpou-badge">ЄДРПОУ 40929168 • Підключено</span>
+      </div>
+      <div class="org-info">
+        <strong id="hosp-title-header">КНП "Обласний центр онкології"</strong>
+        <span id="hosp-period-header">Звітний період: Вересень 2026</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sub-Navigation: Direct links to standalone process prototypes -->
+  <div style="background:#f1f5f9; border-bottom:1px solid #cbd5e1; padding:6px 1.5rem; display:flex; gap:8px; align-items:center; font-size:0.75rem; overflow-x:auto;">
+    <strong style="color:#475569; white-space:nowrap;">Окремі прототипи за процесами:</strong>
+    <a href="process_1_prebilling.html" class="code-tag" style="text-decoration:none; color:#0e508b; font-weight:700;">П1: Пре-білінг лікаря ↗</a>
+    <a href="process_2_upload.html" class="code-tag" style="text-decoration:none; color:#0e508b; font-weight:700;">П2: Імпорт звіту НСЗУ ↗</a>
+    <a href="process_3_financial_audit.html" class="code-tag" style="text-decoration:none; color:#0e508b; font-weight:700;">П3: Фінансовий аудит ↗</a>
+    <a href="process_4_discrepancies.html" class="code-tag" style="text-decoration:none; color:#0e508b; font-weight:700;">П4: Журнал розбіжностей ↗</a>
+    <a href="process_5_correction.html" class="code-tag" style="text-decoration:none; color:#0e508b; font-weight:700;">П5: Асистент виправлення ↗</a>
+    <a href="process_6_catalog.html" class="code-tag" style="text-decoration:none; color:#0e508b; font-weight:700;">П6: Довідник нормативів ↗</a>
+  </div>
+
+  <!-- Main Navigation Tabs -->
+  <nav class="ml-nav">
+    <button class="nav-btn active" onclick="switchTab('tab-report', this)" id="btn-tab-report">
+      <span>📊 Процес 3: Звіт НСЗУ (Аудит & Тарифи)</span>
+      <span class="pill-counter" id="pill-report-cnt">0 ЕМЗ</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('tab-upload', this)" id="btn-tab-upload">
+      <span>📥 Процес 2: Імпорт файлу НСЗУ</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('tab-rejected', this)" id="btn-tab-rejected">
+      <span>⚠️ Процес 4: Журнал розбіжностей</span>
+      <span class="pill-counter" id="pill-rejected-cnt" style="background:#ef4444; color:white;">0</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('tab-doctors', this)" id="btn-tab-doctors">
+      <span>👨‍⚕️ Лікарі & Пакети (Лист Звіт)</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('tab-simulator', this)" id="btn-tab-simulator">
+      <span>⚡ Процес 1: Пре-білінг лікаря</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('tab-catalog', this)" id="btn-tab-catalog">
+      <span>📖 Процес 6: Довідник нормативів</span>
+    </button>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="ml-container">
+
+    <!-- Legal Notice -->
+    <div class="banner-legal">
+      <div>
+        <strong>📌 Нормативна база ПМГ-2026 (Постанова КМУ №1808):</strong>
+        У звітах НСЗУ 2026 року колонки вартості повністю відсутні. Модуль здійснює <strong>автономний розрахунок тарифів</strong>
+        за формулами Кабміну та тарифікує як випадки прямої оплати («Так»), так і обсяги глобального бюджету («ГБ»).
+      </div>
+      <button class="btn btn-outline" style="background:white; font-size:0.75rem;" onclick="switchTab('tab-simulator')">
+        Перевірити тарифи →
+      </button>
+    </div>
+
+    <!-- Top KPI Grid -->
+    <div class="kpi-grid">
+      <div class="kpi-card info">
+        <div class="kpi-label">Всього записів у звіті</div>
+        <div class="kpi-value" id="kpi-total-cases">0 ЕМЗ</div>
+        <div class="kpi-sub" id="kpi-total-sub">Повний реєстр вивантаження</div>
+      </div>
+      <div class="kpi-card success">
+        <div class="kpi-label">Прийнято до оплати (Так)</div>
+        <div class="kpi-value" id="kpi-accepted-sum">0 ₴</div>
+        <div class="kpi-sub up" id="kpi-accepted-sub">✓ 0 ЕМЗ</div>
+      </div>
+      <div class="kpi-card info">
+        <div class="kpi-label">Глобальний бюджет (ГБ)</div>
+        <div class="kpi-value" id="kpi-gb-sum">0 ₴</div>
+        <div class="kpi-sub blue" id="kpi-gb-sub">🏢 0 ЕМЗ враховано в кап. ставку</div>
+      </div>
+      <div class="kpi-card danger">
+        <div class="kpi-label">Втрачено через помилки (Ні)</div>
+        <div class="kpi-value" id="kpi-lost-sum">0 ₴</div>
+        <div class="kpi-sub warn" id="kpi-lost-sub">⚠ 0 ЕМЗ з нульовим тарифом</div>
+      </div>
+      <div class="kpi-card warning">
+        <div class="kpi-label">Підлягає відновленню</div>
+        <div class="kpi-value" id="kpi-recoverable-sum">0 ₴</div>
+        <div class="kpi-sub" style="color:#b45309; font-weight:600;">⚡ Рекомендації 2-Way готові</div>
+      </div>
+    </div>
+
+    <!-- ================= TAB 1: REPORT AUDIT ================= -->
+    <section id="tab-report" class="tab-content active">
+      <div class="content-card">
+        <div class="card-header">
+          <div>
+            <h2><span>📋</span> Реєстр електронних медичних записів з автономним розрахунком тарифів</h2>
+            <p>Співставлення даних ЕСОЗ/НСЗУ з номенклатурою ПМГ 2026 та пошук втраченого доходу</p>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button class="btn btn-outline" onclick="exportAnalyzedTable()">📥 Експорт Excel з тарифами</button>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="toolbar-row">
+          <input type="text" id="report-search" class="search-input" placeholder="🔍 Пошук за ID ЕМЗ, лікарем, діагнозом (напр. C18, K80, A67014)..." oninput="filterReportTable()">
+          
+          <select id="report-status-filter" class="select-input" onchange="filterReportTable()">
+            <option value="all">Усі статуси включення</option>
+            <option value="Так">Статус: Так (Оплата за випадок)</option>
+            <option value="ГБ">Статус: ГБ (Глобальний бюджет)</option>
+            <option value="Ні">Статус: Ні (Відхилено НСЗУ)</option>
+          </select>
+
+          <select id="report-pkg-filter" class="select-input" onchange="filterReportTable()">
+            <option value="all">Усі пакети послуг</option>
+          </select>
+        </div>
+
+        <!-- Table -->
+        <div class="table-responsive">
+          <table class="ml-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>ID ЕМЗ</th>
+                <th>Дата</th>
+                <th>Медичний працівник (виконавець)</th>
+                <th>Пакет послуг</th>
+                <th>Основний діагноз</th>
+                <th>АДСГ / Послуга</th>
+                <th>Розрахований тариф</th>
+                <th>Статус НСЗУ</th>
+                <th>Помилки / Коментарі НСЗУ</th>
+                <th>Дії</th>
+              </tr>
+            </thead>
+            <tbody id="report-tbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB: UPLOAD / INGESTION (PROCESS 2) ================= -->
+    <section id="tab-upload" class="tab-content">
+      <div class="content-card">
+        <div class="card-header">
+          <div>
+            <h2><span>📥</span> Процес 2: Завантаження та потоковий парсинг звіту НСЗУ (OpenXML)</h2>
+            <p>Потоковий OpenXML процесор для обробки файлів до 50 000 рядків без блокування пам'яті сервера</p>
+          </div>
+          <a href="process_2_upload.html" class="btn btn-outline" style="font-size:0.75rem;">Відкрити окремий екран П2 ↗</a>
+        </div>
+
+        <div style="border: 2px dashed #93c5fd; background: #f0f7ff; border-radius: 12px; padding: 2.5rem; text-align: center; margin-bottom: 1.5rem;">
+          <div style="font-size: 2.5rem; margin-bottom: 8px;">📊</div>
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: #1e40af; margin-bottom: 4px;">Перетягніть файл звіту НСЗУ (.xlsx) сюди</h3>
+          <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 15px;">або оберіть зі зразків реальних звітів нижче для миттєвої симуляції імпорту</p>
+          <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+            <button class="btn btn-primary" onclick="simulateUploadPortal('oco')">📂 Завантажити зразок: «Вересень 26.xlsx» (КНП "ОЦО", 5 490 ЕМЗ)</button>
+            <button class="btn btn-outline" onclick="simulateUploadPortal('dkl')">📂 Завантажити зразок: «02000334_SF_2026.xlsx» (КНП "ДКЛ Св. Зінаїди", 4 394 ЕМЗ)</button>
+          </div>
+        </div>
+
+        <div id="portal-ingest-card" style="display:none; background:#f8fafc; border:1px solid var(--ml-border); border-radius:10px; padding:1.25rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <strong id="portal-ingest-title" style="color:var(--ml-primary); font-size:0.95rem;">Обробка...</strong>
+            <span id="portal-ingest-badge" class="badge badge-info">Обробка</span>
+          </div>
+          <div style="width:100%; height:8px; background:#e2e8f0; border-radius:4px; overflow:hidden; margin-bottom:15px;">
+            <div id="portal-ingest-bar" style="width:0%; height:100%; background:var(--ml-accent); transition:width 0.4s ease;"></div>
+          </div>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; font-size:0.8rem; margin-bottom:15px;">
+            <div class="encounter-field"><strong>1. Аркуші файлу:</strong><span id="p-s1" style="color:#059669; font-weight:700;">Очікування...</span></div>
+            <div class="encounter-field"><strong>2. 45 Колонок:</strong><span id="p-s2" style="color:#059669; font-weight:700;">Очікування...</span></div>
+            <div class="encounter-field"><strong>3. Тарифікація ПМГ:</strong><span id="p-s3" style="color:#059669; font-weight:700;">Очікування...</span></div>
+            <div class="encounter-field"><strong>4. 2-Way звірка:</strong><span id="p-s4" style="color:#059669; font-weight:700;">Очікування...</span></div>
+          </div>
+          <div id="portal-ingest-res" style="display:none; background:#ecfdf5; border:1px solid #a7f3d0; border-radius:8px; padding:12px; font-size:0.85rem; color:#065f46;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <div>✓ <strong>Звіт успішно імпортовано та тарифіковано!</strong> Оброблено <span id="p-rows" style="font-weight:700;">5 490</span> записів. Виявлено втрат на <span id="p-lost" style="font-weight:700; color:#dc2626;">4 974 842 ₴</span>.</div>
+              <div style="display:flex; gap:8px;">
+                <button class="btn btn-success" style="font-size:0.8rem;" onclick="switchTab('tab-report', document.getElementById('btn-tab-report'))">Перейти до фінансового аудиту (Процес 3) →</button>
+                <button class="btn btn-outline" style="font-size:0.8rem; color:#b91c1c; border-color:#fca5a5;" onclick="switchTab('tab-rejected', document.getElementById('btn-tab-rejected'))">Журнал помилок (Процес 4) →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 2: REJECTED / DISCREPANCIES ================= -->
+    <section id="tab-rejected" class="tab-content">
+      <div class="content-card">
+        <div class="card-header">
+          <div>
+            <h2 style="color:var(--ml-danger);"><span>⚠️</span> Журнал відхилених записів та конфліктів групування (Lost Revenue)</h2>
+            <p>Записи зі статусом «Ні» або наявністю блокуючих помилок у колонках 39–44. Натисніть «⚡ Відкрити в Медлінку» для автокоригування.</p>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="ml-table">
+            <thead>
+              <tr>
+                <th>ID ЕМЗ</th>
+                <th>Пацієнт / Вік</th>
+                <th>Лікар (виконавець)</th>
+                <th>Клінічне кодування (Діагноз / Інтервенція)</th>
+                <th>Причина відхилення НСЗУ (Кол. 39–42)</th>
+                <th>Втрачений дохід</th>
+                <th>2-Way зв'язок з Медлінком</th>
+              </tr>
+            </thead>
+            <tbody id="rejected-tbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 3: DOCTORS SUMMARY ================= -->
+    <section id="tab-doctors" class="tab-content">
+      <div class="content-card">
+        <div class="card-header">
+          <div>
+            <h2><span>👨‍⚕️</span> Звіт у розрізі лікарів та відділень (Аналог листа «Звіт» НСЗУ)</h2>
+            <p>Статистика обсягу наданих послуг, коефіцієнт відхилень та сума згенерованого доходу за кожним лікарем</p>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="ml-table">
+            <thead>
+              <tr>
+                <th>ПІБ Лікаря</th>
+                <th>Посада</th>
+                <th>Всього ЕМЗ</th>
+                <th>Прийнято (Так/ГБ)</th>
+                <th>Відхилено (Ні)</th>
+                <th>% Помилок</th>
+                <th>Згенерований дохід (розрахунковий)</th>
+                <th>Втрачено через помилки</th>
+              </tr>
+            </thead>
+            <tbody id="doctors-tbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 4: PRE-BILLING SIMULATOR ================= -->
+    <section id="tab-simulator" class="tab-content">
+      <div class="content-card">
+        <div class="card-header">
+          <div>
+            <h2><span>⚡</span> Інтерактивний пре-білінг симулятор тарифів ПМГ-2026</h2>
+            <p>Онлайн-розрахунок очікуваної ДСГ та тарифу в момент заповнення взаємодії лікарем (до накладання КЕП)</p>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1.3fr; gap: 25px;">
+          <!-- Left Input Form -->
+          <div>
+            <div style="margin-bottom:12px;">
+              <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Пакет медичних послуг:</label>
+              <select id="sim-package" class="select-input" style="width:100%;" onchange="runSimulation()">
+                <option value="3">Пакет 3: Стаціонарна допомога без операцій (терапія)</option>
+                <option value="4" selected>Пакет 4: Хірургічні операції у стаціонарі</option>
+                <option value="47">Пакет 47: Хірургічні операції одного дня</option>
+                <option value="9">Пакет 9: Амбулаторна допомога (консультації/діагностика)</option>
+                <option value="17">Пакет 17: Хіміотерапевтичне лікування онкозахворювань</option>
+                <option value="18">Пакет 18: Радіологічне лікування онкозахворювань</option>
+                <option value="54">Пакет 54: Реабілітаційна допомога в амбулаторних умовах</option>
+              </select>
+            </div>
+
+            <div style="margin-bottom:12px;">
+              <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Основний діагноз (МКХ-10):</label>
+              <input type="text" id="sim-diag" class="search-input" style="width:100%;" value="C18.0" placeholder="Напр. C18.0, K35.8, I21.0..." oninput="runSimulation()">
+              <small style="color:#64748b; font-size:0.75rem;">Введіть код МКХ-10 для автоматичного співставлення з ДСГ</small>
+            </div>
+
+            <div style="margin-bottom:12px;">
+              <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Код інтервенції / послуги (АКПІ):</label>
+              <input type="text" id="sim-svc" class="search-input" style="width:100%;" value="30061-02" placeholder="Напр. 30061-02, 30473-00..." oninput="runSimulation()">
+              <small style="color:#64748b; font-size:0.75rem;">Обов'язково для хірургічних та онкологічних пакетів</small>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:12px;">
+              <div>
+                <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Вік пацієнта:</label>
+                <input type="number" id="sim-age" class="search-input" style="width:100%;" value="58" oninput="runSimulation()">
+              </div>
+              <div>
+                <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:4px;">Гірський коефіцієнт:</label>
+                <select id="sim-mountain" class="select-input" style="width:100%;" onchange="runSimulation()">
+                  <option value="1.0">1.00 (Звичайний заклад)</option>
+                  <option value="1.25">1.25 (Гірська місцевість)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Calculation Card -->
+          <div style="background:#f8fafc; border:2px solid #cbd5e1; border-radius:12px; padding:1.5rem; display:flex; flex-direction:column; justify-content:space-between;">
+            <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; border-bottom:1px solid #cbd5e1; padding-bottom:10px;">
+                <h3 style="font-size:1rem; font-weight:800; color:var(--ml-primary);">Результат пре-білінгу ПМГ 2026</h3>
+                <span class="badge badge-success" id="sim-badge-status">Валідацію пройдено</span>
+              </div>
+
+              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; font-size:0.85rem; margin-bottom:15px;">
+                <div class="encounter-field">
+                  <strong>Визначена ДСГ / Клас:</strong>
+                  <span id="sim-res-dsg" style="font-weight:700; color:var(--ml-primary);">G01</span>
+                </div>
+                <div class="encounter-field">
+                  <strong>Коефіцієнт складності:</strong>
+                  <span id="sim-res-coeff" style="font-weight:700;">5.070</span>
+                </div>
+                <div class="encounter-field">
+                  <strong>Базова ставка (Постанова КМУ):</strong>
+                  <span id="sim-res-base">8 735.00 ₴</span>
+                </div>
+                <div class="encounter-field">
+                  <strong>Коригувальний коефіцієнт:</strong>
+                  <span id="sim-res-extra-k">0.55</span>
+                </div>
+              </div>
+
+              <div class="encounter-field" style="margin-bottom:15px;">
+                <strong>Найменування групи / класифікатора:</strong>
+                <span id="sim-res-dsg-name">Резекція прямої кишки та складні втручання на ободовій кишці</span>
+              </div>
+
+              <div class="ai-assist-box">
+                <h4><span>💡</span> Контроль вимог НСЗУ</h4>
+                <p id="sim-compliance-text">Кодування коректне. Інтервенція 30061-02 відповідає основному діагнозу C18.0. Ризик відхилення 0%.</p>
+              </div>
+            </div>
+
+            <div style="background:white; border:2px solid #86efac; border-radius:10px; padding:15px; display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+              <div>
+                <span style="font-size:0.8rem; font-weight:700; color:#15803d; text-transform:uppercase;">Розрахована сума до виплати:</span>
+                <div id="sim-res-total" style="font-size:1.85rem; font-weight:800; color:#15803d; line-height:1.1;">24 357.55 ₴</div>
+              </div>
+              <button class="btn btn-success" onclick="alert('✅ Тариф зафіксовано в МІС Медлінк для поточної взаємодії!')">
+                Зберегти в картці ЕМЗ
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 5: CATALOG & TARIFFS ================= -->
+    <section id="tab-catalog" class="tab-content">
+      <div class="content-card">
+        <div class="card-header">
+          <div>
+            <h2><span>📖</span> Довідник ДСГ, амбулаторних класів та тарифів ПМГ-2026</h2>
+            <p>База даних нормативів, витягнута зі структури info-pmg.com (Постанова КМУ №1808, Додатки 1 та 2)</p>
+          </div>
+        </div>
+
+        <div class="toolbar-row">
+          <input type="text" id="cat-search" class="search-input" placeholder="🔍 Пошук ДСГ за назвою, кодом діагнозу або послуги..." oninput="filterCatalog()">
+          <select id="cat-pkg" class="select-input" onchange="filterCatalog()">
+            <option value="3">Пакет 3 (Терапевтичний стаціонар — 201 ДСГ)</option>
+            <option value="4">Пакет 4 (Хірургічний стаціонар — 190 ДСГ)</option>
+            <option value="47">Пакет 47 (Хірургія 1 дня — 74 ДСГ)</option>
+            <option value="9">Пакет 9 (Амбулаторні класи — 148 класів)</option>
+            <option value="54">Пакет 54 (Реабілітаційні нормативи)</option>
+          </select>
+        </div>
+
+        <div class="table-responsive">
+          <table class="ml-table">
+            <thead>
+              <tr>
+                <th>Код / Група</th>
+                <th>Найменування ДСГ / Класу</th>
+                <th>Коефіцієнт</th>
+                <th>Базова ставка</th>
+                <th>Розрахункова вартість</th>
+                <th>Діагнозів у групі</th>
+                <th>Послуг у групі</th>
+                <th>Додаткові вимоги / Виключення</th>
+              </tr>
+            </thead>
+            <tbody id="catalog-tbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= MODAL: 2-WAY CORRECTION ================= -->
+  <div id="encounterModal" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Взаємодія в Медлінку — ЕМЗ #<span id="m-emz-id-short"></span></h3>
+        <button class="modal-close" onclick="closeEncounterModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+          <div class="encounter-field">
+            <strong>Пацієнт:</strong> <span id="m-patient-name">Іванов І.І.</span> (<span id="m-patient-code">P-125601</span>)
+          </div>
+          <div class="encounter-field">
+            <strong>Лікар (виконавець):</strong> <span id="m-doc-name">Калапуц Ірина Василівна</span>
+          </div>
+          <div class="encounter-field">
+            <strong>Дата взаємодії:</strong> <span id="m-date">01.08.2026</span>
+          </div>
+          <div class="encounter-field">
+            <strong>Спеціальність лікаря:</strong> <span id="m-doc-pos">Лікар-онколог</span>
+          </div>
+        </div>
+
+        <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:12px; margin-bottom:15px;">
+          <h4 style="color:#b91c1c; font-size:0.875rem; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+            <span>❌</span> Відхилення за звітом НСЗУ
+          </h4>
+          <p id="m-error-text" style="font-size:0.825rem; color:#7f1d1d;"></p>
+          <div id="m-error-def" style="margin-top:6px; font-size:0.75rem; color:#991b1b; font-style:italic;"></div>
+        </div>
+
+        <div class="ai-assist-box">
+          <h4><span>💡</span> Рекомендація аналітичного модуля Медлінка</h4>
+          <p id="m-ai-recommendation"></p>
+        </div>
+
+        <div style="margin-top:15px;">
+          <label style="font-size:0.8rem; font-weight:700; color:#334155; display:block; margin-bottom:6px;">Коригування кодування взаємодії:</label>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div>
+              <span style="font-size:0.75rem; color:#64748b;">Основний діагноз (МКХ-10):</span>
+              <input type="text" id="m-input-diag" class="search-input" style="width:100%; font-weight:600;">
+            </div>
+            <div>
+              <span style="font-size:0.75rem; color:#64748b;">Послуга АКПІ / Інтервенція:</span>
+              <input type="text" id="m-input-svc" class="search-input" style="width:100%; font-weight:600;">
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:15px; padding:12px; background:#f0fdf4; border-radius:8px; border:1px solid #bbf7d0; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <span style="font-size:0.8rem; color:#166534; font-weight:600;">Відновлена сума після виправлення:</span>
+            <div id="m-recovered-calc" style="font-size:1.25rem; font-weight:800; color:#15803d;">+24 357.55 ₴</div>
+          </div>
+          <span class="badge badge-success" id="m-recovered-badge">ДСГ буде зараховано</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeEncounterModal()">Скасувати</button>
+        <button class="btn btn-success" onclick="applyCorrection()">💾 Застосувати виправлення та оновити в Медлінку</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= MODAL: 45 COLUMNS FULL INSPECT ================= -->
+  <div id="detailsModal" class="modal-overlay">
+    <div class="modal-card" style="max-width:1100px;">
+      <div class="modal-header">
+        <h3>Повний реєстр 45 колонок офіційного звіту НСЗУ — ЕМЗ #<span id="col45-emz-id"></span></h3>
+        <button class="modal-close" onclick="closeDetailsModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="cols45-grid" id="col45-container">
+          <!-- 45 columns rendered dynamically -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeDetailsModal()">Закрити</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script>
+    // Tab switching
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(tabId);
+      if (target) target.classList.add('active');
+      const button = btn || document.getElementById('btn-' + tabId);
+      if (button) button.classList.add('active');
+      if (tabId === 'tab-catalog') filterCatalog();
+      if (tabId === 'tab-doctors') renderDoctorsTable();
+    }
+
+    const data = window.PROTOTYPE_DATA || {};
+    let currentHospKey = 'oco';
+    let currentHosp = data.hospitals?.oco || {};
+    let reportList = currentHosp.records || [];
+    let currentModalRecord = null;
+
+    const COL_NAMES_45 = [
+      "Звітний рік", "Звітний місяць", "Тип ЕМЗ", "ID ЕМЗ", "Внесено до ЕСОЗ",
+      "Посада медпрацівника", "Медичний працівник", "Місце надання послуг", "Тип направлення", "Код ЄДРПОУ направлення",
+      "Посада лікаря направлення", "ID епізоду", "Тип епізоду", "Початок епізоду / госпіталізації", "Початок періоду / забору",
+      "Кінець періоду / виписки", "Тривалість лікування (дні)", "Основний діагноз", "Статус достовірності осн. діагнозу", "Клінічний статус осн. діагнозу",
+      "Додаткові/супутні діагнози", "Спростовані та помилкові діагнози", "Перелік інтервенцій (АКПІ)", "Клас взаємодії", "Приорітет",
+      "Тип взаємодії", "Підстава госпіталізації", "Результат виписки", "Унікальний код пацієнта", "Наявність декларації",
+      "Стать", "Вік пацієнта", "Додаткова інформація з ЕМЗ", "АДСГ", "Пакет послуг",
+      "Номер послуги", "Включення до статистики", "Включення до звіту", "Коментар щодо помилок", "Деталі критеріїв повноти",
+      "Деталі невідповідностей верифікації", "Деталі помилок групування", "Деталі перегляду НСЗУ", "Додаткові коментарі", "Дата перегляду НСЗУ"
+    ];
+
+    function onHospitalChange() {
+      currentHospKey = document.getElementById('hosp-select').value;
+      currentHosp = data.hospitals[currentHospKey];
+      reportList = currentHosp.records || [];
+
+      // Update Header info
+      document.getElementById('hosp-edrpou-badge').textContent = `ЄДРПОУ ${currentHosp.edrpou} • Підключено`;
+      document.getElementById('hosp-title-header').textContent = currentHosp.name;
+      document.getElementById('hosp-period-header').textContent = `Звітний період: ${currentHosp.period}`;
+
+      populatePackageFilter();
+      renderReportTable();
+      renderRejectedTable();
+      renderDoctorsTable();
+      updateKpis();
+    }
+
+    function populatePackageFilter() {
+      const select = document.getElementById('report-pkg-filter');
+      select.innerHTML = '<option value="all">Усі пакети послуг</option>';
+      const pkgs = new Set();
+      reportList.forEach(r => { if (r.package && r.package !== '-') pkgs.add(r.package); });
+      Array.from(pkgs).sort().forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p;
+        opt.textContent = `Пакет ${p}`;
+        select.appendChild(opt);
+      });
+    }
+
+    function calculateRowTariff(r) {
+      const p = String(r.package || '');
+      if (p.startsWith('3') || p.startsWith('4') || p.startsWith('47')) {
+        const base = 8735.0;
+        let coeff = 1.65;
+        if (r.diag_main.includes('C') || r.diag_main.includes('D')) coeff = 2.856;
+        else if (r.diag_main.includes('I')) coeff = 3.15;
+        else if (r.diag_main.includes('K')) coeff = 2.78;
+        const extraK = p.startsWith('47') ? 0.60 : 0.55;
+        return (base * coeff * extraK).toFixed(2);
+      } else if (p.startsWith('9')) {
+        return (155.0 * 1.29).toFixed(2);
+      } else if (p.startsWith('17') || p.startsWith('38')) {
+        return (17865.0).toFixed(2); // Chemotherapy / Onco-hematology
+      } else if (p.startsWith('18')) {
+        return (54089.0).toFixed(2); // Radiology
+      } else if (p.startsWith('10')) {
+        return (512.0).toFixed(2); // Mammography
+      } else if (p.startsWith('12') || p.startsWith('13') || p.startsWith('15')) {
+        return (1180.0).toFixed(2); // Endoscopy
+      } else if (p.startsWith('54') || p.startsWith('53')) {
+        return (10820.0).toFixed(2); // Rehab
+      } else if (p.startsWith('25')) {
+        return (16359.0).toFixed(2); // Neonatal rehab
+      } else if (p.startsWith('34')) {
+        return (155.0).toFixed(2); // Stomatology
+      } else {
+        return (2450.0).toFixed(2);
+      }
+    }
+
+    function updateKpis() {
+      const stats = currentHosp.stats || {};
+      const totalRows = stats.total || reportList.length;
+      
+      let acceptedSum = 0;
+      let gbSum = 0;
+      let lostSum = 0;
+      let takCount = 0;
+      let gbCount = 0;
+      let niCount = 0;
+
+      reportList.forEach(r => {
+        const t = parseFloat(calculateRowTariff(r));
+        if (r.included === 'Так') {
+          acceptedSum += t;
+          takCount++;
+        } else if (r.included === 'ГБ') {
+          gbSum += t;
+          gbCount++;
+        } else {
+          lostSum += t;
+          niCount++;
+        }
+      });
+
+      // Extrapolate to full hospital volume if sampling
+      const ratio = totalRows / (reportList.length || 1);
+      const estAcceptedTotal = acceptedSum * ratio;
+      const estGbTotal = gbSum * ratio;
+      const estLostTotal = lostSum * ratio;
+
+      document.getElementById('kpi-total-cases').textContent = `${totalRows.toLocaleString('uk-UA')} ЕМЗ`;
+      document.getElementById('kpi-total-sub').textContent = `${currentHosp.filename} (${currentHosp.period})`;
+
+      document.getElementById('kpi-accepted-sum').textContent = `${Math.round(estAcceptedTotal).toLocaleString('uk-UA')} ₴`;
+      document.getElementById('kpi-accepted-sub').textContent = `✓ ${stats.tak || takCount} ЕМЗ прямої оплати`;
+
+      document.getElementById('kpi-gb-sum').textContent = `${Math.round(estGbTotal).toLocaleString('uk-UA')} ₴`;
+      document.getElementById('kpi-gb-sub').textContent = `🏢 ${stats.gb || gbCount} ЕМЗ глобального бюджету`;
+
+      document.getElementById('kpi-lost-sum').textContent = `${Math.round(estLostTotal).toLocaleString('uk-UA')} ₴`;
+      document.getElementById('kpi-lost-sub').textContent = `⚠ ${stats.ni || niCount} ЕМЗ відхилено (0 ₴)`;
+
+      document.getElementById('kpi-recoverable-sum').textContent = `${Math.round(estLostTotal * 0.76).toLocaleString('uk-UA')} ₴`;
+
+      document.getElementById('pill-report-cnt').textContent = `${totalRows} ЕМЗ`;
+      document.getElementById('pill-rejected-cnt').textContent = `${stats.ni || niCount} помилок`;
+    }
+
+    function renderReportTable() {
+      const tbody = document.getElementById('report-tbody');
+      tbody.innerHTML = '';
+
+      const term = (document.getElementById('report-search')?.value || '').toLowerCase();
+      const statusFilter = document.getElementById('report-status-filter')?.value || 'all';
+      const pkgFilter = document.getElementById('report-pkg-filter')?.value || 'all';
+
+      const filtered = reportList.filter(r => {
+        if (statusFilter !== 'all' && r.included !== statusFilter) return false;
+        if (pkgFilter !== 'all' && !String(r.package).includes(pkgFilter)) return false;
+        if (term) {
+          const hay = `${r.emz_id} ${r.doc_name} ${r.diag_main} ${r.services} ${r.patient_id}`.toLowerCase();
+          if (!hay.includes(term)) return false;
+        }
+        return true;
+      });
+
+      filtered.forEach((r, idx) => {
+        const tariff = calculateRowTariff(r);
+        const tr = document.createElement('tr');
+        if (r.included === 'Ні') tr.className = 'row-rejected';
+
+        let statusBadge = '';
+        if (r.included === 'Так') {
+          statusBadge = '<span class="badge badge-success">Так (Оплата)</span>';
+        } else if (r.included === 'ГБ') {
+          statusBadge = '<span class="badge badge-info">ГБ (Глоб. бюджет)</span>';
+        } else {
+          statusBadge = '<span class="badge badge-danger">Ні (Відхилено)</span>';
+        }
+
+        const errText = r.error_comment || r.error_mismatches || r.error_details || r.error_grouping || '—';
+
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td><span class="code-tag" title="${r.emz_id}" style="cursor:pointer;" onclick="openDetailsModal(${r.id})">${r.emz_id.slice(0, 8)}...</span></td>
+          <td>${r.date || '—'}</td>
+          <td><strong>${r.doc_name || 'Не вказано'}</strong><br><small style="color:#64748b;">${r.doc_pos}</small></td>
+          <td><span class="badge badge-gray">${r.package ? r.package.slice(0, 24) : '—'}</span></td>
+          <td><span class="code-tag">${r.diag_main ? r.diag_main.slice(0, 28) : '—'}</span></td>
+          <td>${r.adsg && r.adsg !== '-' ? `<span class="code-tag" style="background:#fef3c7;">${r.adsg}</span>` : (r.services ? `<small>${r.services.slice(0, 25)}</small>` : '—')}</td>
+          <td><strong style="color:${r.included === 'Ні' ? '#b91c1c' : '#15803d'}">${parseFloat(tariff).toLocaleString('uk-UA')} ₴</strong></td>
+          <td>${statusBadge}</td>
+          <td style="max-width:220px; font-size:0.75rem; color:${r.included === 'Ні' ? '#991b1b' : '#64748b'};">${errText}</td>
+          <td>
+            <div style="display:flex; gap:4px;">
+              <button class="btn btn-outline" style="padding:3px 7px; font-size:0.7rem;" onclick="openDetailsModal(${r.id})" title="Всі 45 колонок">📋</button>
+              ${r.included === 'Ні' ? `<button class="btn btn-primary" style="padding:3px 8px; font-size:0.7rem;" onclick="openEncounterModal(${r.id})">⚡ Виправити</button>` : ''}
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderRejectedTable() {
+      const tbody = document.getElementById('rejected-tbody');
+      tbody.innerHTML = '';
+
+      const rejected = reportList.filter(r => r.included === 'Ні');
+      rejected.forEach(r => {
+        const tariff = calculateRowTariff(r);
+        const tr = document.createElement('tr');
+        tr.className = 'row-rejected';
+
+        const errReason = r.error_comment || r.error_mismatches || r.error_details || 'Не відповідає критеріям пакета або відсутня обов’язкова інтервенція';
+
+        tr.innerHTML = `
+          <td><span class="code-tag" onclick="openDetailsModal(${r.id})" style="cursor:pointer;">${r.emz_id.slice(0, 13)}...</span></td>
+          <td>Пацієнт #${r.patient_id.slice(0, 8)}...<br><small style="color:#64748b;">Вік: ${r.age} р. • Стать: ${r.gender || 'Ж'}</small></td>
+          <td><strong>${r.doc_name}</strong><br><small style="color:#64748b;">${r.doc_pos}</small></td>
+          <td>
+            <span class="code-tag">${r.diag_main ? r.diag_main.slice(0, 30) : '—'}</span><br>
+            ${r.services ? `<span class="code-tag" style="background:#e0f2fe; margin-top:2px;">${r.services.slice(0, 30)}</span>` : '<small style="color:#dc2626;">Без інтервенції</small>'}
+          </td>
+          <td style="max-width:320px; font-size:0.775rem; color:#7f1d1d; font-weight:600;">
+            ${errReason}
+            ${r.extra_notes ? `<br><small style="color:#b45309; font-weight:400;">${r.extra_notes.slice(0, 60)}</small>` : ''}
+          </td>
+          <td><strong style="color:#dc2626; font-size:0.95rem;">-${parseFloat(tariff).toLocaleString('uk-UA')} ₴</strong></td>
+          <td>
+            <button class="btn btn-primary" style="padding:6px 12px; font-size:0.75rem;" onclick="openEncounterModal(${r.id})">
+              ⚡ Відкрити в Медлінку
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderDoctorsTable() {
+      const tbody = document.getElementById('doctors-tbody');
+      tbody.innerHTML = '';
+
+      const docMap = {};
+      reportList.forEach(r => {
+        const name = r.doc_name || 'Невідомий лікар';
+        if (!docMap[name]) {
+          docMap[name] = { name: name, pos: r.doc_pos, total: 0, tak: 0, gb: 0, ni: 0, rev: 0, lost: 0 };
+        }
+        const t = parseFloat(calculateRowTariff(r));
+        docMap[name].total++;
+        if (r.included === 'Так') {
+          docMap[name].tak++;
+          docMap[name].rev += t;
+        } else if (r.included === 'ГБ') {
+          docMap[name].gb++;
+          docMap[name].rev += t;
+        } else {
+          docMap[name].ni++;
+          docMap[name].lost += t;
+        }
+      });
+
+      const docs = Object.values(docMap).sort((a,b) => b.total - a.total);
+      docs.slice(0, 40).forEach(d => {
+        const errPct = d.total ? ((d.ni / d.total) * 100).toFixed(1) : '0';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${d.name}</strong></td>
+          <td><small style="color:#64748b;">${d.pos || '—'}</small></td>
+          <td><strong>${d.total}</strong></td>
+          <td><span class="badge badge-success">${d.tak + d.gb}</span></td>
+          <td><span class="badge ${d.ni > 0 ? 'badge-danger' : 'badge-gray'}">${d.ni}</span></td>
+          <td><strong style="color:${parseFloat(errPct) > 10 ? '#dc2626' : '#15803d'}">${errPct}%</strong></td>
+          <td><strong style="color:#15803d;">${d.rev.toLocaleString('uk-UA')} ₴</strong></td>
+          <td><strong style="color:${d.lost > 0 ? '#dc2626' : '#94a3b8'};">${d.lost > 0 ? '-' + d.lost.toLocaleString('uk-UA') + ' ₴' : '0 ₴'}</strong></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filterReportTable() {
+      renderReportTable();
+    }
+
+    // Modal 2-Way
+    function openEncounterModal(recordId) {
+      const rec = reportList.find(x => x.id === recordId);
+      if (!rec) return;
+      currentModalRecord = rec;
+
+      document.getElementById('m-emz-id-short').textContent = rec.emz_id.slice(0, 13);
+      document.getElementById('m-patient-code').textContent = rec.patient_id.slice(0, 12);
+      document.getElementById('m-doc-name').textContent = rec.doc_name;
+      document.getElementById('m-doc-pos').textContent = rec.doc_pos;
+      document.getElementById('m-date').textContent = rec.date;
+      
+      const errTxt = rec.error_comment || rec.error_mismatches || rec.error_details || 'Не відповідає жодному пакету/послузі';
+      document.getElementById('m-error-text').textContent = errTxt;
+
+      // Official NHSU definition
+      const def = data.error_dictionary?.[errTxt] || '';
+      document.getElementById('m-error-def').textContent = def ? `Офіційне визначення НСЗУ: ${def}` : '';
+
+      document.getElementById('m-input-diag').value = rec.diag_main || 'C18.0';
+      document.getElementById('m-input-svc').value = rec.services || '30061-02';
+
+      // Smart AI suggestion
+      let suggestion = '';
+      if (errTxt.includes('МВТН')) {
+        suggestion = `ЕМЗ створено для МВТН без клінічної виписки. Змініть тип взаємодії на «Виписка пацієнта, який вибув зі стаціонару» або додайте основну процедуру лікування.`;
+      } else if (errTxt.includes('жодному пакету')) {
+        suggestion = `Для основного діагнозу <strong>${rec.diag_main}</strong> спеціальність лікаря (${rec.doc_pos}) або відсутність АКПІ заблокували тарифікацію. Додайте обов'язкову процедуру АКПІ <code>30061-02</code> для включення до ДСГ G01.`;
+      } else if (errTxt.includes('Перекриття')) {
+        suggestion = `Виявлено часовий конфлікт із іншим ЕМЗ пацієнта. Перевірте час надання допомоги (колонка 14 і 16) та об'єднайте послуги в один епізод.`;
+      } else {
+        suggestion = `Рекомендується верифікувати код діагнозу відповідно до специфікацій ПМГ 2026 та підтвердити запис новим КЕП.`;
+      }
+      document.getElementById('m-ai-recommendation').innerHTML = suggestion;
+
+      document.getElementById('encounterModal').classList.add('active');
+    }
+
+    function closeEncounterModal() {
+      document.getElementById('encounterModal').classList.remove('active');
+    }
+
+    function applyCorrection() {
+      if (!currentModalRecord) return;
+      currentModalRecord.included = 'Так';
+      currentModalRecord.diag_main = document.getElementById('m-input-diag').value;
+      currentModalRecord.services = document.getElementById('m-input-svc').value;
+      currentModalRecord.error_comment = '';
+      currentModalRecord.error_details = '';
+      currentModalRecord.error_mismatches = '';
+
+      alert(`✅ Взаємодію ${currentModalRecord.emz_id.slice(0, 8)} успішно скориговано в МІС Медлінк!\nТариф оновлено на повну вартість ДСГ. Запис включено до реєстру виправлень для повторної синхронізації з eHealth.`);
+
+      closeEncounterModal();
+      renderReportTable();
+      renderRejectedTable();
+      renderDoctorsTable();
+      updateKpis();
+    }
+
+    // Modal 45 Columns
+    function openDetailsModal(recordId) {
+      const rec = reportList.find(x => x.id === recordId);
+      if (!rec) return;
+
+      document.getElementById('col45-emz-id').textContent = rec.emz_id;
+      const container = document.getElementById('col45-container');
+      container.innerHTML = '';
+
+      const values = [
+        "2026", "8 або 9", rec.emz_type, rec.emz_id, rec.date,
+        rec.doc_pos, rec.doc_name, rec.dept, rec.ref_type, rec.ref_edrpou,
+        rec.ref_doc_pos, rec.episode_id, rec.episode_type, rec.start_date, rec.start_date,
+        rec.end_date, rec.los, rec.diag_main, rec.diag_conf, rec.diag_clin,
+        rec.diag_extra, "-", rec.services, rec.interaction_class, rec.priority,
+        rec.interaction_type, rec.admission_reason, rec.discharge_outcome, rec.patient_id, rec.has_decl,
+        rec.gender, rec.age, "-", rec.adsg, rec.package,
+        rec.service_code, rec.stat_included, rec.included, rec.error_comment, rec.error_details,
+        rec.error_mismatches, rec.error_grouping, rec.nszu_review_details, rec.extra_notes, "2026-09-21"
+      ];
+
+      COL_NAMES_45.forEach((colName, idx) => {
+        const item = document.createElement('div');
+        item.className = 'col-item';
+        const val = values[idx] || '—';
+        item.innerHTML = `
+          <div class="c-num">Колонка ${idx + 1}</div>
+          <span class="c-label">${colName}</span>
+          <div class="c-val">${val}</div>
+        `;
+        container.appendChild(item);
+      });
+
+      document.getElementById('detailsModal').classList.add('active');
+    }
+
+    function closeDetailsModal() {
+      document.getElementById('detailsModal').classList.remove('active');
+    }
+
+    // Simulation logic
+    function runSimulation() {
+      const pkg = document.getElementById('sim-package').value;
+      const diag = (document.getElementById('sim-diag').value || '').trim();
+      const svc = (document.getElementById('sim-svc').value || '').trim();
+      const mountain = parseFloat(document.getElementById('sim-mountain').value || 1.0);
+
+      let dsgCode = "—";
+      let dsgName = "Не визначено";
+      let coeff = 1.0;
+      let baseRate = 8735.0;
+      let extraK = 0.55;
+      let total = 0;
+      let compliance = "Всі вимоги виконано";
+
+      if (pkg === '3' || pkg === '4' || pkg === '47') {
+        baseRate = 8735.0;
+        extraK = pkg === '47' ? 0.60 : 0.55;
+        if (diag.toUpperCase().startsWith('I21')) {
+          dsgCode = "F03";
+          dsgName = "Операції на клапанах серця та судинах";
+          coeff = 11.005;
+        } else if (diag.toUpperCase().startsWith('K35')) {
+          dsgCode = "G02";
+          dsgName = "Складні операції на тонкому і товстому кишечнику";
+          coeff = 4.937;
+        } else if (diag.toUpperCase().startsWith('C')) {
+          dsgCode = "G01";
+          dsgName = "Резекція прямої кишки та онкохірургічні втручання";
+          coeff = 5.070;
+        } else {
+          dsgCode = "E01";
+          dsgName = "Загальносоматична стаціонарна допомога";
+          coeff = 1.45;
+        }
+        total = baseRate * coeff * extraK * mountain;
+      } else if (pkg === '9') {
+        baseRate = 155.0;
+        coeff = 1.29;
+        extraK = 1.0;
+        dsgCode = "Клас 1";
+        dsgName = "Консультування та діагностика (Кардіологія)";
+        total = baseRate * coeff * mountain;
+      } else if (pkg === '17') {
+        baseRate = 17865.0;
+        coeff = 1.0;
+        extraK = 1.0;
+        dsgCode = "Пакет 17";
+        dsgName = "Хіміотерапевтичне лікування (дорослі)";
+        total = baseRate * mountain;
+      } else if (pkg === '18') {
+        baseRate = 54089.0;
+        coeff = 1.0;
+        extraK = 1.0;
+        dsgCode = "Пакет 18";
+        dsgName = "Радіологічне лікування онкологічних хворих";
+        total = baseRate * mountain;
+      } else if (pkg === '54') {
+        baseRate = 10820.0;
+        coeff = 1.0;
+        extraK = 1.0;
+        dsgCode = "АР1, АР2";
+        dsgName = "Комплексна амбулаторна реабілітація (цикл)";
+        total = baseRate * mountain;
+      }
+
+      document.getElementById('sim-res-dsg').textContent = dsgCode;
+      document.getElementById('sim-res-dsg-name').textContent = dsgName;
+      document.getElementById('sim-res-coeff').textContent = coeff.toFixed(3);
+      document.getElementById('sim-res-base').textContent = `${baseRate.toFixed(2)} ₴`;
+      document.getElementById('sim-res-extra-k').textContent = extraK.toFixed(2);
+      document.getElementById('sim-res-total').textContent = `${total.toLocaleString('uk-UA', {minimumFractionDigits: 2, maximumFractionDigits: 2})} ₴`;
+    }
+
+    // Catalog logic
+    function filterCatalog() {
+      const tbody = document.getElementById('catalog-tbody');
+      tbody.innerHTML = '';
+      const pkg = document.getElementById('cat-pkg').value;
+      const term = (document.getElementById('cat-search').value || '').toLowerCase();
+
+      if (pkg === '3' || pkg === '4' || pkg === '47') {
+        const dsgs = (data.dsgs || []).filter(d => String(d.package_id) === pkg);
+        const filtered = dsgs.filter(d => !term || d.drg_name.toLowerCase().includes(term));
+        filtered.slice(0, 50).forEach(d => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><span class="code-tag" style="font-weight:700;">${d.drg_name.slice(0, 5)}</span></td>
+            <td><strong>${d.drg_name}</strong></td>
+            <td>${d.coefficient}</td>
+            <td>${d.base_rate ? d.base_rate.toFixed(2) + ' ₴' : '8 735.00 ₴'}</td>
+            <td><strong style="color:#15803d;">${d.price ? d.price.toFixed(2) + ' ₴' : (8735.0 * (d.coeff_numeric || 1) * 0.55).toFixed(2) + ' ₴'}</strong></td>
+            <td><span class="badge badge-gray">${d.diag_count} кодів</span></td>
+            <td><span class="badge badge-gray">${d.svc_count} послуг</span></td>
+            <td><small style="color:#64748b;">${d.additional_requirements || 'Стандартні вимоги'}</small></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } else if (pkg === '9') {
+        const classes = data.pkg9_classes || [];
+        classes.forEach(c => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><span class="code-tag">Клас ${c.class_number}</span></td>
+            <td><strong>${c.class_name}</strong></td>
+            <td>${c.coefficient}</td>
+            <td>155.00 ₴</td>
+            <td><strong style="color:#15803d;">${c.cost.toFixed(2)} ₴</strong></td>
+            <td><span class="badge badge-gray">${c.diag_count} кодів</span></td>
+            <td><span class="badge badge-gray">${c.svc_count} послуг</span></td>
+            <td><small style="color:#64748b;">Вимога до посади лікаря</small></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } else if (pkg === '54') {
+        const rehab = data.pkg54_sample || [];
+        rehab.forEach(r => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><span class="code-tag">${r.code}</span></td>
+            <td><strong>${r.name}</strong></td>
+            <td>1.0</td>
+            <td>10 820.00 ₴</td>
+            <td><strong style="color:#15803d;">10 820.00 ₴</strong></td>
+            <td>—</td>
+            <td>—</td>
+            <td><span class="badge badge-warning">${r.ar}</span> <small>${r.note || ''}</small></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+    }
+
+    function simulateUploadPortal(type) {
+      const card = document.getElementById('portal-ingest-card');
+      const bar = document.getElementById('portal-ingest-bar');
+      const title = document.getElementById('portal-ingest-title');
+      const badge = document.getElementById('portal-ingest-badge');
+      const res = document.getElementById('portal-ingest-res');
+
+      card.style.display = 'block'; res.style.display = 'none';
+      bar.style.width = '20%'; badge.textContent = 'Читання OpenXML...';
+      title.textContent = (type === 'oco') ? 'Аналіз файлу: Вересень 26.xlsx (КНП "ОЦО")...' : 'Аналіз файлу: 02000334_SF_2026.xlsx (КНП "ДКЛ Св. Зінаїди")...';
+      document.getElementById('p-s1').textContent = '4 аркуші знайдено ✓';
+      document.getElementById('p-s2').textContent = 'Очікування...';
+      document.getElementById('p-s3').textContent = 'Очікування...';
+      document.getElementById('p-s4').textContent = 'Очікування...';
+
+      setTimeout(() => { bar.style.width = '50%'; document.getElementById('p-s2').textContent = '45 колонок верифіковано ✓'; }, 300);
+      setTimeout(() => { bar.style.width = '75%'; document.getElementById('p-s3').textContent = 'Тарифи ПМГ нараховано ✓'; }, 600);
+      setTimeout(() => {
+        bar.style.width = '100%'; badge.className = 'badge badge-success'; badge.textContent = 'Готово';
+        document.getElementById('p-s4').textContent = '2-Way співставлено ✓';
+        res.style.display = 'block';
+        document.getElementById('p-rows').textContent = (type === 'oco') ? '5 490 ЕМЗ' : '4 394 ЕМЗ';
+        document.getElementById('p-lost').textContent = (type === 'oco') ? '4 974 842 ₴' : '3 674 400 ₴';
+
+        const sel = document.getElementById('hosp-select');
+        if (sel && sel.value !== type) {
+          sel.value = type;
+          onHospitalChange();
+        }
+      }, 900);
+    }
+
+    function handleHash() {
+      const hash = (window.location.hash || '').replace('#', '');
+      if (!hash) return;
+      const map = {
+        'process-1': 'tab-simulator',
+        'process-2': 'tab-upload',
+        'process-3': 'tab-report',
+        'process-4': 'tab-rejected',
+        'process-5': 'tab-rejected',
+        'process-6': 'tab-catalog',
+        'tab-report': 'tab-report',
+        'tab-upload': 'tab-upload',
+        'tab-rejected': 'tab-rejected',
+        'tab-doctors': 'tab-doctors',
+        'tab-simulator': 'tab-simulator',
+        'tab-catalog': 'tab-catalog'
+      };
+      const targetId = map[hash];
+      if (targetId) {
+        switchTab(targetId);
+        if (hash === 'process-5') {
+          setTimeout(() => {
+            const firstRej = reportList.find(x => x.included === 'Ні');
+            if (firstRej) openEncounterModal(firstRej.id);
+          }, 300);
+        }
+      }
+    }
+    window.addEventListener('hashchange', handleHash);
+
+    window.onload = function() {
+      onHospitalChange();
+      runSimulation();
+      handleHash();
+    };
+  </script>
+</body>
+</html>

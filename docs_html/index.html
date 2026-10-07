@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedLink PMG Pro — Технічне завдання та архітектура інтеграції</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" rel="stylesheet">
+  <link rel="stylesheet" href="modal_viewer.css">
+
+  <style>
+    :root {
+      --primary: #4274A7;
+      --primary-dark: #2c5277;
+      --accent: #0178BC;
+      --positive: #21ba45;
+      --negative: #d04f45;
+      --warning: #f2c037;
+      --dark-sidebar: #212121;
+      --bg-page: #f8fafc;
+      --border-color: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Source Sans Pro', sans-serif;
+      font-size: 15px;
+      color: #334155;
+      background-color: var(--bg-page);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 280px;
+      background-color: var(--dark-sidebar);
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      border-right: 1px solid #333;
+    }
+
+    .brand-header {
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #333;
+      background: #1a1a1a;
+    }
+    .brand-header img { height: 26px; }
+    .brand-title { font-weight: 700; font-size: 16px; color: #fff; letter-spacing: 0.5px; }
+    .brand-sub { font-size: 11px; color: #94a3b8; }
+
+    .nav-list { list-style: none; padding: 12px 8px; overflow-y: auto; flex-grow: 1; }
+    .nav-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      padding: 12px 14px 6px 14px;
+    }
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      color: #cbd5e1;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .nav-item a:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+    .nav-item.active a {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 600;
+    }
+    .nav-item i { font-size: 18px; width: 20px; text-align: center; }
+
+    .prototype-btn-box {
+      padding: 16px;
+      border-top: 1px solid #333;
+      background: #1a1a1a;
+    }
+    .btn-proto {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 10px;
+      background: #0284c7;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: background 0.2s;
+    }
+    .btn-proto:hover { background: #0369a1; }
+
+    /* Content Area */
+    .main-content {
+      flex-grow: 1;
+      padding: 32px 48px;
+      overflow-y: auto;
+      max-width: 1200px;
+    }
+
+    .header-bar {
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+    }
+    .h1-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .subtitle { font-size: 14px; color: #64748b; line-height: 1.5; }
+
+    /* Alert Banner */
+    .banner {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-left: 5px solid #2563eb;
+      padding: 14px 18px;
+      border-radius: 6px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      color: #1e3a8a;
+      line-height: 1.5;
+    }
+    .banner strong { color: #1e40af; }
+
+    /* Cards Grid */
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 32px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-desc { font-size: 13px; color: #64748b; margin-bottom: 16px; line-height: 1.4; }
+    .card-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .card-link:hover { text-decoration: underline; }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge-primary { background: #dbeafe; color: #1e40af; }
+    .badge-positive { background: #dcfce7; color: #15803d; }
+    .badge-warning { background: #fef3c7; color: #b45309; }
+
+    .diagram-box {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+    .diagram-title { font-weight: 700; font-size: 16px; color: #0f172a; margin-bottom: 16px; }
+
+    .arch-flow {
+      display: flex;
+      align-items: stretch;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    .flow-node {
+      flex: 1;
+      min-width: 200px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 16px;
+      position: relative;
+    }
+    .flow-node.highlight {
+      background: #f0fdf4;
+      border-color: #86efac;
+    }
+    .node-header { font-weight: 700; font-size: 14px; color: #1e293b; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+    .node-body { font-size: 12px; color: #64748b; line-height: 1.4; }
+
+    pre code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px;
+      border-radius: 6px;
+      display: block;
+      overflow-x: auto;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Sidebar -->
+  <aside class="sidebar">
+    <div class="brand-header">
+      <img src="../prototype_medlink/medlink_small.svg" alt="MedLink Logo">
+      <div>
+        <div class="brand-title">MEDLINK PMG</div>
+        <div class="brand-sub">Архітектура ПМГ 2026</div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li class="nav-section-title">Головна навігація</li>
+      <li class="nav-item">
+        <a href="../TZ_MedLink_PMG_Master_Specification.html" target="_blank" style="color: #38bdf8; font-weight: 700;"><i class="material-icons" style="color: #38bdf8;">stars</i> 👑 Головне ТЗ (стиль LABA)</a>
+      </li>
+      <li class="nav-item active">
+        <a href="index.html"><i class="material-icons">dashboard</i> Архітектурний огляд</a>
+      </li>
+
+      <li class="nav-section-title">Технічні специфікації</li>
+      <li class="nav-item">
+        <a href="01_database_schema.html"><i class="material-icons">storage</i> 1. Специфікація БД (EF Core)</a>
+      </li>
+      <li class="nav-item">
+        <a href="02_api_endpoints.html"><i class="material-icons">api</i> 2. Реєстр API Ендпоінтів</a>
+      </li>
+      <li class="nav-item">
+        <a href="03_business_logic_and_math.html"><i class="material-icons">calculate</i> 3. Математика тарифів</a>
+      </li>
+      <li class="nav-item">
+        <a href="04_openxml_processor.html"><i class="material-icons">description</i> 4. Процесор OpenXML</a>
+      </li>
+      <li class="nav-item">
+        <a href="05_frontend_integration_guide.html"><i class="material-icons">web</i> 5. Інтеграція у фронтенд</a>
+      </li>
+      <li class="nav-item">
+        <a href="06_pmg_dictionaries_catalog.html"><i class="material-icons">menu_book</i> 6. Довідники та MedProfit</a>
+      </li>
+      <li class="nav-item">
+        <a href="07_nszu_file_analysis_literal_compliance.html"><i class="material-icons">verified</i> 7. Аудит відповідності та Процеси (info-pmg)</a>
+      </li>
+      <li class="nav-item">
+        <a href="08_medlink_existing_ui_augmentation_guide.html"><i class="material-icons">extension</i> 8. Доповнення існуючих форм МІС</a>
+      </li>
+      <li class="nav-item">
+        <a href="09_all_pmg_packages_normative_guide.html"><i class="material-icons">library_books</i> 9. Всі 46 пакетів ПМГ-2026</a>
+      </li>
+      <li class="nav-item">
+        <a href="10_service_directory_norms_methodologies_combinations.html"><i class="material-icons">miscellaneous_services</i> 10. Справочник послуг та комбінації</a>
+      </li>
+    </ul>
+
+    <ul class="nav-list" style="margin-top: 10px; border-top: 1px solid #333;">
+      <li class="nav-section-title">SQL Скрипти та DDL</li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('01_ddl_tables.sql')"><i class="material-icons">table_chart</i> 01_ddl_tables.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('02_queries_2way_matching.sql')"><i class="material-icons">search</i> 02_queries_matching.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('04_seed_dsg_catalog_465.sql')"><i class="material-icons">dns</i> 04_dsg_catalog_465.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('05_seed_package9_classes_148.sql')"><i class="material-icons">local_hospital</i> 05_pkg9_classes_148.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('06_seed_nhsu_error_dictionary_186.sql')"><i class="material-icons">warning</i> 06_errors_186.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('07_seed_doctor_position_requirements.sql')"><i class="material-icons">person</i> 07_doctor_positions.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('08_seed_laboratory_tests_408.sql')"><i class="material-icons">biotech</i> 08_lab_tests_408.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('10_seed_all_pmg2026_packages.sql')"><i class="material-icons">collections_bookmark</i> 10_seed_all_46_packages.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('11_seed_service_combinations_and_groups.sql')"><i class="material-icons">schema</i> 11_service_combinations.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('09_seed_medprofit_rules_185.sql')"><i class="material-icons">rule</i> 09_rules_185.sql</a></li>
+    </ul>
+
+    <div class="prototype-btn-box">
+      <a href="../prototype_medlink/index.html" target="_blank" class="btn-proto">
+        <i class="material-icons" style="font-size:18px;">play_circle_filled</i>
+        Запустити прототип
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="header-bar">
+      <h1 class="h1-title">
+        <i class="material-icons" style="font-size: 32px; color: var(--primary);">account_balance</i>
+        Модуль аналітики ПМГ-2026 та аудиту звітів НСЗУ
+      </h1>
+      <p class="subtitle">
+        Комплексна інженерна документація для інтеграції аналітичного функціоналу Програми медичних гарантій 2026 року 
+        у медичну інформаційну систему <strong>МІС «Медлінк»</strong> (проєкт <code>evomis</code>).
+      </p>
+    </div>
+
+    <!-- Master Spec Highlight -->
+    <div style="background: linear-gradient(135deg, #072542 0%, #0f172a 100%); color: white; border-radius: 8px; border-left: 6px solid #38bdf8; padding: 20px 24px; margin-bottom: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.12);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+        <div>
+          <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #38bdf8; letter-spacing: 0.08em; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+            <i class="material-icons" style="font-size: 16px;">star</i> ТЕХНІЧНЕ ЗАВДАННЯ • СТИЛЬ ПРОЄКТУ LABA • .NET CORE 10
+          </div>
+          <div style="font-size: 18px; font-weight: 800; color: #ffffff; letter-spacing: -0.01em;">ГОЛОВНЕ ТЗ: Модуль аналітики ПМГ 2026, розрахунку тарифів та зв'язку з ЕМЗ</div>
+          <p style="font-size: 13px; color: #cbd5e1; margin-top: 6px; margin-bottom: 0; line-height: 1.5; max-width: 800px;">
+            Повна майстер-специфікація з 12 детальними скриншотами екранів (1600x1050), вичерпним аналізом двох реальних звітів НСЗУ (Харків 5 490 ЕМЗ, Суми 4 394 ЕМЗ), дорожньою картою фінансового повернення (+₴), архітектурою C# Web API на .NET Core 10, бенчмаркінгом систем Helsi/Doctor Eleks/info-pmg та 11 SQL-пакетами.
+          </p>
+        </div>
+        <a href="../TZ_MedLink_PMG_Master_Specification.html" target="_blank" style="background: #0284c7; hover:background: #0369a1; color: #fff; padding: 12px 22px; border-radius: 6px; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 14px; white-space: nowrap; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+          <i class="material-icons" style="font-size: 18px;">open_in_new</i> Відкрити Головне ТЗ
+        </a>
+      </div>
+    </div>
+
+    <!-- Banner -->
+    <div class="banner">
+      <strong>Ключовий висновок аналізу реальних звітів 2026 року:</strong>
+      У звітних Excel-файлах НСЗУ (як-от <code>Вересень 26.xlsx</code> та <code>02000334_SF_2026_08_20260910.xlsx</code>)
+      <strong>колонки вартості та суми до оплати повністю відсутні</strong>. Розрахунок здійснюється модулем автономно
+      на основі чинної Постанови КМУ №1808 (базова ставка 8 735,00 ₴, 465 ДСГ, 148 амбулаторних класів, коефіцієнти 0,55 / 0,60).
+    </div>
+
+    <!-- Navigation Hub Cards -->
+    <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 14px; color: #0f172a;">Розділи технічного завдання</h2>
+    <div class="grid-2">
+      <!-- Doc 1 -->
+      <div class="card">
+        <div class="card-title">
+          <span>1. База даних та EF Core</span>
+          <span class="badge badge-primary">EF Core / PostgreSQL</span>
+        </div>
+        <p class="card-desc">
+          Структура таблиць <code>dsg_nszu_statement</code>, <code>dsg_nszu_statement_line</code>, <code>dsg_analysis_result</code>, 
+          <code>dsg_tariff_setting</code> та зовнішні ключі до існуючих таблиць <code>mis_encounter</code>, <code>org_employee</code>.
+        </p>
+        <a href="01_database_schema.html" class="card-link">Переглянути DDL та моделі C# →</a>
+      </div>
+
+      <!-- Doc 2 -->
+      <div class="card">
+        <div class="card-title">
+          <span>2. Реєстр REST API</span>
+          <span class="badge badge-primary">App.Api</span>
+        </div>
+        <p class="card-desc">
+          Контролери <code>NszuStatementsController</code>, <code>PmgAnalyticsController</code>, <code>PmgPrebillingController</code>: 
+          ендпоінти імпорту, 2-Way звірки, розрахунку тарифів та повернення JSON DTO.
+        </p>
+        <a href="02_api_endpoints.html" class="card-link">Переглянути специфікацію ендпоінтів →</a>
+      </div>
+
+      <!-- Doc 3 -->
+      <div class="card">
+        <div class="card-title">
+          <span>3. Математичний движок</span>
+          <span class="badge badge-positive">Постанова №1808</span>
+        </div>
+        <p class="card-desc">
+          Повний алгоритм розрахунку вартості стаціонару (Пакети 3, 4, 47), амбулаторії (Пакет 9), гірського коефіцієнта (1,25) 
+          та генерація дерева розрахунку <code>calculation.steps</code>.
+        </p>
+        <a href="03_business_logic_and_math.html" class="card-link">Переглянути формули та код сервісу →</a>
+      </div>
+
+      <!-- Doc 4 -->
+      <div class="card">
+        <div class="card-title">
+          <span>4. Потоковий процесор OpenXML</span>
+          <span class="badge badge-positive">IXlsxProcessor</span>
+        </div>
+        <p class="card-desc">
+          Імплементація SAX-процесора <code>NszuStatementXlsxProcessor</code> у модулі <code>App.XlsxAnalyzer.Module</code>:
+          парсинг 4 аркушів великих Excel-файлів без ризику OutOfMemory.
+        </p>
+        <a href="04_openxml_processor.html" class="card-link">Переглянути потоковий парсер C# →</a>
+      </div>
+
+      <!-- Doc 5 -->
+      <div class="card" style="grid-column: span 2;">
+        <div class="card-title">
+          <span>5. Посібник фронтенд-інтеграції (Quasar / Vue 2)</span>
+          <span class="badge badge-warning">App.View</span>
+        </div>
+        <p class="card-desc">
+          Покрокова інструкція для перенесення 8 розроблених компонентів у <code>src/App.View</code>, 
+          налаштування роутингу в <code>routes.js</code>, пунктів меню в <code>menuDrawer.vue</code> та віджета пре-білінгу в <code>EncounterEdit.vue</code>.
+        </p>
+        <a href="05_frontend_integration_guide.html" class="card-link">Переглянути інструкцію інтеграції →</a>
+      </div>
+
+      <!-- Doc 6 -->
+      <div class="card" style="grid-column: span 2; background: #f0fdf4; border: 1px solid #bbf7d0;">
+        <div class="card-title">
+          <span style="color: #166534;"><i class="material-icons" style="vertical-align: middle; margin-right: 6px;">menu_book</i> 6. Довідники ПМГ-2026, Аудит MedProfit та SQL-пакети</span>
+          <span class="badge badge-positive">ПМГ-2026 + MedProfit</span>
+        </div>
+        <p class="card-desc" style="color: #15803d; font-size: 14px; line-height: 1.5;">
+          Повний каталог клініко-тарифних довідників для негайного імпорту в MedLink: <strong>465 ДСГ</strong>, <strong>148 амбулаторних класів</strong>, <strong>186 помилок дефектури НСЗУ</strong>, 
+          <strong>1 257 вимог до спеціальностей лікарів</strong> (MedProfit Anti-Defektura) та <strong>408 лабораторних тестів</strong>. 
+          Підготовлено 6 готових SQL-пакетів з можливістю перегляду та копіювання у модальному вікні.
+        </p>
+        <a href="06_pmg_dictionaries_catalog.html" class="card-link" style="color: #166534; font-weight: 700;">Переглянути каталог довідників та завантажити SQL →</a>
+      </div>
+
+      <!-- Doc 7 -->
+      <div class="card" style="grid-column: span 2; background: #eff6ff; border: 1px solid #bfdbfe;">
+        <div class="card-title">
+          <span style="color: #1e40af;"><i class="material-icons" style="vertical-align: middle; margin-right: 6px;">verified</i> 7. Повний аудит відповідності вимогам info-pmg.com та 7 процесів</span>
+          <span class="badge badge-primary">info-pmg.com (100% Врахування)</span>
+        </div>
+        <p class="card-desc" style="color: #1e3a8a; font-size: 14px; line-height: 1.5;">
+          Послівний аудит відповідності кожної вимоги із сервісу <code>info-pmg.com/nszu-file-analysis</code> (включно з оновленнями до жовтня 2026 року: пошук діагнозів без крапок, ургентні стани Пакета 9, прихована дефектура, додаткові коефіцієнти, OpenXML конвеєр, аркуш "Звіт").
+          Деталізований розбір 7 процесів за формулою <strong>ЧОМУ / ЩО РОБИТЬСЯ / ЗВІДКИ БЕРЕТЬСЯ</strong> з інтерактивним покроковим туром у прототипі.
+        </p>
+        <a href="07_nszu_file_analysis_literal_compliance.html" class="card-link" style="color: #1e40af; font-weight: 700;">Переглянути аудит відповідності та регламент 7 процесів →</a>
+      </div>
+
+      <!-- Doc 8 -->
+      <div class="card" style="grid-column: span 2; background: #faf5ff; border: 1px solid #e9d5ff;">
+        <div class="card-title">
+          <span style="color: #7e22ce;"><i class="material-icons" style="vertical-align: middle; margin-right: 6px;">extension</i> 8. Посібник доповнення існуючих форм МІС «Медлінк» без їх зламу</span>
+          <span class="badge badge-warning" style="background: #f3e8ff; color: #7e22ce;">Для розробника та аналітика</span>
+        </div>
+        <p class="card-desc" style="color: #6b21a8; font-size: 14px; line-height: 1.5;">
+          Покрокова інструкція для розробника та аналітика: як інтегрувати ПМГ-2026 виключно через адитивні точки розширення.
+          Точні unified diffs для <code>Details.vue</code> (картка взаємодії лікаря), <code>baseElements.js</code> (навігаційне меню <code>navMenu</code>), 
+          <code>NszuStatementXlsxProcessor</code> у модулі <code>App.XlsxAnalyzer.Module</code> та моделі <code>CoreEntity</code> у <code>App.Domain</code>.
+        </p>
+        <a href="08_medlink_existing_ui_augmentation_guide.html" class="card-link" style="color: #7e22ce; font-weight: 700;">Переглянути інструкцію модифікації існуючих форм →</a>
+      </div>
+
+      <!-- Doc 9 -->
+      <div class="card" style="grid-column: span 2; background: #fffbeb; border: 1px solid #fde68a;">
+        <div class="card-title">
+          <span style="color: #b45309;"><i class="material-icons" style="vertical-align: middle; margin-right: 6px;">library_books</i> 9. Реєстр, нормативне регулювання та тарифи всіх 46 пакетів ПМГ-2026</span>
+          <span class="badge badge-warning" style="background: #fef3c7; color: #92400e;">46 Пакетів • Постанова №1808</span>
+        </div>
+        <p class="card-desc" style="color: #78350f; font-size: 14px; line-height: 1.5;">
+          Повний вичерпний каталог усіх 46 медичних пакетів Програми медичних гарантій 2026: базові тарифи, специфікації обсягу, формули розрахунку з коефіцієнтами, правила валідацій eHealth, досьє за 12 тематичними групами та прямі посилання на офіційні нормативно-правові акти.
+        </p>
+        <a href="09_all_pmg_packages_normative_guide.html" class="card-link" style="color: #b45309; font-weight: 700;">Переглянути каталог усіх 46 пакетів ПМГ →</a>
+      </div>
+
+      <!-- Doc 10 -->
+      <div class="card" style="grid-column: span 2; background: #f0fdfa; border: 1px solid #99f6e4;">
+        <div class="card-title">
+          <span style="color: #0f766e;"><i class="material-icons" style="vertical-align: middle; margin-right: 6px;">miscellaneous_services</i> 10. Справочник послуг: норми, методики та матриця всіх можливих комбінацій</span>
+          <span class="badge" style="background: #ccfbf1; color: #115e59;">Delphi Re-engineering • АКПІ 2026</span>
+        </div>
+        <p class="card-desc" style="color: #134e4a; font-size: 14px; line-height: 1.5;">
+          Глибокий аналіз архітектури Delphi (MedProfit: <code>service_groups</code>, <code>services</code>, <code>dct_mp_service_odk_rule_detail</code>). 12 клінічних груп, норми часу та перебування у стаціонарі, анестезіологія, вікові межі, підвищувальний коефіцієнт мультихірургії 1.30, 5-рівнева валідація комбінацій, бібліотека еталонів <code>myAddLib</code>, кольорове підсвічування прибутку/збитку та наскрізний drill-down до ЕМЗ пацієнтів і 45 колонок.
+        </p>
+        <a href="10_service_directory_norms_methodologies_combinations.html" class="card-link" style="color: #0f766e; font-weight: 700;">Переглянути довідник послуг, норм та матрицю комбінацій →</a>
+      </div>
+    </div>
+
+    <!-- Architecture Flow Diagram -->
+    <div class="diagram-box">
+      <div class="diagram-title">Загальна схема інформаційних потоків та 2-Way синхронізації</div>
+      <div class="arch-flow">
+        <!-- Node 1 -->
+        <div class="flow-node">
+          <div class="node-header">
+            <i class="material-icons" style="color: #0284c7;">upload_file</i>
+            1. Звіт НСЗУ (.xlsx)
+          </div>
+          <div class="node-body">
+            Файл завантажується економістом через вебінтерфейс. Потоковий парсер OpenXML зчитує 4 аркуші та 45 колонок.
+          </div>
+        </div>
+
+        <!-- Node 2 -->
+        <div class="flow-node highlight">
+          <div class="node-header">
+            <i class="material-icons" style="color: #16a34a;">sync_alt</i>
+            2. 2-Way Звірка
+          </div>
+          <div class="node-body">
+            Співставлення <code>Encounter.EhealthId</code> (Колонка 4 звіту) з <code>mis_encounter.ehealth_id</code> у тестовій/робочій БД.
+          </div>
+        </div>
+
+        <!-- Node 3 -->
+        <div class="flow-node">
+          <div class="node-header">
+            <i class="material-icons" style="color: #7c3aed;">calculate</i>
+            3. Движок ПМГ-2026
+          </div>
+          <div class="node-body">
+            Автономний розрахунок тарифів за Постановою №1808 (8 735 ₴ × ВК × 0,55 / 155 ₴ × К). Збереження в <code>dsg_analysis_result</code>.
+          </div>
+        </div>
+
+        <!-- Node 4 -->
+        <div class="flow-node">
+          <div class="node-header">
+            <i class="material-icons" style="color: #dc2626;">healing</i>
+            4. Робоче місце лікаря
+          </div>
+          <div class="node-body">
+            Віджет у <code>EncounterEdit.vue</code>: підказки щодо правильного кодування до підписання ЕМЗ і запобігання втратам доходу.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Prototype Showcase Box -->
+    <div class="card" style="border-left: 5px solid var(--accent); background: #f0fdf4;">
+      <div class="card-title">
+        <span style="color: #166534;">Діючий інтерактивний прототип (Zero-Auth)</span>
+        <span class="badge badge-positive">Готовий до запуску</span>
+      </div>
+      <p class="card-desc" style="color: #14532d;">
+        Прототип повністю відтворює дизайн та структуру МІС «Медлінк» на базі Quasar Framework v1.15.3. 
+        Містить завантажені масиви реальних звітів (5 490 записів онкоцентру та 4 394 дитячої лікарні), 
+        підтримує перемикання закладів, повну розшифровку 45 колонок та модальне вікно виправлення дефектури.
+      </p>
+    <!-- Quick SQL & Code Inspection Box -->
+    <div class="card" style="border-left: 5px solid #3b82f6; background: #f8fafc;">
+      <div class="card-title">
+        <i class="material-icons" style="color: #2563eb;">code</i>
+        Швидкий перегляд SQL-запитів, DDL та коду сервісів у попап-вікні
+      </div>
+      <p class="card-desc">
+        Натисніть на будь-яку кнопку для миттєвого відкриття та копіювання повного коду файлу у великому модальному вікні:
+      </p>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="btn-open-popup" onclick="openFileModal('01_ddl_tables.sql')">
+          <i class="material-icons" style="font-size:16px;">storage</i> 01_ddl_tables.sql (DDL Таблиць)
+        </button>
+        <button class="btn-open-popup" onclick="openFileModal('02_queries_2way_matching.sql')">
+          <i class="material-icons" style="font-size:16px;">search</i> 02_queries_2way_matching.sql (Запити 2-Way)
+        </button>
+        <button class="btn-open-popup" onclick="openFileModal('03_seed_pmg2026_data.sql')">
+          <i class="material-icons" style="font-size:16px;">settings</i> 03_seed_pmg2026_data.sql (Сіди тарифів)
+        </button>
+        <button class="btn-open-popup" onclick="openFileModal('PmgTariffCalculatorService.cs')">
+          <i class="material-icons" style="font-size:16px;">calculate</i> PmgTariffCalculatorService.cs (Движок C#)
+        </button>
+      </div>
+    </div>
+
+  </main>
+  <script src="modal_viewer.js"></script>
+</body>
+</html>

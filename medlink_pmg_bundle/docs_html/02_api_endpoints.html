@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Реєстр REST API Ендпоінтів — MedLink PMG 2026</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="modal_viewer.css">
+
+  <style>
+    :root {
+      --primary: #4274A7;
+      --accent: #0178BC;
+      --positive: #21ba45;
+      --negative: #d04f45;
+      --dark-sidebar: #212121;
+      --bg-page: #f8fafc;
+      --border-color: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Source Sans Pro', sans-serif;
+      font-size: 15px;
+      color: #334155;
+      background-color: var(--bg-page);
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 280px;
+      background-color: var(--dark-sidebar);
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      border-right: 1px solid #333;
+    }
+    .brand-header {
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #333;
+      background: #1a1a1a;
+    }
+    .brand-header img { height: 26px; }
+    .brand-title { font-weight: 700; font-size: 16px; color: #fff; }
+    .brand-sub { font-size: 11px; color: #94a3b8; }
+    .nav-list { list-style: none; padding: 12px 8px; overflow-y: auto; flex-grow: 1; }
+    .nav-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      padding: 12px 14px 6px 14px;
+    }
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .nav-item a:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .nav-item.active a { background: var(--primary); color: #fff; font-weight: 600; }
+    .nav-item i { font-size: 18px; width: 20px; text-align: center; }
+
+    .prototype-btn-box { padding: 16px; border-top: 1px solid #333; background: #1a1a1a; }
+    .btn-proto {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 10px;
+      background: #0284c7;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 32px 48px;
+      overflow-y: auto;
+      max-width: 1200px;
+    }
+    .header-bar {
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+    }
+    .h1-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .subtitle { font-size: 14px; color: #64748b; }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .endpoint-box {
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .endpoint-header {
+      padding: 10px 16px;
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .method {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+    .method-get { background: #dbeafe; color: #1e40af; }
+    .method-post { background: #dcfce7; color: #15803d; }
+    .method-put { background: #fef3c7; color: #b45309; }
+
+    .endpoint-body { padding: 16px; background: #fff; font-size: 13px; }
+
+    pre code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 14px;
+      border-radius: 6px;
+      display: block;
+      overflow-x: auto;
+      line-height: 1.5;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="brand-header">
+      <img src="../prototype_medlink/medlink_small.svg" alt="MedLink Logo">
+      <div>
+        <div class="brand-title">MEDLINK PMG</div>
+        <div class="brand-sub">Архітектура ПМГ 2026</div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li class="nav-section-title">Головна навігація</li>
+      <li class="nav-item">
+        <a href="index.html"><i class="material-icons">dashboard</i> Архітектурний огляд</a>
+      </li>
+
+      <li class="nav-section-title">Технічні специфікації</li>
+      <li class="nav-item">
+        <a href="01_database_schema.html"><i class="material-icons">storage</i> 1. Специфікація БД (EF Core)</a>
+      </li>
+      <li class="nav-item active">
+        <a href="02_api_endpoints.html"><i class="material-icons">api</i> 2. Реєстр API Ендпоінтів</a>
+      </li>
+      <li class="nav-item">
+        <a href="03_business_logic_and_math.html"><i class="material-icons">calculate</i> 3. Математика тарифів</a>
+      </li>
+      <li class="nav-item">
+        <a href="04_openxml_processor.html"><i class="material-icons">description</i> 4. Процесор OpenXML</a>
+      </li>
+      <li class="nav-item">
+        <a href="05_frontend_integration_guide.html"><i class="material-icons">web</i> 5. Інтеграція у фронтенд</a>
+      </li>
+      <li class="nav-item">
+        <a href="06_pmg_dictionaries_catalog.html"><i class="material-icons">menu_book</i> 6. Довідники та MedProfit</a>
+      </li>
+      <li class="nav-item">
+        <a href="07_nszu_file_analysis_literal_compliance.html"><i class="material-icons">verified</i> 7. Аудит відповідності (info-pmg)</a>
+      </li>
+      <li class="nav-item">
+        <a href="08_medlink_existing_ui_augmentation_guide.html"><i class="material-icons">extension</i> 8. Доповнення існуючих форм МІС</a>
+      </li>
+      <li class="nav-item">
+        <a href="09_all_pmg_packages_normative_guide.html"><i class="material-icons">library_books</i> 9. Всі 46 пакетів ПМГ-2026</a>
+      </li>
+      <li class="nav-item">
+        <a href="10_service_directory_norms_methodologies_combinations.html"><i class="material-icons">miscellaneous_services</i> 10. Справочник послуг та комбінації</a>
+      </li>
+    </ul>
+
+    <ul class="nav-list" style="margin-top: 10px; border-top: 1px solid #333;">
+      <li class="nav-section-title">SQL Скрипти та DDL</li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('01_ddl_tables.sql')"><i class="material-icons">table_chart</i> 01_ddl_tables.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('02_queries_2way_matching.sql')"><i class="material-icons">search</i> 02_queries_matching.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('04_seed_dsg_catalog_465.sql')"><i class="material-icons">dns</i> 04_dsg_catalog_465.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('05_seed_package9_classes_148.sql')"><i class="material-icons">local_hospital</i> 05_pkg9_classes_148.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('06_seed_nhsu_error_dictionary_186.sql')"><i class="material-icons">warning</i> 06_errors_186.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('07_seed_doctor_position_requirements.sql')"><i class="material-icons">person</i> 07_doctor_positions.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('08_seed_laboratory_tests_408.sql')"><i class="material-icons">biotech</i> 08_lab_tests_408.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('10_seed_all_pmg2026_packages.sql')"><i class="material-icons">collections_bookmark</i> 10_seed_all_46_packages.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('11_seed_service_combinations_and_groups.sql')"><i class="material-icons">schema</i> 11_service_combinations.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('09_seed_medprofit_rules_185.sql')"><i class="material-icons">rule</i> 09_rules_185.sql</a></li></ul>
+
+    <div class="prototype-btn-box">
+      <a href="../prototype_medlink/index.html" target="_blank" class="btn-proto">
+        <i class="material-icons" style="font-size:18px;">play_circle_filled</i>
+        Запустити прототип
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="header-bar">
+      <h1 class="h1-title">
+        <i class="material-icons" style="font-size: 32px; color: var(--primary);">api</i>
+        2. Реєстр REST API Ендпоінтів (Проєкт <code>App.Api</code>)
+      </h1>
+      <p class="subtitle">
+        Специфікація контролерів, маршрутів, параметрів запиту та форматів DTO для взаємодії бекенду МІС «Медлінк» з фронтендом Quasar.
+      </p>
+    </div>
+
+    <!-- Group 1: NszuStatementsController -->
+    <div class="card">
+      <div class="card-title">
+        <i class="material-icons" style="color: var(--primary);">cloud_upload</i>
+        Контролер 1: <code>NszuStatementsController</code> (Маршрут: <code>/api/v1/nszu/statements</code>)
+      </div>
+      <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
+        Відповідає за прийом файлів звіту НСЗУ, збереження метаданих та управління сесіями імпорту.
+      </p>
+
+      <!-- Endpoint 1.1 -->
+      <div class="endpoint-box">
+        <div class="endpoint-header">
+          <span class="method method-post">POST</span>
+          <code>/api/v1/nszu/statements/upload</code>
+          <span style="color: #64748b; font-size: 13px;">— Завантаження та потоковий парсинг файлу звіту (.xlsx)</span>
+        </div>
+        <div class="endpoint-body">
+          <strong>Параметри форми (multipart/form-data):</strong>
+          <ul style="margin: 8px 0 8px 20px;">
+            <li><code>file</code>: IFormFile — файл звіту НСЗУ (.xlsx)</li>
+            <li><code>organizationId</code>: Guid — ідентифікатор медичного закладу</li>
+            <li><code>year</code>: int — звітний рік (наприклад, 2026)</li>
+            <li><code>month</code>: int — звітний місяць (1..12)</li>
+          </ul>
+
+          <strong>Приклад відповіді (JSON 200 OK):</strong>
+          <pre><code>{
+  "statementId": "41a08c45-9ac3-452c-99a1-b6b1f86339b4",
+  "fileName": "Вересень 26.xlsx",
+  "totalProcessedRows": 5490,
+  "acceptedCount": 4980,
+  "acceptedRevenue": 24850600.00,
+  "rejectedCount": 510,
+  "lostRevenue": 2180400.00,
+  "importedAt": "2026-10-06T20:15:00Z"
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- Endpoint 1.2 -->
+      <div class="endpoint-box">
+        <div class="endpoint-header">
+          <span class="method method-post">POST</span>
+          <code>/api/v1/nszu/statements/{id}/reconcile</code>
+          <span style="color: #64748b; font-size: 13px;">— Запуск фонової 2-Way звірки з таблицею <code>mis_encounter</code></span>
+        </div>
+        <div class="endpoint-body">
+          Виконує співставлення <code>dsg_nszu_statement_line.encounter_ehealth_id</code> з <code>mis_encounter.ehealth_id</code>.
+          <pre><code>{
+  "statementId": "41a08c45-9ac3-452c-99a1-b6b1f86339b4",
+  "status": "Completed",
+  "matchedEncountersCount": 5410,
+  "unmatchedInMisCount": 80,
+  "discrepanciesCount": 510
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Group 2: PmgAnalyticsController -->
+    <div class="card">
+      <div class="card-title">
+        <i class="material-icons" style="color: var(--accent);">assessment</i>
+        Контролер 2: <code>PmgAnalyticsController</code> (Маршрут: <code>/api/v1/pmg/analytics</code>)
+      </div>
+      <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
+        Надає агреговані та деталізовані дані для побудови аналітичних зрізів, таблиці 45 колонок та моніторингу дефектури.
+      </p>
+
+      <!-- Endpoint 2.1 -->
+      <div class="endpoint-box">
+        <div class="endpoint-header">
+          <span class="method method-get">GET</span>
+          <code>/api/v1/pmg/analytics/audit-grid</code>
+          <span style="color: #64748b; font-size: 13px;">— Пагінована таблиця 45 колонок із розрахованими тарифами</span>
+        </div>
+        <div class="endpoint-body">
+          <strong>Query параметри:</strong>
+          <code>statementId</code>, <code>status</code> ('all', 'Так', 'ГБ', 'Ні'), <code>package</code>, <code>search</code>, <code>page</code>, <code>pageSize</code>.
+          <pre><code>{
+  "totalItems": 5490,
+  "items": [
+    {
+      "id": 1,
+      "emzId": "a8f3b20c-1122-4455-8899-abcdef012345",
+      "date": "2026-09-14",
+      "docName": "Григоренко О. П.",
+      "docPosition": "Лікар-онколог",
+      "package": "47",
+      "diagMain": "C50.9",
+      "services": "30440-00",
+      "calculatedTariff": 14412.75,
+      "included": "Так",
+      "errorComment": null,
+      "colValues45": [ "..." ]
+    }
+  ]
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- Endpoint 2.2 -->
+      <div class="endpoint-box">
+        <div class="endpoint-header">
+          <span class="method method-get">GET</span>
+          <code>/api/v1/pmg/analytics/doctors-summary</code>
+          <span style="color: #64748b; font-size: 13px;">— Звіт за лікарями та відділеннями (Аркуш «Звіт»)</span>
+        </div>
+        <div class="endpoint-body">
+          <pre><code>[
+  {
+    "employeeId": "840642e6-231b-4cbb-9241-a0b1b9cab12b",
+    "name": "Григоренко О. П.",
+    "position": "Лікар-онколог",
+    "department": "Онкологічне відділення",
+    "totalCount": 420,
+    "acceptedCount": 395,
+    "rejectedCount": 25,
+    "errorRate": 5.95,
+    "generatedRevenue": 1425800.00,
+    "lostRevenue": 78500.00
+  }
+]</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Group 3: PmgPrebillingController -->
+    <div class="card">
+      <div class="card-title">
+        <i class="material-icons" style="color: var(--positive);">flash_on</i>
+        Контролер 3: <code>PmgPrebillingController</code> (Маршрут: <code>/api/v1/pmg/prebilling</code>)
+      </div>
+      <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">
+        Використовується формою <code>EncounterEdit.vue</code> у режимі реального часу при створенні та редагуванні ЕМЗ лікарем.
+      </p>
+
+      <!-- Endpoint 3.1 -->
+      <div class="endpoint-box">
+        <div class="endpoint-header">
+          <span class="method method-post">POST</span>
+          <code>/api/v1/pmg/prebilling/evaluate</code>
+          <span style="color: #64748b; font-size: 13px;">— Оцінка взаємодії перед підписанням КЕП (Pre-Flight Check)</span>
+        </div>
+        <div class="endpoint-body">
+          <strong>Тіло запиту (JSON):</strong>
+          <pre><code>{
+  "organizationId": "a4ae529f-af39-45ba-9abe-d95ca902ba53",
+  "packageNumber": 47,
+  "primaryIcd10Code": "C50.9",
+  "services": ["30440-00"],
+  "patientAge": 54,
+  "isMountain": false
+}</code></pre>
+
+          <strong>Відповідь (JSON 200 OK):</strong>
+          <pre><code>{
+  "isValid": true,
+  "tariff": 14412.75,
+  "baseRate": 8735.00,
+  "weightCoef": 3.00,
+  "dsgGroupCode": "R02A",
+  "findings": [
+    {
+      "ruleCode": "FR-03",
+      "severity": 0,
+      "message": "Основний діагноз відповідає номенклатурі Пакету 47 (МОЗ №517)",
+      "normativeReference": "Наказ МОЗ №517 від 17.04.2026"
+    }
+  ],
+  "calculationSteps": [
+    { "code": "BASE", "caption": "Базова ставка", "value": 8735.00, "operation": "=" },
+    { "code": "WEIGHT", "caption": "ВК ДСГ R02A", "value": 3.00, "operation": "×" },
+    { "code": "SHARE", "caption": "Частка пакету 47 (0,55)", "value": 0.55, "operation": "×" },
+    { "code": "TOTAL", "caption": "Підсумковий тариф", "value": 14412.75, "operation": "=" }
+  ]
+}</code></pre>
+        </div>
+      </div>
+    <!-- Modal View Triggers -->
+    <div class="card" style="border-left: 5px solid var(--accent); background: #f0fdf4;">
+      <div class="card-title" style="color: #166534;">
+        <i class="material-icons" style="color: #166534;">open_in_full</i>
+        Пов'язані SQL-запити та DDL-структури для ендпоінтів
+      </div>
+      <p style="font-size: 14px; color: #1e3a8a; margin-bottom: 12px;">
+        Відкрийте SQL-скрипти запитів, які виконуються бекенд-контролерами:
+      </p>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="btn-open-popup" onclick="openFileModal('02_queries_2way_matching.sql')">
+          <i class="material-icons" style="font-size:16px;">search</i> SQL-запити для API контролерів
+        </button>
+        <button class="btn-open-popup" onclick="openFileModal('01_ddl_tables.sql')">
+          <i class="material-icons" style="font-size:16px;">storage</i> Схема таблиць (DDL)
+        </button>
+      </div>
+    </div>
+
+  </main>
+  <script src="modal_viewer.js"></script>
+</body>
+</html>

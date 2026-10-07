@@ -1,0 +1,23 @@
+{
+  "id": 95,
+  "class_number": "e0430",
+  "class_name": "Астма",
+  "coefficient": 3.21,
+  "cost": "497.55",
+  "diags": [
+    {
+      "code": "J46",
+      "name": "Астматичний статус [status asthmaticus]"
+    },
+    {
+      "code": "J45.9",
+      "name": "Астма, неуточнена"
+    },
+    {
+      "code": "R06.2",
+      "name": "Свистяче дихання"
+    }
+  ],
+  "services": [],
+  "positions": []
+}

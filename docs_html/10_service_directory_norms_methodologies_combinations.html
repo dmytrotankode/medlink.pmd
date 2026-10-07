@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Розділ 10: Справочник послуг: норми, методики та матриця всіх можливих комбінацій — MedLink PMG Pro</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" rel="stylesheet">
+  <link rel="stylesheet" href="modal_viewer.css">
+
+  <style>
+    :root {
+      --primary: #4274A7;
+      --primary-dark: #2c5277;
+      --accent: #0178BC;
+      --positive: #21ba45;
+      --negative: #d04f45;
+      --warning: #f2c037;
+      --dark-sidebar: #212121;
+      --bg-page: #f8fafc;
+      --border-color: #e2e8f0;
+      --teal-dark: #004d40;
+      --teal-brand: #00695c;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Source Sans Pro', sans-serif;
+      font-size: 15px;
+      color: #334155;
+      background-color: var(--bg-page);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 280px;
+      background-color: var(--dark-sidebar);
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      border-right: 1px solid #333;
+    }
+
+    .brand-header {
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #333;
+      background: #1a1a1a;
+    }
+    .brand-title { font-weight: 700; font-size: 16px; color: #fff; letter-spacing: 0.5px; }
+    .brand-sub { font-size: 11px; color: #94a3b8; }
+
+    .nav-list { list-style: none; padding: 12px 8px; overflow-y: auto; flex-grow: 1; }
+    .nav-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      padding: 12px 14px 6px 14px;
+    }
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .nav-item a:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .nav-item.active a { background: var(--teal-brand); color: #fff; font-weight: 600; }
+    .nav-item i { font-size: 18px; width: 20px; text-align: center; }
+
+    .prototype-btn-box { padding: 16px; border-top: 1px solid #333; background: #1a1a1a; }
+    .btn-proto {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 10px;
+      background: #00796b;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+      transition: background 0.2s;
+    }
+    .btn-proto:hover { background: #004d40; }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 32px 48px;
+      overflow-y: auto;
+      max-width: 1300px;
+    }
+    .header-bar {
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+    }
+    .h1-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      color: #64748b;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .callout {
+      padding: 14px 18px;
+      border-radius: 6px;
+      margin: 16px 0;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .callout-info { background: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid #2563eb; color: #1e3a8a; }
+    .callout-success { background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid #16a34a; color: #14532d; }
+    .callout-warning { background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid #d97706; color: #78350f; }
+
+    .card-box {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    table.guide-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+    table.guide-table th { background: #f1f5f9; text-align: left; padding: 10px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; }
+    table.guide-table td { padding: 10px; border: 1px solid #cbd5e1; vertical-align: middle; }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 7px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .badge-primary { background: #e0e7ff; color: #3730a3; }
+    .badge-teal { background: #ccfbf1; color: #115e59; }
+    .badge-purple { background: #f3e8ff; color: #6b21a8; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+    .badge-success { background: #dcfce7; color: #166534; }
+
+    .code-block {
+      background: #0f172a;
+      border-radius: 6px;
+      padding: 16px;
+      margin: 12px 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #f8fafc;
+      overflow-x: auto;
+      line-height: 1.5;
+    }
+
+    .formula-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      background: #f1f5f9;
+      padding: 3px 6px;
+      border-radius: 4px;
+      border: 1px solid #cbd5e1;
+      color: #0f172a;
+    }
+
+    .cluster-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 16px;
+      margin-top: 14px;
+    }
+    .cluster-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 16px;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .cluster-card:hover {
+      transform: translateY(-2px);
+      border-color: #00796b;
+    }
+    .cluster-title {
+      font-weight: 700;
+      font-size: 14px;
+      color: #0f172a;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cluster-pkgs {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Sidebar -->
+  <aside class="sidebar">
+    <div class="brand-header">
+      <img src="../prototype_medlink/medlink_small.svg" alt="MedLink Logo">
+      <div>
+        <div class="brand-title">MEDLINK PMG</div>
+        <div class="brand-sub">Архітектура ПМГ 2026</div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li class="nav-section-title">Головна навігація</li>
+      <li class="nav-item"><a href="index.html"><i class="material-icons">dashboard</i> Архітектурний огляд</a></li>
+
+      <li class="nav-section-title">Технічні специфікації</li>
+      <li class="nav-item"><a href="01_database_schema.html"><i class="material-icons">storage</i> 1. Специфікація БД (EF Core)</a></li>
+      <li class="nav-item"><a href="02_api_endpoints.html"><i class="material-icons">api</i> 2. Реєстр API Ендпоінтів</a></li>
+      <li class="nav-item"><a href="03_business_logic_and_math.html"><i class="material-icons">calculate</i> 3. Математика тарифів</a></li>
+      <li class="nav-item"><a href="04_openxml_processor.html"><i class="material-icons">description</i> 4. Процесор OpenXML</a></li>
+      <li class="nav-item"><a href="05_frontend_integration_guide.html"><i class="material-icons">web</i> 5. Інтеграція у фронтенд</a></li>
+      <li class="nav-item"><a href="06_pmg_dictionaries_catalog.html"><i class="material-icons">menu_book</i> 6. Довідники та MedProfit</a></li>
+      <li class="nav-item"><a href="07_nszu_file_analysis_literal_compliance.html"><i class="material-icons">verified</i> 7. Аудит відповідності (info-pmg)</a></li>
+      <li class="nav-item"><a href="08_medlink_existing_ui_augmentation_guide.html"><i class="material-icons">extension</i> 8. Доповнення існуючих форм МІС</a></li>
+      <li class="nav-item"><a href="09_all_pmg_packages_normative_guide.html"><i class="material-icons">library_books</i> 9. Всі 46 пакетів ПМГ-2026</a></li>
+      <li class="nav-item active"><a href="10_service_directory_norms_methodologies_combinations.html"><i class="material-icons">miscellaneous_services</i> 10. Справочник послуг та комбінації</a></li>
+    </ul>
+
+    <ul class="nav-list" style="margin-top: 10px; border-top: 1px solid #333;">
+      <li class="nav-section-title">SQL Скрипти та DDL</li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('01_ddl_tables.sql')"><i class="material-icons">table_chart</i> 01_ddl_tables.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('02_queries_2way_matching.sql')"><i class="material-icons">search</i> 02_queries_matching.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('04_seed_dsg_catalog_465.sql')"><i class="material-icons">dns</i> 04_dsg_catalog_465.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('07_seed_doctor_position_requirements.sql')"><i class="material-icons">person</i> 07_doctor_positions.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('08_seed_laboratory_tests_408.sql')"><i class="material-icons">biotech</i> 08_lab_tests_408.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('10_seed_all_pmg2026_packages.sql')"><i class="material-icons">collections_bookmark</i> 10_seed_all_46_packages.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('11_seed_service_combinations_and_groups.sql')"><i class="material-icons">schema</i> 11_service_combinations.sql</a></li>
+    </ul>
+
+    <div class="prototype-btn-box">
+      <a href="../prototype_medlink/index.html" target="_blank" class="btn-proto">
+        <i class="material-icons" style="font-size:18px;">play_circle_filled</i>
+        Запустити прототип
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <div class="header-bar">
+      <h1 class="h1-title">
+        <i class="material-icons" style="font-size: 32px; color: #00695c;">miscellaneous_services</i>
+        Розділ 10: Справочник послуг: норми, методики та матриця всіх можливих комбінацій
+      </h1>
+      <div class="subtitle">
+        Глибокий аналіз архітектури Delphi (MedProfit, MedProfit2, DSG) • Моделювання дозволених комбінацій (Послуга ↔ МКХ-10 ↔ Обов'язкові супутні ↔ Мультихірургія ↔ Посада лікаря) • Постанова КМУ № 1808 • Повний наскрізний drill-down до ЕМЗ та 45 колонок
+      </div>
+    </div>
+
+    <!-- Callout Alert -->
+    <div class="callout callout-success">
+      <strong>Реінжиніринг Delphi-архітектури завершено успішно:</strong>
+      У спадковій програмі Delphi (`C:\Projects\MedProfit\fMain.pas` та `C:\Projects\MedProfit2\fMain\dm53_54\d53_54.pas`) налаштування послуг здійснювалося через зв'язки `service_groups`, `services`, `service_group_links`, та матрицю валідації `dct_mp_service_odk_rule_detail`. Ми перенесли цей функціонал у MedLink PMG Pro, розширивши його клінічними нормами хронометражу, вимогами анестезіології, коефіцієнтом мультихірургії $1.30$, бібліотекою еталонів `myAddLib` та прямим drill-down переходом до реальних медичних записів пацієнтів і 45 колонок аудиту.
+    </div>
+
+    <!-- Section 1: Legacy Delphi Analysis -->
+    <div class="card-box">
+      <h2 class="card-title">
+        <i class="material-icons" style="color: #6b21a8;">history_edu</i>
+        1. Результати реверс-інжинірингу та аналізу спадкової програми Delphi
+      </h2>
+      <p style="margin-bottom: 12px;">
+        Під час детального дослідження вихідних кодів Delphi проєктів `MedProfit`, `MedProfit2` та `DSG` виявлено ключові механізми, які регулювали роботу довідника послуг та правил комбінування:
+      </p>
+
+      <table class="guide-table">
+        <thead>
+          <tr>
+            <th style="width: 25%;">Delphi Модуль / Таблиця</th>
+            <th style="width: 35%;">Функціональне призначення у спадковій системі</th>
+            <th style="width: 40%;">Реалізація у MedLink PMG Pro (2026)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>fMain.pas</code> / <code>fMain.dfm</code><br><span class="badge badge-purple">MedProfit 1</span></td>
+            <td>Вкладка «Справочник услуг»: ієрархічне дерево груп послуг (<code>service_groups</code>), список втручань, фільтрація за лікарями та нарахування оплат.</td>
+            <td>Дворівневий інтерфейс: 12 клінічних груп, таблиця АКПІ з нормами часу, анестезією, ліжко-днями та базовими тарифами.</td>
+          </tr>
+          <tr>
+            <td><code>dct_mp_service_odk_rule_detail</code><br><span class="badge badge-teal">Rule Engine</span></td>
+            <td>Таблиця правил групування: <code>rule_block</code>, <code>rule_group</code>, <code>rule_type_code = 'odk'</code>, <code>rule_code = 'icd10'</code>, <code>rule_event = 'include'/'exclude'</code>.</td>
+            <td>Реляційна таблиця <code>pmg_service_combinations</code> із JSON-матрицею сумісних МКХ-10, супутніх послуг, конфліктів та посад лікарів.</td>
+          </tr>
+          <tr>
+            <td><code>myAddLib</code> / <code>myDelLib</code><br><span class="badge badge-primary">Standard Library</span></td>
+            <td>Збереження обраної конфігурації кодування до бібліотеки стандартів лікаря (еталонні шаблони виписок).</td>
+            <td>Кнопка «Зберегти в бібліотеку еталонів (myAddLib)», API ендпоінт <code>POST /api/v1/pmg/combinations/library-save</code>.</td>
+          </tr>
+          <tr>
+            <td><code>myDetailsSel</code><br><span class="badge badge-success">Gain / Loss Check</span></td>
+            <td>Порівняння поточного розрахунку з еталоном бібліотеки: підсвічування зеленим кольором (прибуток) або жовтим (втрата/субоптимальність).</td>
+            <td>Індикатор <code>gainLossStatus</code> (GAIN / LOSS / EQUAL) з візуальним відображенням різниці у гривнях (+30% мультихірургії або втрата).</td>
+          </tr>
+          <tr>
+            <td><code>detail_patients</code><br><span class="badge badge-teal">Drill Down</span></td>
+            <td>Подвійний клік на рядку послуги відкривав список пацієнтів, яким її було надано у звітному періоді.</td>
+            <td>Вкладка «Drill-down до пацієнтів / ЕМЗ» у картці послуги з прямою кнопкою відкриття модального вікна 45 колонок аудиту.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Section 2: Database Schema & DDL -->
+    <div class="card-box">
+      <h2 class="card-title">
+        <i class="material-icons" style="color: #0284c7;">storage</i>
+        2. Архітектура бази даних та DDL структура таблиць
+      </h2>
+      <p style="margin-bottom: 12px;">
+        Для підтримки довідника послуг та матриці комбінацій створено 3 спеціалізовані таблиці в базі даних MedLink:
+      </p>
+
+      <div class="cluster-grid">
+        <div class="cluster-card">
+          <div class="cluster-title">
+            <i class="material-icons text-teal">folder_special</i>
+            pmg_service_groups
+          </div>
+          <div class="cluster-pkgs">12 Клінічних груп</div>
+          <p style="font-size: 12px; color: #475569;">
+            Ієрархічний класифікатор розділів медицини (Хірургія ШКТ, Онкохірургія, Кардіохірургія, тощо).
+          </p>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-title">
+            <i class="material-icons text-primary">medical_services</i>
+            pmg_service_catalog
+          </div>
+          <div class="cluster-pkgs">Паспорт послуги та норми</div>
+          <p style="font-size: 12px; color: #475569;">
+            Код АКПІ, регламентний хронометраж (хв), анестезія, ліжко-дні (мін-макс), вікові межі, базовий тариф.
+          </p>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-title">
+            <i class="material-icons text-purple">schema</i>
+            pmg_service_combinations
+          </div>
+          <div class="cluster-pkgs">Матриця комбінацій</div>
+          <p style="font-size: 12px; color: #475569;">
+            Дозволені МКХ-10, обов'язкові супутні коди, коди мультихірургії (1.30), дозволені посади лікарів, очікувані ДСГ.
+          </p>
+        </div>
+      </div>
+
+      <div class="code-block">
+-- DDL створення структури довідника послуг та комбінацій (SQLite / PostgreSQL)
+CREATE TABLE pmg_service_groups (
+    id TEXT PRIMARY KEY,
+    code TEXT NOT NULL,
+    name TEXT NOT NULL,
+    parent_id TEXT,
+    level INTEGER DEFAULT 1,
+    description TEXT
+);
+
+CREATE TABLE pmg_service_catalog (
+    service_code TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    group_id TEXT,
+    group_name TEXT,
+    category TEXT NOT NULL, -- 'Surgical', 'Diagnostic', 'Therapeutic', 'Rehabilitation'
+    base_norm_time_minutes INTEGER DEFAULT 60,
+    anesthesia_required INTEGER DEFAULT 0, -- 1=так, 0=ні
+    min_stay_days INTEGER DEFAULT 0,
+    max_stay_days INTEGER DEFAULT 14,
+    age_min INTEGER DEFAULT 0,
+    age_max INTEGER DEFAULT 120,
+    gender_restriction TEXT DEFAULT 'ALL', -- 'ALL', 'MALE', 'FEMALE'
+    package_ids TEXT, -- '3,4,47'
+    dsg_codes TEXT, -- 'G01,G02'
+    base_tariff REAL DEFAULT 8735.0,
+    clinical_norm_notes TEXT
+);
+
+CREATE TABLE pmg_service_combinations (
+    id TEXT PRIMARY KEY,
+    service_code TEXT NOT NULL,
+    combination_name TEXT NOT NULL,
+    compatible_icd_codes TEXT NOT NULL, -- JSON-масив МКХ-10 діагнозів
+    mandatory_companions TEXT, -- JSON-масив обов'язкових супутніх втручань
+    optional_multisurg_companions TEXT, -- JSON-масив втручань для коефіцієнту 1.3
+    incompatible_services TEXT, -- JSON-масив конфліктних втручань
+    allowed_doctor_positions TEXT NOT NULL, -- JSON-масив посад оперуючого лікаря
+    prohibited_doctor_positions TEXT NOT NULL,
+    expected_package_number TEXT NOT NULL,
+    expected_dsg_code TEXT NOT NULL,
+    weight_coef REAL NOT NULL,
+    calculated_tariff REAL NOT NULL,
+    calculation_formula TEXT NOT NULL,
+    rule_condition TEXT,
+    is_library_standard INTEGER DEFAULT 1 -- 1=еталон myAddLib, 0=користувацька
+);
+      </div>
+
+      <div style="margin-top: 12px;">
+        <a href="#" onclick="openFileModal('11_seed_service_combinations_and_groups.sql')" style="color: var(--teal-brand); font-weight: 700; text-decoration: none;">
+          <i class="material-icons" style="font-size: 16px; vertical-align: middle;">launch</i>
+          Переглянути повний файл 11_seed_service_combinations_and_groups.sql у спливаючому вікні
+        </a>
+      </div>
+    </div>
+
+    <!-- Section 3: The 12 Clinical Groups -->
+    <div class="card-box">
+      <h2 class="card-title">
+        <i class="material-icons" style="color: #00796b;">category</i>
+        3. 12 Клінічних груп медичних послуг (Delphi Group Link)
+      </h2>
+      <p style="margin-bottom: 14px;">
+        За аналогією з класифікацією `MedProfit` всі послуги розподілено на 12 клінічних груп, кожна з яких має специфічні протокольні вимоги:
+      </p>
+
+      <table class="guide-table">
+        <thead>
+          <tr>
+            <th>Код</th>
+            <th>Клінічна група</th>
+            <th>Характеристика та специфіка тарифікації</th>
+            <th>Типові коди АКПІ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-primary">SG-01</span></td>
+            <td><strong>Хірургія органів черевної порожнини та ШКТ</strong></td>
+            <td>Абдомінальна хірургія: резекції кишечника, шлунка, холецистектомія. Оплата за Пакет 3/4 або Пакет 47 (0.60).</td>
+            <td><code>32003-00</code>, <code>30518-00</code>, <code>30440-00</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-purple">SG-02</span></td>
+            <td><strong>Онкологічні хірургічні втручання</strong></td>
+            <td>Розширені резекції злоякісних новоутворень з обов'язковою регіонарною лімфодисекцією (+30% мультихірургія).</td>
+            <td><code>32003-00</code>, <code>30075-01</code>, <code>30394-00</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-teal">SG-03</span></td>
+            <td><strong>Офтальмологічні операції та мікрохірургія ока</strong></td>
+            <td>Хірургія катаракти, глаукоми, вітректомія. Переважно хірургія одного дня (Пакет 47) з випискою в день операції.</td>
+            <td><code>42702-00</code>, <code>42702-01</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-danger">SG-04</span></td>
+            <td><strong>Кардіохірургія та інтервенційна кардіологія</strong></td>
+            <td>Коронарна ангіопластика, стентування при ГІМ (Пакет 6, 44 400 - 55 200 ₴). Обов'язкова наявність ангіографа.</td>
+            <td><code>38218-00</code>, <code>38300-00</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-primary">SG-05</span></td>
+            <td><strong>Нейрохірургія та спінальна хірургія</strong></td>
+            <td>Краніотомія, кліпування аневризм, декомпресія хребта, механічна тромбектомія при інсульті (Пакет 5).</td>
+            <td><code>39603-00</code>, <code>39709-00</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-teal">SG-06</span></td>
+            <td><strong>Травматологія, ортопедія та ендопротезування</strong></td>
+            <td>Остеосинтез переломів, артроскопія, тотальне ендопротезування кульшового та колінного суглобів.</td>
+            <td><code>47528-00</code>, <code>49518-00</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-primary">SG-07</span></td>
+            <td><strong>Ендоскопічні діагностичні та лікувальні процедури</strong></td>
+            <td>Пріоритетні скринінги (ЕГДС, колоноскопія, бронхоскопія, цистоскопія) за Пакетами 10-15. Обов'язкова фотофіксація.</td>
+            <td><code>11600-00</code>, <code>30473-00</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-purple">SG-08</span></td>
+            <td><strong>Хіміотерапевтичне та фармакологічне введення</strong></td>
+            <td>Внутрішньовенне введення протипухлинних агентів за Пакетом 18 (17 865 - 35 730 ₴). Вимагає онкоконсиліуму.</td>
+            <td><code>96199-00</code>, <code>96197-00</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-warning">SG-09</span></td>
+            <td><strong>Променева терапія та радіологія</strong></td>
+            <td>Дистанційна променева терапія на лінійних прискорювачах за Пакетом 19 (54 089 - 131 499 ₴). Дозиметричний план.</td>
+            <td><code>15269-00</code>, <code>15275-00</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-success">SG-10</span></td>
+            <td><strong>Реабілітаційні інтервенції та фізіотерапія</strong></td>
+            <td>Кінезіотерапія, ерготерапія за Пакетами 53/54 (10 820 - 33 607 ₴). Мультидисциплінарна реабілітаційна команда.</td>
+            <td><code>93125-00</code>, <code>93127-00</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-danger">SG-11</span></td>
+            <td><strong>Інтенсивна терапія, реанімація та ЕКМО</strong></td>
+            <td>ШВЛ понад 24 години, екстракорпоральна мембранна оксигенація, плазмаферез.</td>
+            <td><code>13882-00</code>, <code>13885-00</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-primary">SG-12</span></td>
+            <td><strong>Амбулаторні консультації та скринінги</strong></td>
+            <td>Спеціалізовані консультації 148 амбулаторних класів за Пакетом 9 (155.00 ₴ × ваговий коефіцієнт класу).</td>
+            <td><code>11600-00</code>, <code>11000-00</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Section 4: Calculation Methodologies -->
+    <div class="card-box">
+      <h2 class="card-title">
+        <i class="material-icons" style="color: #16a34a;">calculate</i>
+        4. Методика тарифікації та формули за Постановою КМУ № 1808
+      </h2>
+      <p style="margin-bottom: 12px;">
+        Тариф розраховується відповідно до моделі фінансування:
+      </p>
+
+      <div class="cluster-grid">
+        <div class="cluster-card">
+          <div class="cluster-title text-primary">Стаціонарна хірургія (Пакет 3 / 4)</div>
+          <div class="formula-badge">Тариф = 8 735 × Wg × 0.55 × K_план × K_гірськ × K_мульти</div>
+          <p style="font-size: 12px; margin-top: 8px; color: #475569;">
+            Базова ставка 8 735 ₴, частка випадку 0.55 (решта 0.45 — глобальний бюджет). Плановий коефіцієнт 0.80, гірський 1.25, мультихірургія 1.30.
+          </p>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-title text-teal">Хірургія одного дня (Пакет 47)</div>
+          <div class="formula-badge">Тариф = 8 735 × Wg × 0.60 × K_гірськ</div>
+          <p style="font-size: 12px; margin-top: 8px; color: #475569;">
+            При виписці пацієнта у день операції або протягом 24 годин застосовується підвищена частка випадку 0.60 без планового зниження 0.80.
+          </p>
+        </div>
+
+        <div class="cluster-card">
+          <div class="cluster-title text-purple">Амбулаторна допомога (Пакет 9)</div>
+          <div class="formula-badge">Тариф = 155.00 × K_класу × K_лаб_ліміт</div>
+          <p style="font-size: 12px; margin-top: 8px; color: #475569;">
+            Базова ставка 155.00 ₴ множиться на коефіцієнт 1 із 148 амбулаторних класів (від 0.23 до 14.50).
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: The Combinations Matrix & Validation Engine -->
+    <div class="card-box">
+      <h2 class="card-title">
+        <i class="material-icons" style="color: #6b21a8;">schema</i>
+        5. Матриця комбінацій та алгоритм 5-рівневої валідації
+      </h2>
+      <p style="margin-bottom: 12px;">
+        Для запобігання дефектури система виконує покрокову перевірку кожного введеного випадку:
+      </p>
+
+      <ol style="margin-left: 20px; line-height: 1.8; margin-bottom: 16px;">
+        <li>
+          <strong>Рівень 1: Вікові та статеві обмеження послуги.</strong> Перевірка віку пацієнта за діапазоном <code>[age_min, age_max]</code> та статі (наприклад, мамографія тільки для жінок, простатектомія тільки для чоловіків).
+        </li>
+        <li>
+          <strong>Рівень 2: Сумісність основного діагнозу МКХ-10.</strong> Зіставлення коду діагнозу (підтримується введення без крапок, наприклад <code>C180</code> або <code>C18.0</code>) із переліком дозволених кодів у <code>pmg_service_combinations</code>.
+        </li>
+        <li>
+          <strong>Рівень 3: Ліцензійна посада лікаря (Наказ МОЗ № 410).</strong> Перевірка посади фахівця, який підписує виписку КЕП. При невідповідності (наприклад, терапевт <code>P122</code> для резекції кишки замість хірурга-онколога <code>P157</code>) система негайно блокує дію, оскільки це призведе до 0 ₴ від НСЗУ.
+        </li>
+        <li>
+          <strong>Рівень 4: Обов'язкові супутні процедури (Co-requisites).</strong> Якщо протокол онкохірургії вимагає обов'язкової лімфодисекції (<code>30075-01</code>) та дренування (<code>30394-00</code>), система попереджає лікаря про необхідність їх внесення.
+        </li>
+        <li>
+          <strong>Рівень 5: Мультихірургія (+30%) та конфліктні коди.</strong> При наявності симультанної операції (наприклад, холецистектомія <code>30440-00</code>) автоматично застосовується множник 1.30, а при несумісних кодах видається попередження про конфлікт групування ДСГ.
+        </li>
+      </ol>
+
+      <div class="callout callout-info">
+        <strong>Бібліотека еталонів лікаря (myAddLib):</strong>
+        Лікар або начмед може зберегти будь-яку верифіковану комбінацію в бібліотеку еталонів. При подальшому моніторингу система автоматично порівнює фактично введені виписки із цим еталоном (Delphi <code>myDetailsSel</code>), підсвічуючи зеленою плашкою випадки максимального прибутку та жовтою — втрати доходів лікарні.
+      </div>
+    </div>
+
+    <!-- Section 6: Interactive Drill-Down to Encounters -->
+    <div class="card-box">
+      <h2 class="card-title">
+        <i class="material-icons" style="color: #0284c7;">people</i>
+        6. Наскрізний Drill-Down від послуги до конкретного пацієнта та 45 колонок
+      </h2>
+      <p style="margin-bottom: 12px;">
+        У MedLink PMG Pro реалізовано повністю наскрізну навігацію:
+      </p>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; margin: 12px 0;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-weight: 700; font-size: 13px;">
+          <div style="background: #e0f2fe; color: #0369a1; padding: 8px 12px; border-radius: 6px;">1. Довідник послуг (АКПІ)</div>
+          <span>➡</span>
+          <div style="background: #e0e7ff; color: #4338ca; padding: 8px 12px; border-radius: 6px;">2. Картка послуги (5 вкладок)</div>
+          <span>➡</span>
+          <div style="background: #f3e8ff; color: #7e22ce; padding: 8px 12px; border-radius: 6px;">3. Вкладка «Drill-down до ЕМЗ»</div>
+          <span>➡</span>
+          <div style="background: #dcfce7; color: #15803d; padding: 8px 12px; border-radius: 6px;">4. Запис конкретного пацієнта</div>
+          <span>➡</span>
+          <div style="background: #fef3c7; color: #b45309; padding: 8px 12px; border-radius: 6px;">5. Повний аудит 45 колонок звіту</div>
+        </div>
+      </div>
+
+      <p style="font-size: 13px; color: #64748b; line-height: 1.5;">
+        Економіст або медичний директор може вибрати будь-яку послугу (наприклад, <code>32003-00</code>), переглянути норми та формули, відкрити вкладку «Drill-down до пацієнтів», побачити всіх пацієнтів, яким її було проведено, та одним кліком відкрити повноцінне модальне вікно аудиту всіх 45 колонок звіту НСЗУ для детального аналізу причин відхилення або підтвердження оплати.
+      </p>
+    </div>
+
+    <!-- Section 7: REST API Endpoints Specification -->
+    <div class="card-box">
+      <h2 class="card-title">
+        <i class="material-icons" style="color: #0f766e;">api</i>
+        7. Специфікація REST API ендпоінтів модуля послуг та комбінацій
+      </h2>
+
+      <table class="guide-table">
+        <thead>
+          <tr>
+            <th style="width: 15%;">Метод & URL</th>
+            <th style="width: 35%;">Параметри / Body</th>
+            <th style="width: 50%;">Опис та структура JSON-відповіді</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-primary">GET</span><br><code>/api/v1/pmg/dictionaries/service-groups</code></td>
+            <td>Немає</td>
+            <td>Повертає перелік 12 клінічних груп із кількістю прив'язаних послуг у кожній групі.</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-primary">GET</span><br><code>/api/v1/pmg/dictionaries/services</code></td>
+            <td><code>q</code>, <code>group_id</code>, <code>category</code></td>
+            <td>Пошук та фільтрація послуг каталогу з нормами часу, анестезії, ліжко-днями та тарифами.</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-primary">GET</span><br><code>/api/v1/pmg/dictionaries/services/{code}</code></td>
+            <td><code>code</code> (напр. <code>32003-00</code>)</td>
+            <td>Детальний паспорт послуги: норми, матриця комбінацій, правила посад лікарів, реальні випадки пацієнтів (drill-down) та ризики дефектури.</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-teal">POST</span><br><code>/api/v1/pmg/combinations/validate</code></td>
+            <td><code>serviceCode</code>, <code>icdCode</code>, <code>doctorPosition</code>, <code>companionServices</code>, <code>admissionType</code>, <code>isMountain</code></td>
+            <td>Жива валідація набору кодування лікаря: перевірка сумісності діагнозу, посади, обов'язкових супутніх кодів, мультихірургії 1.30, розрахунок точного тарифу у гривнях та порівняння з еталоном бібліотеки (myAddLib).</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-teal">POST</span><br><code>/api/v1/pmg/combinations/library-save</code></td>
+            <td><code>combinationId</code>, <code>isStandard</code></td>
+            <td>Збереження або видалення комбінації з бібліотеки еталонних шаблонів (Delphi <code>myAddLib</code>).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Modal Viewer Script -->
+  <script src="modal_viewer.js"></script>
+</body>
+</html>

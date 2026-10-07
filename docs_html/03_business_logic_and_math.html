@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Математика тарифів ПМГ-2026 — MedLink PMG Pro</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="modal_viewer.css">
+
+  <style>
+    :root {
+      --primary: #4274A7;
+      --accent: #0178BC;
+      --positive: #21ba45;
+      --negative: #d04f45;
+      --dark-sidebar: #212121;
+      --bg-page: #f8fafc;
+      --border-color: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Source Sans Pro', sans-serif;
+      font-size: 15px;
+      color: #334155;
+      background-color: var(--bg-page);
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 280px;
+      background-color: var(--dark-sidebar);
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      border-right: 1px solid #333;
+    }
+    .brand-header {
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #333;
+      background: #1a1a1a;
+    }
+    .brand-header img { height: 26px; }
+    .brand-title { font-weight: 700; font-size: 16px; color: #fff; }
+    .brand-sub { font-size: 11px; color: #94a3b8; }
+    .nav-list { list-style: none; padding: 12px 8px; overflow-y: auto; flex-grow: 1; }
+    .nav-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      padding: 12px 14px 6px 14px;
+    }
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .nav-item a:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .nav-item.active a { background: var(--primary); color: #fff; font-weight: 600; }
+    .nav-item i { font-size: 18px; width: 20px; text-align: center; }
+
+    .prototype-btn-box { padding: 16px; border-top: 1px solid #333; background: #1a1a1a; }
+    .btn-proto {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 10px;
+      background: #0284c7;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 32px 48px;
+      overflow-y: auto;
+      max-width: 1200px;
+    }
+    .header-bar {
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+    }
+    .h1-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .subtitle { font-size: 14px; color: #64748b; }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .formula-box {
+      background: #f1f5f9;
+      border-left: 4px solid var(--accent);
+      padding: 16px 20px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 600;
+      color: #0f172a;
+      margin: 12px 0 16px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 12px 0;
+    }
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th { background: #f1f5f9; color: #334155; font-weight: 700; }
+    tr:nth-child(even) { background: #f8fafc; }
+
+    pre code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px;
+      border-radius: 6px;
+      display: block;
+      overflow-x: auto;
+      line-height: 1.5;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="brand-header">
+      <img src="../prototype_medlink/medlink_small.svg" alt="MedLink Logo">
+      <div>
+        <div class="brand-title">MEDLINK PMG</div>
+        <div class="brand-sub">Архітектура ПМГ 2026</div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li class="nav-section-title">Головна навігація</li>
+      <li class="nav-item">
+        <a href="index.html"><i class="material-icons">dashboard</i> Архітектурний огляд</a>
+      </li>
+
+      <li class="nav-section-title">Технічні специфікації</li>
+      <li class="nav-item">
+        <a href="01_database_schema.html"><i class="material-icons">storage</i> 1. Специфікація БД (EF Core)</a>
+      </li>
+      <li class="nav-item">
+        <a href="02_api_endpoints.html"><i class="material-icons">api</i> 2. Реєстр API Ендпоінтів</a>
+      </li>
+      <li class="nav-item active">
+        <a href="03_business_logic_and_math.html"><i class="material-icons">calculate</i> 3. Математика тарифів</a>
+      </li>
+      <li class="nav-item">
+        <a href="04_openxml_processor.html"><i class="material-icons">description</i> 4. Процесор OpenXML</a>
+      </li>
+      <li class="nav-item">
+        <a href="05_frontend_integration_guide.html"><i class="material-icons">web</i> 5. Інтеграція у фронтенд</a>
+      </li>
+      <li class="nav-item">
+        <a href="06_pmg_dictionaries_catalog.html"><i class="material-icons">menu_book</i> 6. Довідники та MedProfit</a>
+      </li>
+      <li class="nav-item">
+        <a href="07_nszu_file_analysis_literal_compliance.html"><i class="material-icons">verified</i> 7. Аудит відповідності (info-pmg)</a>
+      </li>
+      <li class="nav-item">
+        <a href="08_medlink_existing_ui_augmentation_guide.html"><i class="material-icons">extension</i> 8. Доповнення існуючих форм МІС</a>
+      </li>
+      <li class="nav-item">
+        <a href="09_all_pmg_packages_normative_guide.html"><i class="material-icons">library_books</i> 9. Всі 46 пакетів ПМГ-2026</a>
+      </li>
+      <li class="nav-item">
+        <a href="10_service_directory_norms_methodologies_combinations.html"><i class="material-icons">miscellaneous_services</i> 10. Справочник послуг та комбінації</a>
+      </li>
+    </ul>
+
+    <ul class="nav-list" style="margin-top: 10px; border-top: 1px solid #333;">
+      <li class="nav-section-title">SQL Скрипти та DDL</li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('01_ddl_tables.sql')"><i class="material-icons">table_chart</i> 01_ddl_tables.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('02_queries_2way_matching.sql')"><i class="material-icons">search</i> 02_queries_matching.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('04_seed_dsg_catalog_465.sql')"><i class="material-icons">dns</i> 04_dsg_catalog_465.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('05_seed_package9_classes_148.sql')"><i class="material-icons">local_hospital</i> 05_pkg9_classes_148.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('06_seed_nhsu_error_dictionary_186.sql')"><i class="material-icons">warning</i> 06_errors_186.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('07_seed_doctor_position_requirements.sql')"><i class="material-icons">person</i> 07_doctor_positions.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('08_seed_laboratory_tests_408.sql')"><i class="material-icons">biotech</i> 08_lab_tests_408.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('10_seed_all_pmg2026_packages.sql')"><i class="material-icons">collections_bookmark</i> 10_seed_all_46_packages.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('11_seed_service_combinations_and_groups.sql')"><i class="material-icons">schema</i> 11_service_combinations.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('09_seed_medprofit_rules_185.sql')"><i class="material-icons">rule</i> 09_rules_185.sql</a></li></ul>
+
+    <div class="prototype-btn-box">
+      <a href="../prototype_medlink/index.html" target="_blank" class="btn-proto">
+        <i class="material-icons" style="font-size:18px;">play_circle_filled</i>
+        Запустити прототип
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="header-bar">
+      <h1 class="h1-title">
+        <i class="material-icons" style="font-size: 32px; color: var(--primary);">calculate</i>
+        3. Математичний движок розрахунку тарифів (Постанова КМУ №1808)
+      </h1>
+      <p class="subtitle">
+        Формули тарифікації стаціонарних та амбулаторних випадків, алгоритм формування кроків аудиту <code>calculation.steps</code> та нормативна база.
+      </p>
+    </div>
+
+    <!-- Section 1: Inpatient Math -->
+    <div class="card">
+      <div class="card-title">
+        <i class="material-icons" style="color: var(--accent);">local_hospital</i>
+        1. Стаціонарна допомога (Пакети 3, 4, 36, 47, 54)
+      </div>
+      <p style="font-size: 14px; color: #475569; line-height: 1.5;">
+        Згідно з Постановою Кабінету Міністрів України №1808, вартість пролікованого стаціонарного випадку визначається за формулою:
+      </p>
+
+      <div class="formula-box">
+        Тариф = БазоваСтавка × ВК_ДСГ × К_пакету [× К_гірський (1.25)]
+      </div>
+
+      <ul style="margin-left: 20px; font-size: 14px; line-height: 1.6; color: #475569;">
+        <li><strong>Базова ставка (BaseRate)</strong>: <code>8 735,00 ₴</code> (зафіксована в таблиці <code>dsg_tariff_setting.base_rate</code>).</li>
+        <li><strong>ВК_ДСГ (WeightCoef)</strong>: Ваговий коефіцієнт складності ДСГ (з довідника <code>dsg_group_weight</code>, 471 група). Діапазон: від 0.20 до 18.50.</li>
+        <li><strong>К_пакету (PackageSpecificCoef)</strong>:
+          <ul style="margin-left: 16px; margin-top: 4px;">
+            <li><code>0.55</code> — терапевтичний профіль (Пакет 3), хіміотерапія (Пакет 47), стаціонарна реабілітація (Пакет 54).</li>
+            <li><code>0.60</code> — хірургічні втручання (Пакет 4). При тривалості перебування ≤ 3 діб застосовується правило короткої тривалості (<code>PK-01A</code>).</li>
+          </ul>
+        </li>
+        <li><strong>К_гірський (MountainCoef)</strong>: <code>1.25</code> (+25% до тарифу згідно із Законом України «Про статус гірських населених пунктів»).</li>
+      </ul>
+    </div>
+
+    <!-- Section 2: Outpatient Math -->
+    <div class="card">
+      <div class="card-title">
+        <i class="material-icons" style="color: var(--positive);">medical_services</i>
+        2. Амбулаторна вторинна допомога (Пакет 9)
+      </div>
+      <div class="formula-box">
+        Тариф = БазоваСтавка_АМБ (155,00 ₴) × Коефіцієнт_Класу (К)
+      </div>
+      <p style="font-size: 14px; color: #475569; line-height: 1.5;">
+        Вартість випадку амбулаторної допомоги визначається віднесенням виконаних медичних втручань до одного зі 148 амбулаторних класів.
+        Коефіцієнт варіюється від 1.00 (стандартна консультація, 155.00 ₴) до 9.80 (КТ з контрастом, 1 519.00 ₴).
+      </p>
+    </div>
+
+    <!-- Section 3: C# Service Implementation -->
+    <div class="card">
+      <div class="card-title">
+        <i class="material-icons" style="color: var(--primary);">code</i>
+        Імплементація калькулятора <code>PmgTariffCalculatorService.cs</code>
+      </div>
+      <pre><code>using System;
+using System.Collections.Generic;
+using System.Text.Json;
+using App.Domain.Models.dsg;
+
+namespace App.Business.Services.Pmg
+{
+    public class PmgTariffCalculatorService : IPmgTariffCalculatorService
+    {
+        private const decimal InpatientBaseRate = 8735.00m;
+        private const decimal OutpatientBaseRate = 155.00m;
+        private const decimal MountainMultiplier = 1.25m;
+
+        public CalculationOutput CalculateInpatient(
+            string dsgCode, 
+            decimal weightCoef, 
+            int packageNumber, 
+            bool isMountain,
+            int stayDays)
+        {
+            var steps = new List&lt;CalculationStepDto&gt;();
+
+            // Крок 1: Базова ставка
+            decimal runningTotal = InpatientBaseRate;
+            steps.Add(new CalculationStepDto {
+                Code = "BASE",
+                Caption = "Базова ставка за Постановою №1808",
+                Value = InpatientBaseRate,
+                Operation = "=",
+                RunningTotal = runningTotal
+            });
+
+            // Крок 2: Ваговий коефіцієнт ДСГ
+            runningTotal *= weightCoef;
+            steps.Add(new CalculationStepDto {
+                Code = "PK-12",
+                Caption = $"Ваговий коефіцієнт ДСГ {dsgCode}",
+                Value = weightCoef,
+                Operation = "×",
+                RunningTotal = Math.Round(runningTotal, 2),
+                NormativeReference = "Вагові коефіцієнти ДСГ (RD-13)"
+            });
+
+            // Крок 3: Специфічний коефіцієнт пакету
+            decimal packageCoef = (packageNumber == 4) ? 0.60m : 0.55m;
+            runningTotal *= packageCoef;
+            steps.Add(new CalculationStepDto {
+                Code = "SHARE",
+                Caption = $"Частка глобальної ставки ({packageCoef:F2})",
+                Value = packageCoef,
+                Operation = "×",
+                RunningTotal = Math.Round(runningTotal, 2)
+            });
+
+            // Крок 4: Гірський коефіцієнт
+            if (isMountain)
+            {
+                runningTotal *= MountainMultiplier;
+                steps.Add(new CalculationStepDto {
+                    Code = "PK-04",
+                    Caption = "Гірський коефіцієнт 1,25 (+25%)",
+                    Value = MountainMultiplier,
+                    Operation = "×",
+                    RunningTotal = Math.Round(runningTotal, 2),
+                    NormativeReference = "Закон України «Про статус гірських населених пунктів»"
+                });
+            }
+
+            return new CalculationOutput
+            {
+                TotalTariff = Math.Round(runningTotal, 2),
+                BaseRate = InpatientBaseRate,
+                WeightCoef = weightCoef,
+                DsgCode = dsgCode,
+                CalculationJson = JsonSerializer.Serialize(new { steps, total = runningTotal })
+            };
+        }
+    }
+}</code></pre>
+    <!-- Interactive Popup Trigger -->
+    <div class="card" style="border-left: 5px solid var(--positive); background: #f0fdf4;">
+      <div class="card-title" style="color: #166534;">
+        <i class="material-icons" style="color: #166534;">open_in_full</i>
+        Інтерактивний перегляд коду сервісу та конфігурації
+      </div>
+      <p style="font-size: 14px; color: #1e3a8a; margin-bottom: 12px;">
+        Відкрийте повну версію математичного калькулятора та сідів тарифів у модальному вікні:
+      </p>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="btn-open-popup" onclick="openFileModal('PmgTariffCalculatorService.cs')">
+          <i class="material-icons" style="font-size:16px;">code</i> PmgTariffCalculatorService.cs
+        </button>
+        <button class="btn-open-popup" onclick="openFileModal('03_seed_pmg2026_data.sql')">
+          <i class="material-icons" style="font-size:16px;">settings</i> 03_seed_pmg2026_data.sql
+        </button>
+        <button class="btn-open-popup" onclick="openFileModal('02_queries_2way_matching.sql')">
+          <i class="material-icons" style="font-size:16px;">search</i> SQL-запити тарифів
+        </button>
+      </div>
+    </div>
+
+  </main>
+  <script src="modal_viewer.js"></script>
+</body>
+</html>

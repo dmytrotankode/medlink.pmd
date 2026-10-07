@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Посібник безшовного доповнення існуючих форм МІС «Медлінк» — MedLink PMG Pro</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="modal_viewer.css">
+
+  <style>
+    :root {
+      --primary: #4274A7;
+      --accent: #0178BC;
+      --positive: #21ba45;
+      --negative: #d04f45;
+      --warning: #f2c037;
+      --dark-sidebar: #212121;
+      --bg-page: #f8fafc;
+      --border-color: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Source Sans Pro', sans-serif;
+      font-size: 15px;
+      color: #334155;
+      background-color: var(--bg-page);
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 280px;
+      background-color: var(--dark-sidebar);
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      border-right: 1px solid #333;
+    }
+    .brand-header {
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #333;
+      background: #1a1a1a;
+    }
+    .brand-header img { height: 26px; }
+    .brand-title { font-weight: 700; font-size: 16px; color: #fff; }
+    .brand-sub { font-size: 11px; color: #94a3b8; }
+    .nav-list { list-style: none; padding: 12px 8px; overflow-y: auto; flex-grow: 1; }
+    .nav-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      padding: 12px 14px 6px 14px;
+    }
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .nav-item a:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .nav-item.active a { background: var(--primary); color: #fff; font-weight: 600; }
+    .nav-item i { font-size: 18px; width: 20px; text-align: center; }
+
+    .prototype-btn-box { padding: 16px; border-top: 1px solid #333; background: #1a1a1a; }
+    .btn-proto {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 10px;
+      background: #0284c7;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 32px 48px;
+      overflow-y: auto;
+      max-width: 1200px;
+    }
+    .header-bar {
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+    }
+    .h1-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .subtitle { font-size: 14px; color: #64748b; }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .diff-block {
+      background: #0f172a;
+      border-radius: 6px;
+      padding: 16px;
+      margin: 12px 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #f8fafc;
+      overflow-x: auto;
+      line-height: 1.5;
+    }
+    .diff-add { color: #86efac; background: rgba(34, 197, 94, 0.15); display: block; padding: 2px 4px; border-left: 3px solid #22c55e; }
+    .diff-same { color: #94a3b8; display: block; padding: 2px 4px; }
+    .diff-del { color: #fca5a5; background: rgba(239, 68, 68, 0.15); display: block; padding: 2px 4px; border-left: 3px solid #ef4444; }
+
+    .callout {
+      padding: 14px 18px;
+      border-radius: 6px;
+      margin: 14px 0;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .callout-info { background: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid #2563eb; color: #1e3a8a; }
+    .callout-success { background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid #16a34a; color: #14532d; }
+    .callout-warning { background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid #d97706; color: #78350f; }
+
+    table.guide-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+    table.guide-table th { background: #f1f5f9; text-align: left; padding: 10px; border: 1px solid #cbd5e1; font-weight: 700; color: #1e293b; }
+    table.guide-table td { padding: 10px; border: 1px solid #cbd5e1; vertical-align: top; }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="brand-header">
+      <img src="../prototype_medlink/medlink_small.svg" alt="MedLink Logo">
+      <div>
+        <div class="brand-title">MEDLINK PMG</div>
+        <div class="brand-sub">Архітектура ПМГ 2026</div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li class="nav-section-title">Головна навігація</li>
+      <li class="nav-item"><a href="index.html"><i class="material-icons">dashboard</i> Архітектурний огляд</a></li>
+
+      <li class="nav-section-title">Технічні специфікації</li>
+      <li class="nav-item"><a href="01_database_schema.html"><i class="material-icons">storage</i> 1. Специфікація БД (EF Core)</a></li>
+      <li class="nav-item"><a href="02_api_endpoints.html"><i class="material-icons">api</i> 2. Реєстр API Ендпоінтів</a></li>
+      <li class="nav-item"><a href="03_business_logic_and_math.html"><i class="material-icons">calculate</i> 3. Математика тарифів</a></li>
+      <li class="nav-item"><a href="04_openxml_processor.html"><i class="material-icons">description</i> 4. Процесор OpenXML</a></li>
+      <li class="nav-item"><a href="05_frontend_integration_guide.html"><i class="material-icons">web</i> 5. Інтеграція у фронтенд</a></li>
+      <li class="nav-item"><a href="06_pmg_dictionaries_catalog.html"><i class="material-icons">menu_book</i> 6. Довідники та MedProfit</a></li>
+      <li class="nav-item"><a href="07_nszu_file_analysis_literal_compliance.html"><i class="material-icons">verified</i> 7. Аудит відповідності (info-pmg)</a></li>
+      <li class="nav-item active"><a href="08_medlink_existing_ui_augmentation_guide.html"><i class="material-icons">extension</i> 8. Доповнення існуючих форм МІС</a></li>
+      <li class="nav-item">
+        <a href="09_all_pmg_packages_normative_guide.html"><i class="material-icons">library_books</i> 9. Всі 46 пакетів ПМГ-2026</a>
+      </li>
+      <li class="nav-item">
+        <a href="10_service_directory_norms_methodologies_combinations.html"><i class="material-icons">miscellaneous_services</i> 10. Справочник послуг та комбінації</a>
+      </li>
+    </ul>
+
+    <ul class="nav-list" style="margin-top: 10px; border-top: 1px solid #333;">
+      <li class="nav-section-title">SQL Скрипти та DDL</li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('01_ddl_tables.sql')"><i class="material-icons">table_chart</i> 01_ddl_tables.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('02_queries_2way_matching.sql')"><i class="material-icons">search</i> 02_queries_matching.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('04_seed_dsg_catalog_465.sql')"><i class="material-icons">dns</i> 04_dsg_catalog_465.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('07_seed_doctor_position_requirements.sql')"><i class="material-icons">person</i> 07_doctor_positions.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('08_seed_laboratory_tests_408.sql')"><i class="material-icons">biotech</i> 08_lab_tests_408.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('10_seed_all_pmg2026_packages.sql')"><i class="material-icons">collections_bookmark</i> 10_seed_all_46_packages.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('11_seed_service_combinations_and_groups.sql')"><i class="material-icons">schema</i> 11_service_combinations.sql</a></li>
+    </ul>
+
+    <div class="prototype-btn-box">
+      <a href="../prototype_medlink/index.html" target="_blank" class="btn-proto">
+        <i class="material-icons" style="font-size:18px;">play_circle_filled</i>
+        Запустити прототип
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="header-bar">
+      <h1 class="h1-title">
+        <i class="material-icons" style="font-size: 32px; color: var(--primary);">extension</i>
+        8. Посібник безшовного доповнення існуючих форм та процесів МІС «Медлінк»
+      </h1>
+      <p class="subtitle">
+        Інструкція для розробника та системного аналітика: як інтегрувати функціонал ПМГ-2026 
+        <strong>виключно шляхом точкових адитивних розширень</strong> поточних форм, меню та сервісів проєкту <code>evomis</code>, не порушуючи їх стабільність.
+      </p>
+    </div>
+
+    <!-- Executive Golden Rule -->
+    <div class="callout callout-success">
+      <strong>🎯 Головний інженерний принцип:</strong> 
+      Ми не створюємо ізольовану окрему систему і не ламаємо жодного існуючого компонента. 
+      Всі зміни впроваджуються як <strong>доповнення (augmentations / extension hooks)</strong> до існуючих файлів репозиторію МІС «Медлінк» (<code>evomis</code>):
+      у картку взаємодії додається пре-білінг віджет, у навігаційне меню — пункт аналітики, а в процесор OpenXML — новий клас <code>NszuStatementXlsxProcessor</code> на базі існуючого <code>CoreXlsxProcessor</code>.
+    </div>
+
+    <!-- Section 1: Encounter Details -->
+    <div class="card">
+      <div class="card-title">
+        <i class="material-icons" style="color: var(--primary);">medical_services</i>
+        1. Доповнення картки взаємодії лікаря: <code>Details.vue</code>
+      </div>
+      <p style="font-size: 13px; color: #64748b; margin-bottom: 12px;">
+        <strong>Файл у репозиторії:</strong> <code>c:/__MEDLINK___/__MEDLINK/evomis/src/App.View/src/pages/medicalEvents/encounter/subpages/Details.vue</code>
+      </p>
+
+      <div class="callout callout-info">
+        <strong>Що вже є в МІС:</strong> У формі <code>Details.vue</code> вже існують кнопки:
+        <code>createWithSign</code> (Підписати КЕП), <code>showDsgRecommendedCodesDialog</code> (Зберегти та перевірити ДСГ), випадаючі списки рецептів та направлень,
+        а також вкладки <code>encounter-edit-tab</code>, <code>diagnoses-tab</code>, <code>episodes-tab</code>.<br>
+        <strong>Що ми додаємо:</strong> Інтерактивний блок пре-білінгу та перевірки спеціальності лікаря (MedProfit Anti-Defektura) безпосередньо над кнопкою підписання КЕП.
+      </div>
+
+      <div class="diff-block">
+<span class="diff-same">         &lt;!-- Існуюча кнопка підписання КЕП у Details.vue (рядок 204) --&gt;</span>
+<span class="diff-same">         &lt;q-btn v-if="canEditEncounter && !allowsOperatingWithoutEhealth"</span>
+<span class="diff-same">                icon="fas fa-signature" color="primary q-mr-sm"</span>
+<span class="diff-same">                @click="createWithSign" :label="labelCreateEncounterWithSignBtn" /&gt;</span>
+<span class="diff-same"></span>
+<span class="diff-add">+        &lt;!-- ================= АДИТИВНЕ ДОПОВНЕННЯ ПМГ-2026: ВІДЖЕТ ПРЕ-БІЛІНГУ ================= --&gt;</span>
+<span class="diff-add">+        &lt;q-btn color="accent" icon="calculate" label="Пре-білінг та Anti-Defektura"</span>
+<span class="diff-add">+               outline class="q-mr-sm" @click="showPmgPrebillingDialog = true"&gt;</span>
+<span class="diff-add">+          &lt;q-badge v-if="pmgDefekturaRisk" color="negative" floating&gt;УВАГА: Ризик дефектури!&lt;/q-badge&gt;</span>
+<span class="diff-add">+        &lt;/q-btn&gt;</span>
+<span class="diff-same"></span>
+<span class="diff-same">         &lt;!-- Існуюча кнопка рекомендацій ДСГ у Details.vue (рядок 214) --&gt;</span>
+<span class="diff-same">         &lt;q-btn v-if="canEditEncounter" @click="showDsgRecommendedCodesDialog"</span>
+<span class="diff-same">                :label="isEncounterEdit ? labelSaveEncounterBtn : createEncounterButtonLabel" /&gt;</span>
+      </div>
+
+      <p style="font-size: 13px; color: #475569; margin-top: 10px;">
+        <strong>Як це працює без зламу процесу:</strong> Лікар заповнює діагноз та послугу як звичайно. Якщо посада лікаря відповідає вимогам (наприклад, $P157$ для хірургії), 
+        кнопка підписання підсвічується зеленим та вказує розрахований тариф. Якщо виявлено невідповідність посади ($P122$), система показує попередження: 
+        <em>«ERR_DOC_SPEC_04: НСЗУ відхилить цей випадок (0 ₴)! Призначте лікаря з посадою P157!»</em>. Лікар виправляє помилку <strong>до підписання КЕП</strong>.
+      </p>
+    </div>
+
+    <!-- Section 2: Navigation Drawer -->
+    <div class="card">
+      <div class="card-title">
+        <i class="material-icons" style="color: var(--primary);">menu</i>
+        2. Доповнення навігаційного меню: <code>baseElements.js</code> та <code>menuDrawer.vue</code>
+      </div>
+      <p style="font-size: 13px; color: #64748b; margin-bottom: 12px;">
+        <strong>Файли у репозиторії:</strong><br>
+        • <code>src/App.View/src/store/modules/components/baseElements.js</code> (масив <code>navMenu</code>)<br>
+        • <code>src/App.View/src/components/baseElements/menuDrawer.vue</code> (відображення пунктів)
+      </p>
+
+      <div class="diff-block">
+<span class="diff-same">       // baseElements.js -> state.navMenu:</span>
+<span class="diff-same">       {</span>
+<span class="diff-same">         header: "Журнали",</span>
+<span class="diff-same">         children: [</span>
+<span class="diff-same">           { label: "Пацієнти", link: "/patients" },</span>
+<span class="diff-same">           { label: "Взаємодії", link: "/encounters" },</span>
+<span class="diff-same">           { label: "Неоновлені ЕМЗ", link: "/emz-errors-refresh/encounters" },</span>
+<span class="diff-same">         ]</span>
+<span class="diff-same">       },</span>
+<span class="diff-add">+      // ================= НОВИЙ РОЗДІЛ: АНАЛІТИКА ПМГ 2026 (АДИТИВНО) =================</span>
+<span class="diff-add">+      {</span>
+<span class="diff-add">+        header: "Аналітика ПМГ 2026",</span>
+<span class="diff-add">+        separator: true,</span>
+<span class="diff-add">+        operationRight: "ShowPmgAnalyticsTab",</span>
+<span class="diff-add">+        children: [</span>
+<span class="diff-add">+          { icon: "assessment", label: "Аудит та тарифи ПМГ (45 кол.)", link: "/pmg/audit", entity: "DsgStatement" },</span>
+<span class="diff-add">+          { icon: "cloud_upload", label: "Імпорт звіту НСЗУ (OpenXML)", link: "/pmg/upload", entity: "DsgStatement" },</span>
+<span class="diff-add">+          { icon: "sync_alt", label: "2-Way Звірка (Прихована дефектура)", link: "/pmg/reconciliation", entity: "DsgStatement" },</span>
+<span class="diff-add">+          { icon: "report_problem", label: "Журнал дефектури (186 помилок)", link: "/pmg/discrepancies", entity: "DsgStatement" },</span>
+<span class="diff-add">+          { icon: "people_alt", label: "Звіт по лікарях («Звіт» НСЗУ)", link: "/pmg/doctors", entity: "DsgStatement" },</span>
+<span class="diff-add">+        ]</span>
+<span class="diff-add">+      },</span>
+<span class="diff-same">       {</span>
+<span class="diff-same">         header: "Довідники",</span>
+<span class="diff-same">         children: [ ... ]</span>
+<span class="diff-same">       }</span>
+      </div>
+    </div>
+
+    <!-- Section 3: OpenXML Processor -->
+    <div class="card">
+      <div class="card-title">
+        <i class="material-icons" style="color: var(--primary);">description</i>
+        3. Доповнення OpenXML процесора: <code>App.XlsxAnalyzer.Module</code>
+      </div>
+      <p style="font-size: 13px; color: #64748b; margin-bottom: 12px;">
+        <strong>Проєкт у репозиторії:</strong> <code>c:/__MEDLINK___/__MEDLINK/evomis/src/App.XlsxAnalyzer.Module</code>
+      </p>
+
+      <div class="callout callout-info">
+        <strong>Що вже є в МІС:</strong> У модулі <code>App.XlsxAnalyzer.Module</code> вже реалізовано базовий клас <code>CoreXlsxProcessor</code>,
+        інтерфейс <code>IXlsxProcessor</code> та фабрику <code>XlsxProcessorFactory</code> для завантаження обладнання, платних послуг та спеціальностей.<br>
+        <strong>Що ми додаємо:</strong> Створюємо новий клас <code>NszuStatementXlsxProcessor</code>, який успадковує <code>CoreXlsxProcessor</code>
+        та реєструється в фабриці без переписування існуючого коду.
+      </div>
+
+      <div class="diff-block">
+<span class="diff-add">namespace App.XlsxAnalyzer.Module.Processors.Internal;</span>
+<span class="diff-add"></span>
+<span class="diff-add">internal class NszuStatementXlsxProcessor : CoreXlsxProcessor, IXlsxProcessor</span>
+<span class="diff-add">{</span>
+<span class="diff-add">    public NszuStatementXlsxProcessor(IOfficeDocumentService xlsxService) : base(xlsxService) { }</span>
+<span class="diff-add"></span>
+<span class="diff-add">    protected override FileExtensionType FileExtensionType => FileExtensionType.Xlsx;</span>
+<span class="diff-add">    protected override XlsxEntityType XlsxEntityType => XlsxEntityType.NszuStatement;</span>
+<span class="diff-add"></span>
+<span class="diff-add">    protected override Func&lt;DataTable, XlsxFileDto?, CancellationToken, Task&gt; ExecuteAsync()</span>
+<span class="diff-add">    {</span>
+<span class="diff-add">        return async (dataTable, fileDto, cancellationToken) =></span>
+<span class="diff-add">        {</span>
+<span class="diff-add">            // Потоковий SAX-парсинг 45 колонок звіту НСЗУ</span>
+<span class="diff-add">            // Збереження в dsg_nszu_statement_line через PostgreSQL COPY</span>
+<span class="diff-add">        };</span>
+<span class="diff-add">    }</span>
+<span class="diff-add">}</span>
+      </div>
+    </div>
+
+    <!-- Section 4: Analyst Process Table -->
+    <div class="card">
+      <div class="card-title">
+        <i class="material-icons" style="color: var(--primary);">assignment</i>
+        4. Зведена таблиця змін бізнес-процесів для аналітика
+      </div>
+
+      <table class="guide-table">
+        <thead>
+          <tr>
+            <th>Бізнес-роль</th>
+            <th>Поточний процес (As-Is)</th>
+            <th>Доповнений процес (To-Be)</th>
+            <th>Що запобігає злам</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Лікар (стаціонар / амбулаторія)</strong></td>
+            <td>Вносить ЕМЗ у <code>Details.vue</code>, обирає діагноз та послугу, натискає «Підписати КЕП». Про помилку дізнається лише через місяць після відмови НСЗУ.</td>
+            <td>Вносить ЕМЗ як звичайно. Система миттєво рахує очікуваний тариф та валідує посаду лікаря ($P157$). Якщо є ризик дефектури — видає підказку до підписання.</td>
+            <td>Кнопка «Підписати КЕП» залишається активною. Перевірка працює як інформаційний асистент, не блокуючи невідкладну реєстрацію пацієнта.</td>
+          </tr>
+          <tr>
+            <td><strong>Економіст / Моніторинг</strong></td>
+            <td>Вручну відкриває Excel-файл НСЗУ на 50 МБ у Microsoft Excel, фільтрує помилки, вручну розраховує тарифи за формулами.</td>
+            <td>Завантажує файл у веб-інтерфейс через OpenXML. Система автоматично проводить 2-Way звірку з базою <code>mis_encounter</code> та виявляє приховану дефектуру.</td>
+            <td>Використовується існуючий стек Quasar 1.15.3 та потоковий SAX-парсер, що виключає падіння сервера за пам'яттю.</td>
+          </tr>
+          <tr>
+            <td><strong>Керівництво (Головний лікар)</strong></td>
+            <td>Отримує паперові або зведені звіти про недофінансування без розуміння персональної відповідальності за помилки.</td>
+            <td>Відкриває вкладку «Звіт по лікарях», бачить нарахований дохід за кожним лікарем, суму втраченої дефектури та статус ургентних випадків Пакета 9.</td>
+            <td>Агрегація спирається на реальні сутності <code>org_employee</code> та <code>org_department</code>, без створення дублюючих структур.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+
+  <script src="modal_viewer.js"></script>
+</body>
+</html>

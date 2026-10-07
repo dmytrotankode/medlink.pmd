@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <title>Журнал розбіжностей та 2-Way звірка за ID ЕМЗ — MedLink PMG Pro</title>
+  
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ml-primary: #0e508b;
+      --ml-primary-dark: #0a3a66;
+      --ml-primary-light: #166ba8;
+      --ml-accent: #0086ff;
+      --ml-accent-cyan: #00c0f0;
+      --ml-bg: #f8fafc;
+      --ml-card-bg: #ffffff;
+      --ml-text: #1e293b;
+      --ml-text-muted: #64748b;
+      --ml-border: #e2e8f0;
+      --ml-success: #10b981;
+      --ml-success-light: #ecfdf5;
+      --ml-warning: #f59e0b;
+      --ml-warning-light: #fffbeb;
+      --ml-danger: #ef4444;
+      --ml-danger-light: #fef2f2;
+      --ml-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --ml-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+      --radius: 10px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+    body { background-color: var(--ml-bg); color: var(--ml-text); min-height: 100vh; display: flex; flex-direction: column; }
+
+    .ml-header {
+      background: linear-gradient(135deg, var(--ml-primary-dark) 0%, var(--ml-primary) 100%);
+      color: white; padding: 0.75rem 1.5rem; display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 3px solid var(--ml-accent); box-shadow: var(--ml-shadow); position: sticky; top: 0; z-index: 100;
+    }
+    .ml-brand { display: flex; align-items: center; gap: 12px; }
+    .ml-logo-box {
+      width: 42px; height: 42px; background: white; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15); font-weight: 800; color: var(--ml-primary); font-size: 1.2rem;
+    }
+    .ml-brand-titles h1 { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+    .ml-brand-titles h1 span.badge-pro {
+      background: var(--ml-accent-cyan); color: #0a3a66; font-size: 0.65rem;
+      padding: 2px 7px; border-radius: 4px; font-weight: 800; text-transform: uppercase;
+    }
+    .ml-brand-titles p { font-size: 0.75rem; color: #cbd5e1; }
+
+    .hosp-select {
+      background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+      color: white; padding: 7px 12px; border-radius: 8px; font-size: 0.825rem; font-weight: 600;
+      cursor: pointer; outline: none;
+    }
+    .hosp-select option { background: #0a3a66; color: white; }
+
+    .ml-nav {
+      background: white; border-bottom: 1px solid var(--ml-border);
+      padding: 0 1.5rem; display: flex; gap: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.03); overflow-x: auto;
+    }
+    .nav-btn {
+      padding: 12px 14px; border: none; background: transparent; font-size: 0.825rem; font-weight: 600;
+      color: var(--ml-text-muted); cursor: pointer; display: flex; align-items: center; gap: 6px;
+      border-bottom: 3px solid transparent; text-decoration: none; white-space: nowrap; transition: all 0.2s ease;
+    }
+    .nav-btn:hover { color: var(--ml-primary); background: #f8fafc; }
+    .nav-btn.active { color: var(--ml-primary); border-bottom-color: var(--ml-accent); font-weight: 700; }
+    .nav-btn .pill { background: #e2e8f0; color: #475569; font-size: 0.7rem; padding: 2px 6px; border-radius: 10px; font-weight: 700; }
+    .nav-btn.active .pill { background: var(--ml-accent); color: white; }
+
+    .ml-container { max-width: 1560px; margin: 1.5rem auto; padding: 0 1.5rem; flex: 1; width: 100%; }
+
+    .process-banner {
+      background: #eff6ff; border: 1px solid #bfdbfe; border-left: 5px solid var(--ml-accent);
+      border-radius: var(--radius); padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--ml-shadow);
+    }
+    .process-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .process-title { font-size: 1.1rem; font-weight: 800; color: #1e3a8a; display: flex; align-items: center; gap: 8px; }
+    .process-meta-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 10px; font-size: 0.8rem; border-top: 1px solid #dbeafe; padding-top: 10px; }
+    .process-meta-item strong { display: block; color: #1e40af; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 2px; }
+    .process-meta-item span { color: #1e3a8a; }
+
+    .content-card {
+      background: white; border-radius: var(--radius); border: 1px solid var(--ml-border);
+      box-shadow: var(--ml-shadow); padding: 1.5rem; margin-bottom: 1.5rem;
+    }
+    .card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--ml-border);
+    }
+    .card-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--ml-primary); display: flex; align-items: center; gap: 8px; }
+    .card-header p { font-size: 0.8rem; color: var(--ml-text-muted); }
+
+    .btn {
+      padding: 9px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+      border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; transition: all 0.2s;
+    }
+    .btn-primary { background: var(--ml-accent); color: white; }
+    .btn-primary:hover { background: #0070d6; }
+    .btn-outline { background: white; border: 1px solid var(--ml-border); color: var(--ml-text); }
+    .btn-outline:hover { background: #f1f5f9; border-color: #cbd5e1; }
+    .btn-success { background: var(--ml-success); color: white; }
+    .btn-success:hover { background: #059669; }
+
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 0.725rem; font-weight: 700; white-space: nowrap; }
+    .badge-success { background: var(--ml-success-light); color: var(--ml-success); border: 1px solid #a7f3d0; }
+    .badge-info { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .badge-danger { background: var(--ml-danger-light); color: var(--ml-danger); border: 1px solid #fecaca; }
+    .badge-warning { background: var(--ml-warning-light); color: #b45309; border: 1px solid #fde68a; }
+    .badge-gray { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+
+    .code-tag {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.775rem; background: #f1f5f9;
+      padding: 2px 6px; border-radius: 4px; border: 1px solid #cbd5e1; color: #0f172a;
+    }
+
+    .search-input {
+      padding: 9px 14px; border: 1px solid var(--ml-border); border-radius: 8px; font-size: 0.875rem;
+      min-width: 260px; outline: none; transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: var(--ml-accent); box-shadow: 0 0 0 3px rgba(0, 134, 255, 0.15); }
+
+    .encounter-field { background: #f8fafc; border: 1px solid var(--ml-border); padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; }
+    .encounter-field strong { display: block; color: #64748b; font-size: 0.7rem; text-transform: uppercase; margin-bottom: 2px; }
+
+    .table-responsive { width: 100%; overflow-x: auto; border: 1px solid var(--ml-border); border-radius: 8px; }
+    .ml-table { width: 100%; border-collapse: collapse; font-size: 0.825rem; text-align: left; }
+    .ml-table th { background: #f8fafc; color: #475569; font-weight: 700; padding: 10px 12px; border-bottom: 2px solid var(--ml-border); white-space: nowrap; }
+    .ml-table td { padding: 9px 12px; border-bottom: 1px solid var(--ml-border); color: var(--ml-text); vertical-align: middle; }
+    .ml-table tr:hover { background-color: #f1f5f9; }
+    .ml-table tr.row-rejected { background-color: #fffafb; }
+
+    .ml-footer {
+      background: white; border-top: 1px solid var(--ml-border); padding: 1.25rem 1.5rem;
+      font-size: 0.8rem; color: var(--ml-text-muted); display: flex; justify-content: space-between; align-items: center; margin-top: auto;
+    }
+  </style>
+
+</head>
+<body>
+  <header class="ml-header">
+    <div class="ml-brand">
+      <div class="ml-logo-box">ML</div>
+      <div class="ml-brand-titles">
+        <h1>MedLink PMG Analytics <span class="badge-pro">PRO 2026</span></h1>
+        <p>Процес 4: Журнал розбіжностей та 2-Way звірка за ID ЕМЗ</p>
+      </div>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <span class="badge badge-info">● Завідувачі відділень / Експерти з кодування</span>
+      <a href="../TZ_MedLink_PMG_Analytics.html#process-4" class="btn btn-outline" style="background:rgba(255,255,255,0.15); color:white; border-color:rgba(255,255,255,0.3); font-size:0.75rem;">📖 Читати в ТЗ →</a>
+    </div>
+  </header>
+
+  <nav class="ml-nav">
+  <a href="index.html" class="nav-btn"><span>🌐 Портал (Всі процеси)</span></a>
+  <a href="process_1_prebilling.html" class="nav-btn"><span>1. Пре-білінг лікаря</span> <span class="pill">П1</span></a>
+  <a href="process_2_upload.html" class="nav-btn"><span>2. Імпорт звіту НСЗУ</span> <span class="pill">П2</span></a>
+  <a href="process_3_financial_audit.html" class="nav-btn"><span>3. Фінансовий аудит (45 колонок)</span> <span class="pill">П3</span></a>
+  <a href="process_4_discrepancies.html" class="nav-btn active"><span>4. Журнал розбіжностей 2-Way</span> <span class="pill">П4</span></a>
+  <a href="process_5_correction.html" class="nav-btn"><span>5. Асистент виправлення</span> <span class="pill">П5</span></a>
+  <a href="process_6_catalog.html" class="nav-btn"><span>6. Довідник нормативів</span> <span class="pill">П6</span></a>
+</nav>
+
+  <main class="ml-container">
+    <div class="process-banner">
+      <div class="process-header">
+        <div class="process-title">
+          <span>⚡</span> БІЗНЕС-ПРОЦЕС 4: Журнал розбіжностей та 2-Way звірка за ID ЕМЗ
+        </div>
+        <span class="badge badge-success" style="font-size:0.8rem;">Прототип готовий</span>
+      </div>
+      <p style="font-size:0.85rem; color:#1e3a8a; line-height:1.5;">
+        <strong>Суть процесу:</strong> Автоматичне співставлення відхилених записів НСЗУ з базою МІС Медлінк за полем Encounter.EhealthId. Локалізація відділень та розрахунок точного збитку.
+      </p>
+      <div class="process-meta-grid">
+        <div class="process-meta-item">
+          <strong>Хто виконує:</strong>
+          <span>Завідувачі відділень / Експерти з кодування</span>
+        </div>
+        <div class="process-meta-item">
+          <strong>Нормативна база:</strong>
+          <span>Лист «Опис помилок» НСЗУ (186 правил перевірки)</span>
+        </div>
+        <div class="process-meta-item">
+          <strong>Точка входу в Медлінку:</strong>
+          <span>Компонент МІС «Медлінк»</span>
+        </div>
+        <div class="process-meta-item">
+          <strong>Бізнес-ефект:</strong>
+          <span>Виявлення та підготовка до відновлення від 3.6 до 6.1 млн грн у кожному звіті.</span>
+        </div>
+      </div>
+    </div>
+
+    
+<div class="content-card">
+  <div class="card-header">
+    <div>
+      <h2><span>⚠️</span> Реєстр розбіжностей та втраченого доходу (Lost Revenue)</h2>
+      <p>Записи зі статусом «Ні», співставлені з первинними ЕМЗ МІС Медлінк за ID ЕМЗ</p>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="ml-table">
+      <thead>
+        <tr>
+          <th>ID ЕМЗ</th>
+          <th>Пацієнт</th>
+          <th>Лікар</th>
+          <th>Діагноз / Послуга</th>
+          <th>Причина відхилення НСЗУ (Кол. 39)</th>
+          <th>Втрачений дохід</th>
+          <th>Дія</th>
+        </tr>
+      </thead>
+      <tbody id="p4-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+  </main>
+
+  <footer class="ml-footer">
+    <div>МІС «Медлінк» • Процес 4: Журнал розбіжностей та 2-Way звірка за ID ЕМЗ</div>
+    <div>Нормативна база: Постанова КМУ №1808 від 27.12.2024</div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script>
+    
+function renderP4() {
+  const tb = document.getElementById('p4-tbody');
+  tb.innerHTML = '';
+  const hosp = window.PROTOTYPE_DATA.hospitals.oco;
+  const rej = (hosp.records || []).filter(r => r.included === 'Ні');
+
+  rej.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.className = 'row-rejected';
+    tr.innerHTML = `
+      <td><span class="code-tag">${r.emz_id.slice(0, 12)}...</span></td>
+      <td>Пацієнт #${r.patient_id.slice(0, 8)}...<br><small style="color:#64748b;">Вік: ${r.age} р.</small></td>
+      <td><strong>${r.doc_name}</strong><br><small style="color:#64748b;">${r.doc_pos}</small></td>
+      <td><span class="code-tag">${r.diag_main ? r.diag_main.slice(0, 22) : '—'}</span></td>
+      <td style="max-width:280px; font-size:0.775rem; color:#7f1d1d; font-weight:600;">${r.error_comment || 'Не відповідає жодному пакету/послузі'}</td>
+      <td><strong style="color:#dc2626; font-size:0.95rem;">-24 357.55 ₴</strong></td>
+      <td><a href="process_5_correction.html" class="btn btn-primary" style="padding:6px 12px; font-size:0.75rem;">⚡ Відкрити в Медлінку</a></td>
+    `;
+    tb.appendChild(tr);
+  });
+}
+window.onload = renderP4;
+
+  </script>
+</body>
+</html>

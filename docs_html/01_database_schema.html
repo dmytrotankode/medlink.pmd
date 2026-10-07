@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Специфікація бази даних та EF Core — MedLink PMG 2026</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="modal_viewer.css">
+
+  <style>
+    :root {
+      --primary: #4274A7;
+      --accent: #0178BC;
+      --positive: #21ba45;
+      --negative: #d04f45;
+      --dark-sidebar: #212121;
+      --bg-page: #f8fafc;
+      --border-color: #e2e8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Source Sans Pro', sans-serif;
+      font-size: 15px;
+      color: #334155;
+      background-color: var(--bg-page);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 280px;
+      background-color: var(--dark-sidebar);
+      color: #f1f5f9;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      border-right: 1px solid #333;
+    }
+    .brand-header {
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #333;
+      background: #1a1a1a;
+    }
+    .brand-header img { height: 26px; }
+    .brand-title { font-weight: 700; font-size: 16px; color: #fff; }
+    .brand-sub { font-size: 11px; color: #94a3b8; }
+    .nav-list { list-style: none; padding: 12px 8px; overflow-y: auto; flex-grow: 1; }
+    .nav-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      padding: 12px 14px 6px 14px;
+    }
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .nav-item a:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
+    .nav-item.active a { background: var(--primary); color: #fff; font-weight: 600; }
+    .nav-item i { font-size: 18px; width: 20px; text-align: center; }
+
+    .prototype-btn-box { padding: 16px; border-top: 1px solid #333; background: #1a1a1a; }
+    .btn-proto {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 10px;
+      background: #0284c7;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    .main-content {
+      flex-grow: 1;
+      padding: 32px 48px;
+      overflow-y: auto;
+      max-width: 1200px;
+    }
+    .header-bar {
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+    }
+    .h1-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .subtitle { font-size: 14px; color: #64748b; }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 12px 0;
+    }
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    th {
+      background: #f1f5f9;
+      color: #334155;
+      font-weight: 700;
+    }
+    tr:nth-child(even) { background: #f8fafc; }
+    .col-pk { font-weight: 700; color: #0284c7; font-family: 'JetBrains Mono', monospace; }
+    .col-fk { font-weight: 700; color: #16a34a; font-family: 'JetBrains Mono', monospace; }
+
+    pre code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 16px;
+      border-radius: 6px;
+      display: block;
+      overflow-x: auto;
+      line-height: 1.5;
+      margin: 12px 0;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge-primary { background: #dbeafe; color: #1e40af; }
+    .badge-positive { background: #dcfce7; color: #15803d; }
+  </style>
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="brand-header">
+      <img src="../prototype_medlink/medlink_small.svg" alt="MedLink Logo">
+      <div>
+        <div class="brand-title">MEDLINK PMG</div>
+        <div class="brand-sub">Архітектура ПМГ 2026</div>
+      </div>
+    </div>
+
+    <ul class="nav-list">
+      <li class="nav-section-title">Головна навігація</li>
+      <li class="nav-item">
+        <a href="index.html"><i class="material-icons">dashboard</i> Архітектурний огляд</a>
+      </li>
+
+      <li class="nav-section-title">Технічні специфікації</li>
+      <li class="nav-item active">
+        <a href="01_database_schema.html"><i class="material-icons">storage</i> 1. Специфікація БД (EF Core)</a>
+      </li>
+      <li class="nav-item">
+        <a href="02_api_endpoints.html"><i class="material-icons">api</i> 2. Реєстр API Ендпоінтів</a>
+      </li>
+      <li class="nav-item">
+        <a href="03_business_logic_and_math.html"><i class="material-icons">calculate</i> 3. Математика тарифів</a>
+      </li>
+      <li class="nav-item">
+        <a href="04_openxml_processor.html"><i class="material-icons">description</i> 4. Процесор OpenXML</a>
+      </li>
+      <li class="nav-item">
+        <a href="05_frontend_integration_guide.html"><i class="material-icons">web</i> 5. Інтеграція у фронтенд</a>
+      </li>
+      <li class="nav-item">
+        <a href="06_pmg_dictionaries_catalog.html"><i class="material-icons">menu_book</i> 6. Довідники та MedProfit</a>
+      </li>
+      <li class="nav-item">
+        <a href="07_nszu_file_analysis_literal_compliance.html"><i class="material-icons">verified</i> 7. Аудит відповідності (info-pmg)</a>
+      </li>
+      <li class="nav-item">
+        <a href="08_medlink_existing_ui_augmentation_guide.html"><i class="material-icons">extension</i> 8. Доповнення існуючих форм МІС</a>
+      </li>
+      <li class="nav-item">
+        <a href="09_all_pmg_packages_normative_guide.html"><i class="material-icons">library_books</i> 9. Всі 46 пакетів ПМГ-2026</a>
+      </li>
+      <li class="nav-item">
+        <a href="10_service_directory_norms_methodologies_combinations.html"><i class="material-icons">miscellaneous_services</i> 10. Справочник послуг та комбінації</a>
+      </li>
+    </ul>
+
+    <ul class="nav-list" style="margin-top: 10px; border-top: 1px solid #333;">
+      <li class="nav-section-title">SQL Скрипти та DDL</li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('01_ddl_tables.sql')"><i class="material-icons">table_chart</i> 01_ddl_tables.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('02_queries_2way_matching.sql')"><i class="material-icons">search</i> 02_queries_matching.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('04_seed_dsg_catalog_465.sql')"><i class="material-icons">dns</i> 04_dsg_catalog_465.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('05_seed_package9_classes_148.sql')"><i class="material-icons">local_hospital</i> 05_pkg9_classes_148.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('06_seed_nhsu_error_dictionary_186.sql')"><i class="material-icons">warning</i> 06_errors_186.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('07_seed_doctor_position_requirements.sql')"><i class="material-icons">person</i> 07_doctor_positions.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('08_seed_laboratory_tests_408.sql')"><i class="material-icons">biotech</i> 08_lab_tests_408.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('10_seed_all_pmg2026_packages.sql')"><i class="material-icons">collections_bookmark</i> 10_seed_all_46_packages.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('11_seed_service_combinations_and_groups.sql')"><i class="material-icons">schema</i> 11_service_combinations.sql</a></li>
+      <li class="nav-item"><a href="#" onclick="openFileModal('09_seed_medprofit_rules_185.sql')"><i class="material-icons">rule</i> 09_rules_185.sql</a></li></ul>
+
+    <div class="prototype-btn-box">
+      <a href="../prototype_medlink/index.html" target="_blank" class="btn-proto">
+        <i class="material-icons" style="font-size:18px;">play_circle_filled</i>
+        Запустити прототип
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="header-bar">
+      <h1 class="h1-title">
+        <i class="material-icons" style="font-size: 32px; color: var(--primary);">storage</i>
+        1. Специфікація схеми бази даних (PostgreSQL) та Entity Framework Core
+      </h1>
+      <p class="subtitle">
+        Детальний опис таблиць зберігання звітів НСЗУ, результатів аналітики ПМГ-2026 та зв'язків із ядрами клінічних сутностей МІС <code>evomis</code>.
+      </p>
+    </div>
+
+    <!-- Section 1: Overview of Schema Verified via Live VPN -->
+    <div class="card">
+      <div class="card-title">
+        <i class="material-icons" style="color: var(--accent);">verified</i>
+        Результати аудиту тестової бази даних <code>evomis-test</code> (PostgreSQL 14)
+      </div>
+      <p style="font-size: 14px; line-height: 1.5; margin-bottom: 12px;">
+        Підключення до тестової БД через VPN (192.168.255.1:5432) підтвердило наявність сформованого ядра таблиць для ДСГ:
+      </p>
+      <ul style="margin-left: 20px; font-size: 14px; line-height: 1.6; color: #475569;">
+        <li><code>dsg_nszu_statement</code> — заголовки імпортованих звітних файлів НСЗУ.</li>
+        <li><code>dsg_nszu_statement_line</code> — рядки деталізації послуг зі звіту НСЗУ (аркуш «Деталізація послуг»).</li>
+        <li><code>dsg_analysis_result</code> — результати розрахунку тарифів та перевірки правил валідації (із полями <code>calculation (jsonb)</code> та <code>findings (jsonb)</code>).</li>
+        <li><code>dsg_tariff_setting</code> — налаштування тарифів ПМГ-2026: <strong>Базова ставка 8 735,00 ₴</strong>, частка глобальної ставки <strong>0,55</strong>.</li>
+        <li><code>dsg_group_weight</code> — 471 запис вагових коефіцієнтів ДСГ (наприклад, <code>A40: 12.7030</code>, <code>B01: 2.9420</code>).</li>
+        <li><code>dsg_rule_config</code> — 58 нормативних правил перевірки (FR-01, FR-02, PK-01A, PK-04, тощо).</li>
+      </ul>
+    </div>
+
+    <!-- Section 2: Table Specifications -->
+    <div class="card">
+      <div class="card-title">Таблиця 1: <code>dsg_nszu_statement</code> (Заголовок звіту)</div>
+      <p style="font-size: 13px; color: #64748b;">Фіксує метадані завантаженого пакетного файлу звіту НСЗУ (.xlsx).</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Поле</th>
+            <th>Тип PostgreSQL</th>
+            <th>Nullable</th>
+            <th>Опис та призначення</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="col-pk">id</td><td>uuid</td><td>Ні</td><td>Первинний ключ (Guid.NewGuid())</td></tr>
+          <tr><td>record_state</td><td>integer</td><td>Ні</td><td>Стан запису в системі evomis (2 = Active, 4 = Deleted)</td></tr>
+          <tr><td>caption</td><td>varchar(255)</td><td>Так</td><td>Найменування / опис звіту для інтерфейсу</td></tr>
+          <tr><td class="col-fk">organization_id</td><td>uuid</td><td>Ні</td><td>FK до LegalEntities.Id (Медичний заклад)</td></tr>
+          <tr><td>period_from</td><td>timestamp</td><td>Ні</td><td>Початок звітного місяця (наприклад, 2026-09-01 00:00:00)</td></tr>
+          <tr><td>period_to</td><td>timestamp</td><td>Ні</td><td>Кінець звітного місяця (наприклад, 2026-09-30 23:59:59)</td></tr>
+          <tr><td>file_name</td><td>varchar(500)</td><td>Так</td><td>Оригінальне ім’я файлу (наприклад, 02000334_SF_2026_08.xlsx)</td></tr>
+          <tr><td>imported_at</td><td>timestamp</td><td>Ні</td><td>Дата та час імпорту файлу (UTC)</td></tr>
+          <tr><td class="col-fk">imported_by</td><td>uuid</td><td>Так</td><td>FK до Employees.Id (Користувач, що виконав імпорт)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Таблиця 2: <code>dsg_nszu_statement_line</code> (Рядки звіту — Деталізація)</div>
+      <p style="font-size: 13px; color: #64748b;">Зберігає записи аркуша «Деталізація послуг» звіту НСЗУ та результати 2-Way звірки з МІС.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Поле</th>
+            <th>Тип PostgreSQL</th>
+            <th>Nullable</th>
+            <th>Опис та зв'язок</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="col-pk">id</td><td>uuid</td><td>Ні</td><td>Первинний ключ рядка звіту</td></tr>
+          <tr><td class="col-fk">statement_id</td><td>uuid</td><td>Ні</td><td>FK до dsg_nszu_statement.id (Заголовок звіту)</td></tr>
+          <tr><td>encounter_ehealth_id</td><td>uuid</td><td>Так</td><td><strong>Колонка 4 звіту:</strong> ID ЕМЗ в eHealth (зовнішній ідентифікатор)</td></tr>
+          <tr><td class="col-fk">matched_encounter_id</td><td>uuid</td><td>Так</td><td><strong>2-Way FK до mis_encounter.id:</strong> локальний ключ взаємодії в МІС</td></tr>
+          <tr><td>dsg_code</td><td>varchar(64)</td><td>Так</td><td>Код ДСГ або номер амбулаторного класу з файлу звіту</td></tr>
+          <tr><td>package_number</td><td>varchar(32)</td><td>Так</td><td>Номер пакету медичних послуг (наприклад, "3", "4", "9", "47")</td></tr>
+          <tr><td>nszu_amount</td><td>numeric(18,2)</td><td>Ні</td><td>Сума, визначена НСЗУ (0.00, якщо колонки вартості відсутні)</td></tr>
+          <tr><td>mis_amount</td><td>numeric(18,2)</td><td>Так</td><td>Сума, автономно розрахована модулем МІС за Постановою №1808</td></tr>
+          <tr><td>difference</td><td>numeric(18,2)</td><td>Так</td><td>Різниця (mis_amount - nszu_amount), дефіцит або втрачений дохід</td></tr>
+          <tr><td>match_status</td><td>integer</td><td>Ні</td><td>0 = Співпало, 1 = Розбіжність, 2 = Є у звіті але нема в МІС, 3 = Відхилено НСЗУ</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Таблиця 3: <code>dsg_analysis_result</code> (Результат аудиту взаємодії)</div>
+      <p style="font-size: 13px; color: #64748b;">Центральна аналітична сутність, яка формується як при пакетному імпорті, так і в режимі Pre-Billing при створенні взаємодії.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Поле</th>
+            <th>Тип PostgreSQL</th>
+            <th>Опис та використання</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="col-pk">id</td><td>uuid</td><td>Первинний ключ аналітичного запису</td></tr>
+          <tr><td class="col-fk">encounter_id</td><td>uuid</td><td>FK до <code>mis_encounter.id</code></td></tr>
+          <tr><td class="col-fk">organization_id</td><td>uuid</td><td>FK до <code>LegalEntities.Id</code></td></tr>
+          <tr><td>package_number</td><td>varchar(16)</td><td>Пакет ПМГ (3, 4, 9, 36, 47, 54)</td></tr>
+          <tr><td>dsg_group_code</td><td>varchar(32)</td><td>Код клінічної групи (B72, R02A, тощо)</td></tr>
+          <tr><td>status</td><td>integer</td><td>0 = Валідовано, 1 = Попередження, 2 = Відхилено НСЗУ (Ні)</td></tr>
+          <tr><td>tariff</td><td>numeric(18,4)</td><td>Повний нормативний тариф за Постановою №1808 (₴)</td></tr>
+          <tr><td>estimated_payment</td><td>numeric(18,4)</td><td>Фактична частка до оплати закладу (з урахуванням коеф. 0,55 / 0,60)</td></tr>
+          <tr><td>weight_coef</td><td>numeric(18,4)</td><td>Ваговий коефіцієнт складності ДСГ</td></tr>
+          <tr><td>calculation</td><td>jsonb</td><td><strong>Повне дерево розрахунку:</strong> кроки (steps), коефіцієнти, нормативні посилання</td></tr>
+          <tr><td>findings</td><td>jsonb</td><td><strong>Перелік виявлених дефектів:</strong> код правила, severity (0..2), повідомлення, нормативка</td></tr>
+          <tr><td>primary_icd10_code</td><td>varchar(32)</td><td>Основний діагноз (наприклад, C50.9, I21.0)</td></tr>
+          <tr><td class="col-fk">employee_id</td><td>uuid</td><td>FK до <code>org_employee.id</code> (Лікар-виконавець)</td></tr>
+          <tr><td class="col-fk">department_id</td><td>uuid</td><td>FK до <code>org_department.id</code> (Відділення)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Section 3: C# EF Core Models -->
+    <div class="card">
+      <div class="card-title">
+        <i class="material-icons" style="color: var(--primary);">code</i>
+        C# Моделі Entity Framework Core (для проєкту <code>App.Domain</code>)
+      </div>
+
+      <pre><code>using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Core.Base.Data;
+
+namespace App.Domain.Models.dsg
+{
+    [Table("dsg_nszu_statement")]
+    public class NszuStatement : CoreEntity
+    {
+        [Column("organization_id")]
+        public Guid OrganizationId { get; set; }
+
+        [Column("period_from")]
+        public DateTime PeriodFrom { get; set; }
+
+        [Column("period_to")]
+        public DateTime PeriodTo { get; set; }
+
+        [Column("file_name")]
+        [MaxLength(500)]
+        public string FileName { get; set; }
+
+        [Column("imported_at")]
+        public DateTime ImportedAt { get; set; } = DateTime.UtcNow;
+
+        [Column("imported_by")]
+        public Guid? ImportedBy { get; set; }
+    }
+
+    [Table("dsg_nszu_statement_line")]
+    public class NszuStatementLine : CoreEntity
+    {
+        [Column("statement_id")]
+        public Guid StatementId { get; set; }
+
+        [Column("encounter_ehealth_id")]
+        public Guid? EncounterEhealthId { get; set; }
+
+        [Column("matched_encounter_id")]
+        public Guid? MatchedEncounterId { get; set; }
+
+        [Column("dsg_code")]
+        [MaxLength(64)]
+        public string DsgCode { get; set; }
+
+        [Column("package_number")]
+        [MaxLength(32)]
+        public string PackageNumber { get; set; }
+
+        [Column("nszu_amount")]
+        public decimal NszuAmount { get; set; }
+
+        [Column("mis_amount")]
+        public decimal? MisAmount { get; set; }
+
+        [Column("difference")]
+        public decimal? Difference { get; set; }
+
+        [Column("match_status")]
+        public int MatchStatus { get; set; }
+
+        [ForeignKey("StatementId")]
+        public virtual NszuStatement Statement { get; set; }
+    }
+
+    [Table("dsg_analysis_result")]
+    public class DsgAnalysisResult : CoreEntity
+    {
+        [Column("encounter_id")]
+        public Guid EncounterId { get; set; }
+
+        [Column("organization_id")]
+        public Guid OrganizationId { get; set; }
+
+        [Column("package_number")]
+        [MaxLength(16)]
+        public string PackageNumber { get; set; }
+
+        [Column("dsg_group_code")]
+        [MaxLength(32)]
+        public string DsgGroupCode { get; set; }
+
+        [Column("status")]
+        public int Status { get; set; }
+
+        [Column("tariff")]
+        public decimal Tariff { get; set; }
+
+        [Column("estimated_payment")]
+        public decimal EstimatedPayment { get; set; }
+
+        [Column("weight_coef")]
+        public decimal WeightCoef { get; set; }
+
+        [Column("calculation", TypeName = "jsonb")]
+        public string CalculationJson { get; set; }
+
+        [Column("findings", TypeName = "jsonb")]
+        public string FindingsJson { get; set; }
+
+        [Column("primary_icd10_code")]
+        [MaxLength(32)]
+        public string PrimaryIcd10Code { get; set; }
+
+        [Column("employee_id")]
+        public Guid? EmployeeId { get; set; }
+
+        [Column("department_id")]
+        public Guid? DepartmentId { get; set; }
+    }
+}</code></pre>
+    </div>
+
+    <!-- Section 4: DbContext Configuration -->
+    <div class="card">
+      <div class="card-title">Налаштування <code>DbContextMisPartial.cs</code> в <code>App.Data</code></div>
+      <pre><code>protected override void OnModelCreating(ModelBuilder modelBuilder)
+{
+    base.OnModelCreating(modelBuilder);
+
+    // Зв'язок рядків звіту НСЗУ із заголовком
+    modelBuilder.Entity&lt;NszuStatementLine&gt;()
+        .HasOne(x =&gt; x.Statement)
+        .WithMany()
+        .HasForeignKey(x =&gt; x.StatementId)
+        .OnDelete(DeleteBehavior.Cascade);
+
+    // Індекси для швидкої 2-Way звірки за Encounter.EhealthId
+    modelBuilder.Entity&lt;NszuStatementLine&gt;()
+        .HasIndex(x =&gt; x.EncounterEhealthId)
+        .HasDatabaseName("idx_dsg_nszu_statement_line_ehealth_id");
+
+    modelBuilder.Entity&lt;NszuStatementLine&gt;()
+        .HasIndex(x =&gt; x.MatchedEncounterId)
+        .HasDatabaseName("idx_dsg_nszu_statement_line_matched_enc_id");
+
+    <!-- Section 5: Direct SQL Access in Popup Modal -->
+    <div class="card" style="border-left: 5px solid var(--accent); background: #f0fdf4;">
+      <div class="card-title" style="color: #166534;">
+        <i class="material-icons" style="color: #166534;">open_in_full</i>
+        Інтерактивний перегляд SQL-файлів та DDL у попап-вікні
+      </div>
+      <p style="font-size: 14px; color: #1e3a8a; margin-bottom: 14px;">
+        Ви можете переглянути повний DDL код, індекси та SQL-запити прямо у великому модальному вікні з можливістю копіювання:
+      </p>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button class="btn-open-popup" onclick="openFileModal('01_ddl_tables.sql')">
+          <i class="material-icons" style="font-size:16px;">code</i> Відкрити 01_ddl_tables.sql у попап-вікні
+        </button>
+        <button class="btn-open-popup" onclick="openFileModal('02_queries_2way_matching.sql')">
+          <i class="material-icons" style="font-size:16px;">search</i> Відкрити 02_queries_2way_matching.sql
+        </button>
+        <button class="btn-open-popup" onclick="openFileModal('03_seed_pmg2026_data.sql')">
+          <i class="material-icons" style="font-size:16px;">settings_suggest</i> Відкрити сіди 03_seed_pmg2026_data.sql
+        </button>
+        <a href="../sql/01_ddl_tables.sql" download class="btn-open-popup" style="background:#e0f2fe; color:#0369a1;">
+          <i class="material-icons" style="font-size:16px;">download</i> Завантажити файл на диск
+        </a>
+      </div>
+    </div>
+
+  </main>
+  <script src="modal_viewer.js"></script>
+</body>
+</html>

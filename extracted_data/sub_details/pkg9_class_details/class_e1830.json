@@ -1,0 +1,15 @@
+{
+  "id": 131,
+  "class_number": "e1830",
+  "class_name": "Лихоманка невідомого походження",
+  "coefficient": 3.32,
+  "cost": "514.60",
+  "diags": [
+    {
+      "code": "R50.9",
+      "name": "Лихоманка, неуточнена"
+    }
+  ],
+  "services": [],
+  "positions": []
+}

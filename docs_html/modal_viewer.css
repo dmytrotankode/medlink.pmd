@@ -1,0 +1,180 @@
+/* ============================================================================
+   MEDLINK PMG-2026: СТИЛІ ПОПАП-МОДАЛЬНОГО ВІКНА ПЕРЕГЛЯДУ КОДУ ТА ЗАПИТІВ
+   ============================================================================ */
+
+.code-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(4px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.code-modal-container {
+  width: 90vw;
+  max-width: 1200px;
+  height: 85vh;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.code-modal-header {
+  padding: 14px 20px;
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.row-center {
+  display: flex;
+  align-items: center;
+}
+
+.code-modal-title {
+  color: #f8fafc;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.3px;
+}
+
+.code-modal-badge {
+  background: #3b82f6;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-left: 10px;
+  text-transform: uppercase;
+}
+
+.btn-modal-action {
+  background: #334155;
+  color: #e2e8f0;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 8px;
+  transition: background 0.2s;
+}
+
+.btn-modal-action:hover {
+  background: #475569;
+  color: #fff;
+}
+
+.btn-modal-close {
+  background: transparent;
+  color: #94a3b8;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.btn-modal-close:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+.code-modal-tabs {
+  background: #0f172a;
+  padding: 8px 16px;
+  border-bottom: 1px solid #1e293b;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.modal-tab {
+  background: #1e293b;
+  color: #94a3b8;
+  border: 1px solid #334155;
+  padding: 6px 14px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-tab:hover {
+  color: #f8fafc;
+  border-color: #64748b;
+}
+
+.modal-tab.active {
+  background: #3b82f6;
+  color: #fff;
+  border-color: #3b82f6;
+  font-weight: 600;
+}
+
+.code-modal-body {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: #090d16;
+}
+
+.code-modal-body pre {
+  margin: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #e2e8f0;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* Button to trigger popup from page text */
+.btn-open-popup {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  padding: 5px 12px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+  margin: 4px 0;
+}
+
+.btn-open-popup:hover {
+  background: #3b82f6;
+  color: #fff;
+  border-color: #3b82f6;
+}

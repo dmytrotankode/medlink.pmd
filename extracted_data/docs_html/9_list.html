@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Корисні підбірки / списки / посилання</title>
+
+<link rel="stylesheet" href="/serve.php?f=css/info-pages">
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="head">
+
+
+      <div class="toolbar card" style="padding:10px 12px;">
+        <div class="search">
+          <input id="q" type="text" placeholder="Пошук... по назві, опису або тегах" autocomplete="off" />
+        </div>
+        <span class="pill"><span id="count">0</span> документи (ів)</span>
+      </div>
+    </div>
+	     <div id="empty" class="empty" style="display:none;">Нічого не знайдено за вашим запитом.</div>
+	  
+	  
+	  
+    <div id="list" class="list" aria-live="polite"></div>
+	<div id="placeholder" class="card placeholder" style= "text-align: center;">
+  <h3>📂 Розділ у розробці</h3>
+  <p style="text-align: center;">Тут буде зібрано корисні добірки: переліки послуг, діагнозів, станів та корисні посилання.</p>
+</div>
+
+	
+</div>
+
+<script>
+    // ====== Налаштування ======
+    // Якщо хочеш відкривати PDF в модалці (iframe) — постав true
+    const USE_MODAL = false;
+
+    // Якщо сторінка для різних пакетів — можна підставляти номер з URL ?pkg=stac
+const pkgFromUrl = new URLSearchParams(location.search).get('pkg') || '9';
+
+    // База документів (ти просто редагуєш цей список)
+    // url: шлях до pdf (може бути абсолютний або через твій serve.php)
+    const ITEMS = [
+    ];
+
+    // ====== Рендер ======
+    const listEl = document.getElementById('list');
+    
+	// ====== ТЕСТ ======
+	const placeholderEl = document.getElementById('placeholder');
+
+    const emptyEl = document.getElementById('empty');
+    const countEl = document.getElementById('count');
+    const qEl = document.getElementById('q');
+
+    function normalize(s) {
+      return (s || "")
+        .toLowerCase()
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function matches(item, query) {
+      if (!query) return true;
+      const hay = normalize([
+        item.title,
+        item.desc,
+        (item.tags || []).join(" "),
+        item.date
+      ].join(" "));
+      return hay.includes(query);
+    }
+
+    function openPdf(item) {
+      if (!USE_MODAL) {
+        window.open(item.url, "_blank", "noopener");
+        return;
+      }
+      const modal = document.getElementById('modal');
+      const frame = document.getElementById('modalFrame');
+      const title = document.getElementById('modalTitle');
+      title.textContent = item.title;
+      frame.src = item.url;
+      modal.classList.add('open');
+    }
+	
+	function downloadPdf(item) {
+  		const a = document.createElement('a');
+  		a.href = item.url;
+  		a.download = '';
+  		document.body.appendChild(a);
+  		a.click();
+  		document.body.removeChild(a);
+	}
+
+    function render(query) {
+      const q = normalize(query);
+      const filtered = ITEMS.filter(it => matches(it, q));
+
+      listEl.innerHTML = "";
+      countEl.textContent = filtered.length;
+		
+		// ТЕСТ
+		placeholderEl.style.display = ITEMS.length ? "none" : "block";
+		
+		
+      emptyEl.style.display = filtered.length ? "none" : "block";
+
+      filtered.forEach((item, idx) => {
+        const el = document.createElement('div');
+        el.className = 'item';
+
+        el.innerHTML = `
+          <div class="badge">${String(idx+1).padStart(2,'0')}</div>
+          <div class="meta">
+            <p class="title">${escapeHtml(item.title)}</p>
+            <p class="desc">${escapeHtml(item.desc || "")}</p>
+            <div class="row">
+              <span>📅 ${escapeHtml(item.date || "")}</span>
+              <div class="tags">
+                ${(item.tags || []).slice(0, 6).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("")}
+              </div>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" type="button">Завантажити PDF</button>
+	  		</div>
+			`;
+
+		// Клік на кнопку
+        el.querySelector('button')
+  			.addEventListener('click', (e) => {
+    		e.stopPropagation();
+    		downloadPdf(item);
+  		});
+        
+        // Клік на заголовок
+        el.querySelector('.title').addEventListener('click', () => openPdf(item));
+
+        listEl.appendChild(el);
+      });
+    }
+
+    // XSS-safe простий escape
+    function escapeHtml(str) {
+      return String(str ?? "").replace(/[&<>"']/g, (ch) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[ch]));
+    }
+
+    // ====== Події ======
+    qEl.addEventListener('input', () => render(qEl.value));
+    render("");
+
+
+</script>
+</body>
+</html>

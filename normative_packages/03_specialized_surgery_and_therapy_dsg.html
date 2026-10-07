@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Спеціалізована стаціонарна допомога за ДСГ (Пакети 3, 4, 47) — MedLink PMG 2026 Нормативне досьє</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../docs_html/modal_viewer.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #f4f7fb;
+            color: #2c3e50;
+            margin: 0;
+            padding: 24px;
+            line-height: 1.6;
+        }
+        .header {
+            background: linear-gradient(135deg, #1976D2 0%, #0D47A1 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        .header h1 { margin: 0 0 8px 0; font-size: 24px; font-weight: 500; }
+        .header p { margin: 0; opacity: 0.9; font-size: 14px; }
+        .nav-back {
+            display: inline-block;
+            margin-bottom: 16px;
+            color: #1976D2;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .package-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            padding: 24px;
+            margin-bottom: 24px;
+            border-left: 5px solid #1976D2;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            background: #e3f2fd;
+            color: #1565c0;
+            margin-right: 8px;
+        }
+        .badge-tariff {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .badge-model {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        h2 { color: #1565c0; margin-top: 0; font-size: 20px; }
+        h3 { color: #37474f; font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 6px; margin-top: 20px; }
+        .formula-box {
+            background: #f8f9fa;
+            border-left: 4px solid #4CAF50;
+            padding: 12px 16px;
+            font-family: monospace;
+            font-size: 14px;
+            border-radius: 0 4px 4px 0;
+            margin: 12px 0;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th { background: #fafafa; font-weight: 500; color: #555; }
+        .law-link {
+            color: #1976D2;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .law-link:hover { text-decoration: underline; }
+        ul { padding-left: 20px; margin: 8px 0; }
+        li { margin-bottom: 4px; }
+        .normative-docs-panel {
+            background: #e8eaf6;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="nav-back">← До повного реєстру всіх 46 пакетів ПМГ</a>
+    <div class="header">
+        <h1>Спеціалізована стаціонарна допомога за ДСГ (Пакети 3, 4, 47)</h1>
+        <p>Офіційні специфікації, тарифи, формули та правила контролю НСЗУ відповідно до Постанови КМУ № 1808</p>
+    </div>
+
+    <div class="package-card" id="pkg-3">
+        <div>
+            <span class="badge">PKG-03 (Пакет 3)</span>
+            <span class="badge badge-tariff">Базовий тариф: 8,735.00 ₴ (за пролікований випадок)</span>
+            <span class="badge badge-model">Комбінована оплата (ДСГ + ГБ)</span>
+        </div>
+        <h2>Хірургічні операції дорослим та дітям у стаціонарних умовах</h2>
+        <p>Цілодобова стаціонарна хірургічна допомога, включаючи планові та ургентні операції, анестезію, реанімацію, цілодобовий догляд, ліки з Нацпереліку та післяопераційну реабілітацію.</p>
+
+        <h3>1. Нормативно-правове регулювання</h3>
+        <p><b>Базовий розділ:</b> Глава 3 Порядку (Постанова КМУ № 1808, Додаток 1)</p>
+        <ul>
+            <li><a href="https://zakon.rada.gov.ua/laws/show/1808-2025-%D0%BF#n42" target="_blank" class="law-link">Постанова КМУ № 1808 (Глава 3, п. 12-25) ↗</a></li><li><a href="file:///c:/__MEDLINK___/PMG/extracted_data/normative_docs/Додаток-1.pdf" target="_blank" class="law-link">Додаток 1 до Порядку (Вагові коефіцієнти ДСГ-2026) ↗</a></li>
+        </ul>
+
+        <h3>2. Формула та алгоритм розрахунку вартості</h3>
+        <div class="formula-box">
+            Тариф = 8735 * Вага_ДСГ * K_закладу * 0.55 + Частка_Глобального_Бюджету
+        </div>
+        <table><thead><tr><th>Тип коефіцієнта</th><th>Значення / Градація</th></tr></thead><tbody><tr><td><b>частка випадку</b></td><td>0.55</td></tr><tr><td><b>частка глобальної ставки</b></td><td>0.45</td></tr><tr><td><b>мультихірургія (2+ операції)</b></td><td>1.3</td></tr><tr><td><b>амбулаторна хірургія у стаціонарі</b></td><td>0.6</td></tr><tr><td><b>складність закладу</b></td><td>надкластерний: <b>1.25</b>, кластерний: <b>1.15</b>, загальний: <b>1.0</b></td></tr></tbody></table>
+
+        <h3>3. Критерії верифікації ЕСОЗ та умови оплати НСЗУ</h3>
+        <ul>
+            <li>Кодування основного діагнозу за МКХ-10 (AM) та інтервенцій за АКМІ (ACHI)</li><li>Обов'язкова наявність хірургічного втручання зі списку операційних ДСГ</li><li>Відповідність посади оперуючого хірурга (довідник P_POSADA)</li><li>Тривалість перебування не менше 2 діб (для випадків тривалістю 1 доба застосовується коефіцієнт 0.6 або пакет 47)</li>
+        </ul>
+
+        <div class="normative-docs-panel">
+            <b>Пов'язані офіційні документи:</b>
+            <ul>
+                <li><a href="../extracted_data/normative_docs/pmg-2026.pdf" target="_blank" class="law-link">Посібник та огляд ПМГ-2026 (Офіційний PDF НСЗУ, 43 стор.) 📄</a></li>
+                <li><a href="../extracted_data/normative_docs/Додаток-1.pdf" target="_blank" class="law-link">Додаток 1 до Порядку: Вагові коефіцієнти ДСГ-2026 (PDF) 📄</a></li>
+                <li><a href="../extracted_data/normative_docs/Додаток-2.pdf" target="_blank" class="law-link">Додаток 2 до Порядку: Коефіцієнти стаціонару одного дня (PDF) 📄</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="package-card" id="pkg-4">
+        <div>
+            <span class="badge">PKG-04 (Пакет 4)</span>
+            <span class="badge badge-tariff">Базовий тариф: 8,735.00 ₴ (за пролікований випадок)</span>
+            <span class="badge badge-model">Комбінована оплата (ДСГ + ГБ)</span>
+        </div>
+        <h2>Стаціонарна допомога дорослим та дітям без проведення хірургічних операцій</h2>
+        <p>Терапевтичне, педіатричне, неврологічне, кардіологічне лікування в умовах цілодобового стаціонару без необхідності хірургічного втручання.</p>
+
+        <h3>1. Нормативно-правове регулювання</h3>
+        <p><b>Базовий розділ:</b> Глава 3 Порядку (Постанова КМУ № 1808, Додаток 1)</p>
+        <ul>
+            <li><a href="https://zakon.rada.gov.ua/laws/show/1808-2025-%D0%BF#n55" target="_blank" class="law-link">Постанова КМУ № 1808 (Глава 3, п. 26-38) ↗</a></li><li><a href="file:///c:/__MEDLINK___/PMG/extracted_data/normative_docs/Додаток-1.pdf" target="_blank" class="law-link">Додаток 1 до Порядку (Терапевтичні ДСГ) ↗</a></li>
+        </ul>
+
+        <h3>2. Формула та алгоритм розрахунку вартості</h3>
+        <div class="formula-box">
+            Тариф = 8735 * Вага_ДСГ * K_закладу * 0.60 + Частка_Глобального_Бюджету
+        </div>
+        <table><thead><tr><th>Тип коефіцієнта</th><th>Значення / Градація</th></tr></thead><tbody><tr><td><b>частка випадку</b></td><td>0.6</td></tr><tr><td><b>частка глобальної ставки</b></td><td>0.4</td></tr><tr><td><b>короткочасне лікування (<2 діб без переведення)</b></td><td>0.3</td></tr></tbody></table>
+
+        <h3>3. Критерії верифікації ЕСОЗ та умови оплати НСЗУ</h3>
+        <ul>
+            <li>Критерії обґрунтованості цілодобової госпіталізації (тяжкість стану, потреба у парентеральному введенні препаратів)</li><li>Недопущення необґрунтованої госпіталізації хронічних пацієнтів, які можуть лікуватись амбулаторно</li><li>Наявність діагностичних підтверджень основного діагнозу (лабораторні та інструментальні дані в ЕСОЗ)</li>
+        </ul>
+
+        <div class="normative-docs-panel">
+            <b>Пов'язані офіційні документи:</b>
+            <ul>
+                <li><a href="../extracted_data/normative_docs/pmg-2026.pdf" target="_blank" class="law-link">Посібник та огляд ПМГ-2026 (Офіційний PDF НСЗУ, 43 стор.) 📄</a></li>
+                <li><a href="../extracted_data/normative_docs/Додаток-1.pdf" target="_blank" class="law-link">Додаток 1 до Порядку: Вагові коефіцієнти ДСГ-2026 (PDF) 📄</a></li>
+                <li><a href="../extracted_data/normative_docs/Додаток-2.pdf" target="_blank" class="law-link">Додаток 2 до Порядку: Коефіцієнти стаціонару одного дня (PDF) 📄</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="package-card" id="pkg-47">
+        <div>
+            <span class="badge">PKG-47 (Пакет 47)</span>
+            <span class="badge badge-tariff">Базовий тариф: 8,735.00 ₴ (за пролікований випадок)</span>
+            <span class="badge badge-model">Оплата за випадок за ДСГ стаціонару 1 дня</span>
+        </div>
+        <h2>Хірургічні операції в умовах стаціонару одного дня</h2>
+        <p>Малоінвазивні планові операції (лапароскопічні, офтальмологічні, урологічні), що не потребують перебування у стаціонарі довше 24 годин.</p>
+
+        <h3>1. Нормативно-правове регулювання</h3>
+        <p><b>Базовий розділ:</b> Глава 3 Порядку (Постанова КМУ № 1808, Додаток 2)</p>
+        <ul>
+            <li><a href="https://zakon.rada.gov.ua/laws/show/1808-2025-%D0%BF#n48" target="_blank" class="law-link">Постанова КМУ № 1808 (Глава 3, п. 20-22) ↗</a></li><li><a href="file:///c:/__MEDLINK___/PMG/extracted_data/normative_docs/Додаток-2.pdf" target="_blank" class="law-link">Додаток 2 до Порядку (Коефіцієнти хірургії одного дня) ↗</a></li>
+        </ul>
+
+        <h3>2. Формула та алгоритм розрахунку вартості</h3>
+        <div class="formula-box">
+            Тариф = 8735.00 * 0.55 * Коефіцієнт_ДСГ_Додаток2
+        </div>
+        <table><thead><tr><th>Тип коефіцієнта</th><th>Значення / Градація</th></tr></thead><tbody><tr><td><b>частка стаціонару 1 дня</b></td><td>0.55</td></tr><tr><td><b>коефіцієнти Додатка 2</b></td><td>від 0.28 до 4.80 за видами малоінвазивних операцій</td></tr></tbody></table>
+
+        <h3>3. Критерії верифікації ЕСОЗ та умови оплати НСЗУ</h3>
+        <ul>
+            <li>Тривалість перебування в стаціонарі строго до 24 годин</li><li>Код операції входить до затвердженого переліку Додатка 2</li><li>Анестезіологічний протокол в ЕСОЗ</li>
+        </ul>
+
+        <div class="normative-docs-panel">
+            <b>Пов'язані офіційні документи:</b>
+            <ul>
+                <li><a href="../extracted_data/normative_docs/pmg-2026.pdf" target="_blank" class="law-link">Посібник та огляд ПМГ-2026 (Офіційний PDF НСЗУ, 43 стор.) 📄</a></li>
+                <li><a href="../extracted_data/normative_docs/Додаток-1.pdf" target="_blank" class="law-link">Додаток 1 до Порядку: Вагові коефіцієнти ДСГ-2026 (PDF) 📄</a></li>
+                <li><a href="../extracted_data/normative_docs/Додаток-2.pdf" target="_blank" class="law-link">Додаток 2 до Порядку: Коефіцієнти стаціонару одного дня (PDF) 📄</a></li>
+            </ul>
+        </div>
+    </div>
+
+</body>
+</html>
