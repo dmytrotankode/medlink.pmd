@@ -16,6 +16,7 @@
 
 ## Віддалена робота
 
+- **Керування локальною сесією з телефону (Remote Control)**: на комп'ютері `.\tools\start_remote.ps1` (інтерактивно) або `.\tools\start_remote.ps1 -Server`; сесія з'являється у застосунку Claude → Code під назвою **MEDLINK**. Повернути попередню: `.\tools\start_remote.ps1 -Continue`. Усі сесії проєкту називати з префіксом `MEDLINK`.
 - **Хмарні сесії Claude Code**: `.claude/hooks/session-start.sh` (зареєстровано в `.claude/settings.json`) при старті ставить .NET 8 SDK через apt, робить `dotnet restore` обох проєктів і Python-залежності (openpyxl, markdown). Запускається лише коли `CLAUDE_CODE_REMOTE=true`.
 - **Перевірка коду**: `dotnet build MedLink.Pmg.sln` · `dotnet format src/MedLink.Pmg.Module/MedLink.Pmg.Module.csproj --verify-no-changes` · `dotnet test MedLink.Pmg.sln` (24 тести: формули, класифікатор, workflow, інтеграційні на реальному звіті з тимчасовою SQLite).
 - **Віддалений сервер / Docker**: `docker compose -f deploy/docker-compose.yml up -d --build` → `http://<host>:8085` (дані у volume `pmg-data`). Без Docker: `dotnet publish src/MedLink.Pmg.Module -c Release -o out && dotnet out/MedLink.Pmg.Module.dll --urls http://0.0.0.0:8085`.
