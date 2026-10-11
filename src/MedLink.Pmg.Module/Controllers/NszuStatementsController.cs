@@ -112,8 +112,8 @@ public class NszuStatementsController : ControllerBase
         var total = await q.CountAsync();
         q = sort switch
         {
-            "tariff" => desc ? q.OrderByDescending(l => l.MisAmount) : q.OrderBy(l => l.MisAmount),
-            "lost" => desc ? q.OrderByDescending(l => l.LostRevenue) : q.OrderBy(l => l.LostRevenue),
+            "tariff" => desc ? q.OrderByDescending(l => (double?)l.MisAmount) : q.OrderBy(l => (double?)l.MisAmount),
+            "lost" => desc ? q.OrderByDescending(l => (double)l.LostRevenue) : q.OrderBy(l => (double)l.LostRevenue),
             "doctor" => desc ? q.OrderByDescending(l => l.PractitionerName) : q.OrderBy(l => l.PractitionerName),
             "date" => desc ? q.OrderByDescending(l => l.PeriodStart) : q.OrderBy(l => l.PeriodStart),
             _ => desc ? q.OrderByDescending(l => l.LineNumber) : q.OrderBy(l => l.LineNumber),

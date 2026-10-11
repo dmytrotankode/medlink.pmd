@@ -10,9 +10,15 @@
 | `src/MedLink.Pmg.Module/` | Готовий бекенд (.NET 8). `Models/` — CoreEntity, сутності Медлінка (org_*, mis_*), домен `dsg_*`, довідники `pmg_*`. `Services/` — тарифний движок, SAX OpenXML парсер, класифікатор помилок, 2-Way звірка + рекомендації, пре-білінг, комбінатор, коригування, workflow. `Controllers/` — REST API. `Data/DatabaseSeeder.cs` — сідинг з `seed/`. |
 | `seed/*.json` | Компактні довідники (465 ДСГ + 285k зв'язків, 148 класів, реабілітація, 186 помилок, 1 257 посад, послуги/комбінації). Генерується `python tools/build_seed.py` з `extracted_data/` та `sql/`. |
 | `Вересень 26.xlsx`, `02000334_SF_2026_08_20260910.xlsx` | Реальні звіти НСЗУ — імпортуються автоматично при першому старті. |
-| `src/MedLink.Pmg.Web/` | **Ще не створено** — сюди треба покласти Quasar v1 / Vue 2 SPA (вендори можна взяти з `prototype_medlink/vendor/`, компоненти-зразки з `prototype_medlink/components/*.vue`). API віддає цю папку як статику з кореня `/`. |
+| `src/MedLink.Pmg.Web/` | **Лише заглушка (redirect на Swagger)** — сюди треба покласти Quasar v1 / Vue 2 SPA (вендори можна взяти з `prototype_medlink/vendor/`, компоненти-зразки з `prototype_medlink/components/*.vue`). API віддає цю папку як статику з кореня `/`. |
 | `docs/`, `docs_html/`, `TZ_*.html` | Попередні ТЗ та документація (Antigravity). |
 | `prototype/`, `prototype_medlink/` | Старі прототипи з вбудованими даними (data.js) — залишені як референс дизайну MedLink. |
+
+## Віддалена робота
+
+- **Хмарні сесії Claude Code**: `.claude/hooks/session-start.sh` (зареєстровано в `.claude/settings.json`) при старті ставить .NET 8 SDK через apt, робить `dotnet restore` обох проєктів і Python-залежності (openpyxl, markdown). Запускається лише коли `CLAUDE_CODE_REMOTE=true`.
+- **Перевірка коду**: `dotnet build MedLink.Pmg.sln` · `dotnet format src/MedLink.Pmg.Module/MedLink.Pmg.Module.csproj --verify-no-changes` · `dotnet test MedLink.Pmg.sln` (24 тести: формули, класифікатор, workflow, інтеграційні на реальному звіті з тимчасовою SQLite).
+- **Віддалений сервер / Docker**: `docker compose -f deploy/docker-compose.yml up -d --build` → `http://<host>:8085` (дані у volume `pmg-data`). Без Docker: `dotnet publish src/MedLink.Pmg.Module -c Release -o out && dotnet out/MedLink.Pmg.Module.dll --urls http://0.0.0.0:8085`.
 
 ## Запуск
 
@@ -35,7 +41,7 @@ dotnet run            # http://localhost:8085  (Swagger: /swagger, фронте�
 ## Що залишилось зробити (пріоритет)
 
 1. **ТЗ v4** `docs/TZ_MedLink_PMG_v4_Cloud.md` (+ HTML у стилі `TZ_MedLink_PMG_Master_Specification.html`): мета, задачі з аналізу, MoSCoW, процеси P1–P8 за ролями з життєвими циклами (`Workflows.cs`), модель даних (усі таблиці `Models/*.cs`), зв'язки з evomis, REST API, формули тарифів (`PmgTariffCalculatorService.cs`), план міграції SQLite→PostgreSQL, тест-план. Оновити `README.md`.
-2. **Тести**: xUnit проєкт `src/MedLink.Pmg.Tests` (формули: G01 5.070×0.55 = 24 357.55; pkg47 4.937×0.60 = 25 874.82; pkg9 1.29 = 199.95; гірський 1.25; неонатальний 1.54; парсер на реальних файлах; 2-Way статуси; workflow переходи) + e2e-скрипт `tools/smoke_api.py` по всіх ендпоінтах і CRUD/статусах.
+2. **Тести**: базовий xUnit проєкт `src/MedLink.Pmg.Tests` вже є (24 тести). Розширити: парсер на обох файлах, усі статусні переходи, CRUD усіх сутностей, пакетне застосування рекомендацій, адмін-CRUD довідників.
 3. **Фронтенд** `src/MedLink.Pmg.Web/` (Quasar UMD + Vue 2, без збірки): перемикач ролі в шапці, екрани — дашборд/імпорт, аудит 45 колонок з інспектором, 2-Way звірка, журнал розбіжностей + модалка виправлення, звіт за лікарями, АРМ лікаря (картка ЕМЗ з CRUD + пре-білінг + статуси), комбінатор + myAddLib, довідники (46 пакетів, ДСГ, класи, реабілітація, помилки, послуги), адміністрування (тарифи, правила, сутності Медлінка). Усі дані — з API (без data.js).
 
 ## Домовленості

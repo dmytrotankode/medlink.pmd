@@ -130,7 +130,7 @@ public class MedLinkEntitiesController : ControllerBase
         if (e == null) return NotFound();
         var dept = e.DepartmentId != null ? await _db.Departments.AsNoTracking().FirstOrDefaultAsync(d => d.Id == e.DepartmentId) : null;
         var encounters = await _db.Encounters.AsNoTracking().Where(x => x.EmployeeId == id && x.RecordState == 2).OrderByDescending(x => x.DateStart).Take(50).ToListAsync();
-        var discrepancies = await _db.Discrepancies.AsNoTracking().Where(d => d.EmployeeId == id && d.RecordState == 2).OrderByDescending(d => d.LostAmount).Take(50).ToListAsync();
+        var discrepancies = await _db.Discrepancies.AsNoTracking().Where(d => d.EmployeeId == id && d.RecordState == 2).OrderByDescending(d => (double)d.LostAmount).Take(50).ToListAsync();
         var allowedServices = await _db.ServiceDoctorPositions.AsNoTracking().Where(p => p.PositionRequirements.Contains(e.PositionCode)).Take(50).ToListAsync();
         return Ok(new { employee = e, department = dept, encounters, discrepancies, allowedServicesSample = allowedServices, stats = new { encounters = await _db.Encounters.CountAsync(x => x.EmployeeId == id && x.RecordState == 2), lost = discrepancies.Sum(d => d.LostAmount) } });
     }

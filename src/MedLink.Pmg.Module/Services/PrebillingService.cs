@@ -87,6 +87,19 @@ public class PrebillingService
 
         // FR-05 — посада лікаря (MedProfit + позиції класів Пакету 9)
         var posCheck = CheckDoctorPosition(cat, position, services, calc.ClassNumber);
+        if (!posCheck.applicable && !string.IsNullOrEmpty(position))
+        {
+            foreach (var svc in services)
+            {
+                var combo = await _db.ServiceCombinations.AsNoTracking().FirstOrDefaultAsync(c => c.ServiceCode == svc, ct);
+                if (combo == null) continue;
+                var allowed = ParseCodes(combo.AllowedDoctorPositionsJson); var prohibited = ParseCodes(combo.ProhibitedDoctorPositionsJson);
+                if (allowed.Count == 0 && prohibited.Count == 0) continue;
+                var valid = !prohibited.Contains(position) && (allowed.Count == 0 || allowed.Contains(position));
+                posCheck = (true, valid, svc, string.Join(", ", allowed));
+                break;
+            }
+        }
         if (posCheck.applicable)
         {
             if (!posCheck.valid) F("FR-05", 2, $"Посада лікаря {position} не входить до дозволених для послуги {posCheck.service} ({posCheck.allowed}). Ризик дефектури ERR_DOC_SPEC_04: 0 ₴!", "ERR_DOC_SPEC_04", $"Призначте виконавця з посадою {posCheck.allowed}.");
@@ -146,6 +159,17 @@ public class PrebillingService
             resp.AnalysisResultId = ar.Id;
         }
         return resp;
+    }
+
+    private static List<string> ParseCodes(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json)) return new();
+        try
+        {
+            using var doc = JsonDocument.Parse(json);
+            return doc.RootElement.EnumerateArray().Select(e => (e.ValueKind == JsonValueKind.String ? e.GetString() : e.TryGetProperty("code", out var c) ? c.GetString() : null) ?? "").Where(x => x.Length > 0).Select(x => x.ToUpperInvariant()).ToList();
+        }
+        catch { return new(); }
     }
 
     public static (bool applicable, bool valid, string? service, string? allowed) CheckDoctorPosition(TariffCatalog cat, string position, List<string> services, string? classNumber)

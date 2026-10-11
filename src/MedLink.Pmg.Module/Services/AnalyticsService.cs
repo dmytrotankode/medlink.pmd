@@ -39,7 +39,9 @@ public class AnalyticsService
     {
         var st = await _db.Statements.AsNoTracking().FirstOrDefaultAsync(s => s.Id == statementId, ct) ?? throw new KeyNotFoundException("Statement not found");
         var org = await _db.LegalEntities.AsNoTracking().FirstOrDefaultAsync(o => o.Id == st.OrganizationId, ct);
-        var byPackage = await _db.StatementLines.AsNoTracking().Where(l => l.StatementId == statementId)
+        var rows = await _db.StatementLines.AsNoTracking().Where(l => l.StatementId == statementId)
+            .Select(l => new { l.PackageNumber, l.PackageName, l.IncludedInReport, l.MisAmount, l.LostRevenue, l.RecoverableAmount, l.MatchStatus, l.EmzType }).ToListAsync(ct);
+        var byPackage = rows
             .GroupBy(l => new { l.PackageNumber, l.PackageName })
             .Select(g => new
             {
@@ -47,16 +49,13 @@ public class AnalyticsService
                 total = g.Count(), directPay = g.Count(x => x.IncludedInReport == "Так"), globalBudget = g.Count(x => x.IncludedInReport == "ГБ"), rejected = g.Count(x => x.IncludedInReport == "Ні"),
                 directPayAmount = g.Where(x => x.IncludedInReport == "Так").Sum(x => x.MisAmount ?? 0), globalBudgetAmount = g.Where(x => x.IncludedInReport == "ГБ").Sum(x => x.MisAmount ?? 0),
                 lostAmount = g.Sum(x => x.LostRevenue), recoverable = g.Sum(x => x.RecoverableAmount),
-            }).OrderByDescending(x => x.total).ToListAsync(ct);
-        var byStatus = await _db.StatementLines.AsNoTracking().Where(l => l.StatementId == statementId).GroupBy(l => l.IncludedInReport)
-            .Select(g => new { status = g.Key, count = g.Count(), amount = g.Sum(x => x.MisAmount ?? 0) }).ToListAsync(ct);
-        var byMatch = await _db.StatementLines.AsNoTracking().Where(l => l.StatementId == statementId).GroupBy(l => l.MatchStatus)
-            .Select(g => new { matchStatus = g.Key, name = "", count = g.Count(), amount = g.Sum(x => x.MisAmount ?? 0) }).ToListAsync(ct);
-        var byEmzType = await _db.StatementLines.AsNoTracking().Where(l => l.StatementId == statementId).GroupBy(l => l.EmzType)
-            .Select(g => new { emzType = g.Key, count = g.Count() }).ToListAsync(ct);
+            }).OrderByDescending(x => x.total).ToList();
+        var byStatus = rows.GroupBy(l => l.IncludedInReport).Select(g => new { status = g.Key, count = g.Count(), amount = g.Sum(x => x.MisAmount ?? 0) }).ToList();
+        var byMatch = rows.GroupBy(l => l.MatchStatus).Select(g => new { matchStatus = g.Key, name = "", count = g.Count(), amount = g.Sum(x => x.MisAmount ?? 0) }).ToList();
+        var byEmzType = rows.GroupBy(l => l.EmzType).Select(g => new { emzType = g.Key, count = g.Count() }).ToList();
         var errors = await ErrorsSummaryAsync(statementId, ct);
-        var discrepancies = await _db.Discrepancies.AsNoTracking().Where(d => d.StatementId == statementId).GroupBy(d => d.Status)
-            .Select(g => new { status = g.Key, count = g.Count(), lost = g.Sum(x => x.LostAmount), recoverable = g.Sum(x => x.RecoverableAmount) }).ToListAsync(ct);
+        var discRows = await _db.Discrepancies.AsNoTracking().Where(d => d.StatementId == statementId).Select(d => new { d.Status, d.LostAmount, d.RecoverableAmount }).ToListAsync(ct);
+        var discrepancies = discRows.GroupBy(d => d.Status).Select(g => new { status = g.Key, count = g.Count(), lost = g.Sum(x => x.LostAmount), recoverable = g.Sum(x => x.RecoverableAmount) }).ToList();
         return new
         {
             statement = st, organization = org,
@@ -77,10 +76,11 @@ public class AnalyticsService
     public async Task<List<object>> ErrorsSummaryAsync(Guid statementId, CancellationToken ct)
     {
         var rejected = await _db.StatementLines.AsNoTracking().Where(l => l.StatementId == statementId && l.IncludedInReport == "Ні").CountAsync(ct);
-        var rows = await _db.StatementLines.AsNoTracking().Where(l => l.StatementId == statementId && l.IncludedInReport == "Ні")
-            .GroupBy(l => new { l.ErrorComment, l.ErrorCode, l.ErrorCategory })
+        var raw = await _db.StatementLines.AsNoTracking().Where(l => l.StatementId == statementId && l.IncludedInReport == "Ні")
+            .Select(l => new { l.ErrorComment, l.ErrorCode, l.ErrorCategory, l.LostRevenue, l.RecoverableAmount }).ToListAsync(ct);
+        var rows = raw.GroupBy(l => new { l.ErrorComment, l.ErrorCode, l.ErrorCategory })
             .Select(g => new { errorText = g.Key.ErrorComment ?? "—", errorCode = g.Key.ErrorCode, category = g.Key.ErrorCategory, count = g.Count(), lostAmount = g.Sum(x => x.LostRevenue), recoverableAmount = g.Sum(x => x.RecoverableAmount) })
-            .OrderByDescending(x => x.count).ToListAsync(ct);
+            .OrderByDescending(x => x.count).ToList();
         return rows.Select(r => (object)new { r.errorText, r.errorCode, r.category, r.count, sharePercent = rejected > 0 ? Math.Round((decimal)r.count / rejected * 100, 1) : 0, r.lostAmount, r.recoverableAmount }).ToList();
     }
 

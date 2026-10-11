@@ -7,3 +7,6 @@ obj/
 
 App_Data/
 *.xml.bak
+
+out/
+TestResults/

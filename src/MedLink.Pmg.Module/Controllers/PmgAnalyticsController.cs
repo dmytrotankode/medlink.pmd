@@ -57,7 +57,8 @@ public class PmgAnalyticsController : ControllerBase
     {
         var statements = await _db.Statements.AsNoTracking().Where(s => s.RecordState == 2).OrderByDescending(s => s.PeriodFrom).ToListAsync();
         var orgs = await _db.LegalEntities.AsNoTracking().ToDictionaryAsync(o => o.Id, o => o);
-        var open = await _db.Discrepancies.AsNoTracking().Where(d => d.Status == "New" || d.Status == "InProgress").GroupBy(d => d.StatementId).Select(g => new { g.Key, count = g.Count(), recoverable = g.Sum(x => x.RecoverableAmount) }).ToDictionaryAsync(x => x.Key, x => x);
+        var openRows = await _db.Discrepancies.AsNoTracking().Where(d => d.Status == "New" || d.Status == "InProgress").Select(d => new { d.StatementId, d.RecoverableAmount }).ToListAsync();
+        var open = openRows.GroupBy(d => d.StatementId).Select(g => new { g.Key, count = g.Count(), recoverable = g.Sum(x => x.RecoverableAmount) }).ToDictionary(x => x.Key, x => x);
         var queue = await _db.ResyncQueue.AsNoTracking().GroupBy(q => q.Status).Select(g => new { status = g.Key, count = g.Count() }).ToListAsync();
         return Ok(new
         {
@@ -85,12 +86,13 @@ public class PmgAnalyticsController : ControllerBase
         if (employeeId.HasValue) q = q.Where(d => d.EmployeeId == employeeId);
         if (!string.IsNullOrEmpty(search)) q = q.Where(d => (d.NszuComment != null && d.NszuComment.Contains(search)) || (d.PrimaryIcd10Code != null && d.PrimaryIcd10Code.StartsWith(search)) || (d.Caption != null && d.Caption.Contains(search)));
         var total = await q.CountAsync();
-        var items = await q.OrderByDescending(d => d.LostAmount).Skip((page - 1) * pageSize).Take(Math.Clamp(pageSize, 1, 500)).ToListAsync();
+        var items = await q.OrderByDescending(d => (double)d.LostAmount).Skip((page - 1) * pageSize).Take(Math.Clamp(pageSize, 1, 500)).ToListAsync();
         var empIds = items.Where(i => i.EmployeeId != null).Select(i => i.EmployeeId!.Value).Distinct().ToList();
         var emps = await _db.Employees.AsNoTracking().Where(e => empIds.Contains(e.Id)).ToDictionaryAsync(e => e.Id, e => e);
         var lineIds = items.Where(i => i.StatementLineId != null).Select(i => i.StatementLineId!.Value).ToList();
         var lines = await _db.StatementLines.AsNoTracking().Where(l => lineIds.Contains(l.Id)).Select(l => new { l.Id, l.PractitionerName, l.PractitionerPosition, l.PrimaryDiagnosis, l.Interventions, l.PeriodStart, l.EmzType, l.PatientAge, l.PatientGender }).ToDictionaryAsync(l => l.Id, l => l);
-        var categories = await _db.Discrepancies.AsNoTracking().Where(d => d.RecordState == 2 && (!statementId.HasValue || d.StatementId == statementId)).GroupBy(d => d.ErrorCategory).Select(g => new { category = g.Key ?? "—", count = g.Count(), lost = g.Sum(x => x.LostAmount) }).OrderByDescending(x => x.count).ToListAsync();
+        var catRows = await _db.Discrepancies.AsNoTracking().Where(d => d.RecordState == 2 && (!statementId.HasValue || d.StatementId == statementId)).Select(d => new { d.ErrorCategory, d.LostAmount }).ToListAsync();
+        var categories = catRows.GroupBy(d => d.ErrorCategory).Select(g => new { category = g.Key ?? "—", count = g.Count(), lost = g.Sum(x => x.LostAmount) }).OrderByDescending(x => x.count).ToList();
         return Ok(new
         {
             total, page, pageSize, categories,

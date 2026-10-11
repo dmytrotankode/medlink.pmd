@@ -155,9 +155,8 @@ public class PmgTariffCalculatorService : IPmgTariffCalculatorService
     {
         if (string.IsNullOrWhiteSpace(code)) return string.Empty;
         var c = code.Trim().ToUpperInvariant();
-        var m = Regex.Match(c, @"[A-Z]\d{2}(?:\.\d{1,2})?");
-        if (m.Success) return m.Value;
-        if (c.Length > 3 && !c.Contains('.')) return c[..3] + "." + c[3..];
+        var m = Regex.Match(c, @"(?<![A-Z])([A-Z]\d{2})\.?(\d{1,2})?(?![\d])");
+        if (m.Success) return m.Groups[2].Success ? $"{m.Groups[1].Value}.{m.Groups[2].Value}" : m.Groups[1].Value;
         return c;
     }
 
@@ -184,7 +183,7 @@ public class PmgTariffCalculatorService : IPmgTariffCalculatorService
     public static string ExtractIcd(string? diagnosisText)
     {
         if (string.IsNullOrWhiteSpace(diagnosisText)) return string.Empty;
-        var m = Regex.Match(diagnosisText, @"\b([A-Z]\d{2}(?:\.\d{1,2})?)\b");
+        var m = Regex.Match(diagnosisText, @"(?<![A-Z])([A-Z]\d{2}(?:\.\d{1,2})?)(?![\d])");
         return m.Success ? m.Groups[1].Value : string.Empty;
     }
 
@@ -192,7 +191,7 @@ public class PmgTariffCalculatorService : IPmgTariffCalculatorService
     {
         var res = new List<string>();
         if (string.IsNullOrWhiteSpace(text) || text.Trim() == "-") return res;
-        foreach (Match m in Regex.Matches(text, @"\b([A-Z]\d{2}(?:\.\d{1,2})?)\b"))
+        foreach (Match m in Regex.Matches(text, @"(?<![A-Z])([A-Z]\d{2}(?:\.\d{1,2})?)(?![\d])"))
             if (!res.Contains(m.Value)) res.Add(m.Value);
         return res;
     }

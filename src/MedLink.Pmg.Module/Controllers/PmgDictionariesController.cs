@@ -92,7 +92,7 @@ public class PmgDictionariesController : ControllerBase
     {
         var n = PmgTariffCalculatorService.NormalizeIcd(icd);
         var ids = await _db.DsgDiagnoses.AsNoTracking().Where(x => x.DiagCode == n).Select(x => x.DsgId).Distinct().ToListAsync();
-        var list = await _db.Dsg.AsNoTracking().Where(d => ids.Contains(d.Id)).OrderByDescending(d => d.WeightCoef).ToListAsync();
+        var list = await _db.Dsg.AsNoTracking().Where(d => ids.Contains(d.Id)).OrderByDescending(d => (double)d.WeightCoef).ToListAsync();
         return Ok(list);
     }
 

@@ -1,0 +1,19 @@
+services:
+  pmg-api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: medlink-pmg:latest
+    container_name: medlink-pmg
+    ports:
+      - "8085:8085"
+    volumes:
+      - pmg-data:/app/App_Data
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      Pmg__ImportSampleReportsOnStartup: "true"
+      Pmg__GenerateMedLinkDemoEntities: "true"
+    restart: unless-stopped
+
+volumes:
+  pmg-data:
