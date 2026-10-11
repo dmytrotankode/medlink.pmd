@@ -3,7 +3,7 @@
 #   .\tools\start_remote.ps1            — інтерактивна сесія в терміналі + доступ з телефону
 #   .\tools\start_remote.ps1 -Server    — лише сервер Remote Control (без локального чату), QR-код по пробілу
 #   .\tools\start_remote.ps1 -Continue  — повернути попередню сесію MEDLINK цієї папки
-param([switch]$Server, [switch]$Continue, [string]$Name = "MEDLINK")
+param([switch]$Server, [switch]$Continue, [string]$Name = "PMG")
 
 Set-Location (Split-Path $PSScriptRoot -Parent)
 $env:CLAUDE_REMOTE_CONTROL_SESSION_NAME_PREFIX = "MEDLINK"
